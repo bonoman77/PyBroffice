@@ -1,0 +1,235 @@
+{% extends "layout.html" %}
+{% block title %}공지사항{% endblock %}
+
+{% block content %}
+<!-- Page Header -->
+<div class="page-header">
+  <div>
+    <h1 class="page-title">공지사항</h1>
+    <nav>
+      <ol class="breadcrumb">
+        <li class="breadcrumb-item"><a href="/">홈</a></li>
+        <li class="breadcrumb-item active">공지사항</li>
+      </ol>
+    </nav>
+  </div>
+</div>
+
+<div class="row">
+  <!-- 공지사항 목록 -->
+  <div class="col-lg-8">
+    <div class="card">
+      <div class="card-header d-flex justify-content-between align-items-center">
+        <div>
+          <h5 class="mb-1">공지사항 목록</h5>
+          <p class="text-muted small mb-0">전체 공지사항을 확인할 수 있습니다</p>
+        </div>
+        <button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#addNoticeModal">
+          <i class="ph ph-plus me-1"></i> 공지 작성
+        </button>
+      </div>
+      <div class="card-body p-0">
+        <div class="table-responsive">
+          <table class="table table-hover mb-0">
+            <thead>
+              <tr>
+                <th style="width: 80px;">No.</th>
+                <th>제목</th>
+                <th style="width: 120px;">작성자</th>
+                <th style="width: 120px;">등록일</th>
+              </tr>
+            </thead>
+            <tbody>
+              {% if res_list %}
+                {% for res in res_list %}
+                <tr style="cursor: pointer;" onclick="noticeOpen({{res.ChannelNoticeID}})">
+                  <td class="text-muted">{{res.ChannelNoticeID}}</td>
+                  <td>
+                    <div class="d-flex align-items-center">
+                      {% if res.TopExposeYn %}
+                      <i class="ph ph-push-pin text-warning me-2"></i>
+                      {% endif %}
+                      <span>{{res.Title}}</span>
+                    </div>
+                  </td>
+                  <td>{{res.UserName}}</td>
+                  <td class="text-muted">{{res.CreateDate}}</td>
+                </tr>
+                {% endfor %}
+              {% else %}
+                <tr>
+                  <td colspan="4" class="text-center py-5">
+                    <div class="text-muted">
+                      <i class="ph ph-megaphone" style="font-size: 48px; opacity: 0.3;"></i>
+                      <p class="mt-3 mb-0">등록된 공지사항이 없습니다.</p>
+                    </div>
+                  </td>
+                </tr>
+              {% endif %}
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 공지사항 작성 폼 -->
+  <div class="col-lg-4">
+    <div class="card">
+      <div class="card-header">
+        <h5 class="mb-0">빠른 공지 작성</h5>
+      </div>
+      <div class="card-body">
+        <form id="quickNoticeForm">
+          <div class="mb-3">
+            <label for="quickTitle" class="form-label">제목</label>
+            <input type="text" class="form-control" id="quickTitle" placeholder="공지사항 제목" required>
+          </div>
+          <div class="mb-3">
+            <label for="quickContent" class="form-label">내용</label>
+            <textarea class="form-control" id="quickContent" rows="8" placeholder="공지사항 내용을 입력하세요" required></textarea>
+          </div>
+          <div class="mb-3">
+            <div class="form-check">
+              <input class="form-check-input" type="checkbox" id="quickTopExpose">
+              <label class="form-check-label" for="quickTopExpose">
+                <i class="ph ph-push-pin me-1"></i> 상단 고정
+              </label>
+            </div>
+          </div>
+          <button type="submit" class="btn btn-primary w-100">
+            <i class="ph ph-paper-plane-right me-1"></i> 등록
+          </button>
+        </form>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- 공지사항 보기 모달 -->
+<div class="modal fade" id="noticeModal" tabindex="-1" aria-labelledby="noticeModalLabel" aria-hidden="true">
+  <div class="modal-dialog modal-lg">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="noticeModalLabel">공지사항</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body">
+        <div id="noticeContent" style="min-height: 200px;"></div>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">닫기</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- 공지사항 작성 모달 (상세) -->
+<div class="modal fade" id="addNoticeModal" tabindex="-1" aria-labelledby="addNoticeModalLabel" aria-hidden="true">
+  <div class="modal-dialog modal-lg">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="addNoticeModalLabel">공지사항 작성</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body">
+        <form id="addNoticeForm">
+          <div class="mb-3">
+            <label for="noticeTitle" class="form-label">제목</label>
+            <input type="text" class="form-control" id="noticeTitle" placeholder="공지사항 제목을 입력하세요" required>
+          </div>
+          <div class="mb-3">
+            <label for="noticeContent" class="form-label">내용</label>
+            <textarea class="form-control" id="noticeContentInput" rows="10" placeholder="공지사항 내용을 입력하세요" required></textarea>
+          </div>
+          <div class="row">
+            <div class="col-md-6">
+              <div class="form-check">
+                <input class="form-check-input" type="checkbox" id="topExpose">
+                <label class="form-check-label" for="topExpose">
+                  <i class="ph ph-push-pin me-1"></i> 상단 고정
+                </label>
+              </div>
+            </div>
+          </div>
+        </form>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">취소</button>
+        <button type="button" class="btn btn-primary" onclick="submitNotice()">등록</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+{% endblock %}
+
+{% block extra_js %}
+<script>
+// 공지사항 보기
+function noticeOpen(noticeId) {
+    const modal = new bootstrap.Modal(document.getElementById('noticeModal'));
+    modal.show();
+
+    fetch('{{ url_for("homes.get_notice_content") }}?channel_notice_id=' + noticeId)
+        .then(response => response.json())
+        .then(data => {
+            const content = data.content || '';
+            const textarea = document.createElement('textarea');
+            textarea.value = content;
+            textarea.readOnly = true;
+            textarea.className = 'form-control';
+            textarea.style.height = '300px';
+            textarea.style.border = 'none';
+            textarea.style.resize = 'none';
+            document.getElementById('noticeContent').innerHTML = '';
+            document.getElementById('noticeContent').appendChild(textarea);
+        })
+        .catch(error => {
+            console.error('Error fetching notice:', error);
+            document.getElementById('noticeContent').innerHTML = '<div class="alert alert-danger">공지를 불러오는 중 오류가 발생했습니다.</div>';
+        });
+}
+
+// 빠른 공지 작성
+document.getElementById('quickNoticeForm')?.addEventListener('submit', function(e) {
+    e.preventDefault();
+    
+    const title = document.getElementById('quickTitle').value;
+    const content = document.getElementById('quickContent').value;
+    const topExpose = document.getElementById('quickTopExpose').checked;
+    
+    // TODO: 서버로 데이터 전송
+    console.log('Quick Notice:', { title, content, topExpose });
+    
+    // 폼 초기화
+    this.reset();
+    alert('공지사항이 등록되었습니다.');
+    location.reload();
+});
+
+// 상세 공지 작성
+function submitNotice() {
+    const title = document.getElementById('noticeTitle').value;
+    const content = document.getElementById('noticeContentInput').value;
+    const topExpose = document.getElementById('topExpose').checked;
+    
+    if (!title || !content) {
+        alert('제목과 내용을 입력해주세요.');
+        return;
+    }
+    
+    // TODO: 서버로 데이터 전송
+    console.log('Notice:', { title, content, topExpose });
+    
+    // 모달 닫기
+    const modal = bootstrap.Modal.getInstance(document.getElementById('addNoticeModal'));
+    modal.hide();
+    
+    // 폼 초기화
+    document.getElementById('addNoticeForm').reset();
+    alert('공지사항이 등록되었습니다.');
+    location.reload();
+}
+</script>
+{% endblock %}

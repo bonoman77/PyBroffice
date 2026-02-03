@@ -1,0 +1,96 @@
+{% extends "layout_login.html" %}
+{% from "macros/form.html" import input %}
+{% from "macros/modal.html" import classic_modal %}
+{% block title %} 사용자 이용약관 {% endblock %}
+
+{% block section %}
+
+<div class="main-content">
+    <!-- Header -->
+    <div class="header bg-gradient-orange py-7 py-lg-8 pt-lg-9">
+      <div class="container">
+        <div class="header-body text-center mb-5">
+          <div class="row justify-content-center">
+            <div class="col-xl-5 col-lg-6 col-md-8 px-5">
+              <h1 class="text-white">튼튼영어 채널관리</h1>
+              <p class="text-lead text-white"></p>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="separator separator-bottom separator-skew zindex-100">
+        <svg x="0" y="0" viewBox="0 0 2560 100" preserveAspectRatio="none" version="1.1" xmlns="http://www.w3.org/2000/svg">
+          <polygon class="fill-default" points="2560 0 2560 100 0 100"></polygon>
+        </svg>
+      </div>
+    </div>
+
+    <!-- Page content -->
+    <div class="container mt--8 pb-5">
+        <div class="row justify-content-center">
+          <div class="col-lg-10">
+            <div class="pricing card-group flex-column flex-md-row mb-3">
+              <div class="card card-pricing border-0 text-center mb-4">
+                <div class="card-header bg-transparent">
+                  <h3 class="text-uppercase ls-1 text-primary py-3 mb-0">사용자 이용약관</h3>
+                </div>
+                <div class="card-body text-left px-lg-7">
+                    <div id="accordion" role="tablist" aria-multiselectable="true" class="card-collapse">
+                        <div class="card card-plain">
+                            <div class="card-header" role="tab" id="headingOne">
+                                <a data-toggle="collapse" data-parent="#accordion" href="#collapseOne" aria-expanded="true" aria-controls="collapseOne">
+                                    제1조(목적)
+                                    <i class="nc-icon nc-minimal-down"></i>
+                                </a>
+                            </div>
+                            <div id="collapseOne" class="collapse show" role="tabpanel" aria-labelledby="headingOne">
+                                <div class="card-body">
+                                    튼튼영어 채널관리(이하 ‘채널관리’) 이용약관은 채널관리 사이트에 접근하는 자(이하 ‘사용자’)가 튼튼영어의 지적재산 내부자료(이하 ‘정보’)를 체계적으로 관리∙이용하여 ‘정보’가 분실, 도난, 누출, 변조, 훼손, 남용 등이 되지 아니하도록 함을 목적으로 한다.
+                                </div>
+                            </div>
+                        </div>
+                        <div class="card card-plain">
+                            <div class="card-header" role="tab" id="headingTwo">
+                                <a class="collapsed" data-toggle="collapse" data-parent="#accordion" href="#collapseTwo" aria-expanded="false"
+                                   aria-controls="collapseTwo">
+                                    제2조(적용범위)
+                                    <i class="nc-icon nc-minimal-down"></i>
+                                </a>
+                            </div>
+                            <div id="collapseTwo" class="collapse" role="tabpanel" aria-labelledby="headingTwo">
+                                <div class="card-body">
+                                    본 이용약관은 ‘채널관리’ 접근 권한이 부여 된 ‘사용자’ 모두에게 적용된다.
+                                </div>
+                            </div>
+                        </div>
+                        <div class="card card-plain">
+                            <div class="card-header" role="tab" id="headingThree">
+                                <a class="collapsed" data-toggle="collapse" data-parent="#accordion" href="#collapseThree" aria-expanded="false"
+                                   aria-controls="collapseThree">
+                                    제3조(사용자의 권리 의무)
+                                    <i class="nc-icon nc-minimal-down"></i>
+                                </a>
+                            </div>
+                            <div id="collapseThree" class="collapse" role="tabpanel" aria-labelledby="headingThree">
+                                <div class="card-body">
+                                    ① 사용자란 ‘채널관리’에 접근하여 ‘정보’를 관리∙이용∙운용하기 위하여 스스로 ‘정보’를 처리하는 자를 말한다.<p></p>
+                                    ② 사용자가 사용하는 ‘정보’의 사용범위는 채널관리 목적을 위해서만 사용하고 그 밖의 목적으로 사용해서는 아니된다.<p></p>
+                                    ③ 사용자는 ‘정보’가 기재 또는 기록된 모든 문서, 도면, 기타 서류 또는 전자적, 광학적 기록매체를 복사해서는 아니된다.<p></p>
+                                    ④ 사용자는 ‘채널관리’ 이용 상 알게 된 ‘정보’를 외부로 유출하거나 제3자에게 발설해서는 아니된다.<p></p>
+                                    ⑤ 사용자의 귀책사유로 ‘정보’의 분실, 도난, 유출 등으로 회사 및 제3자에게 손해를 야기할 경우 사용자는 ‘부정경쟁방지 및 영업비밀보호에 관한 법률’ 제11조에 따라 손해배상책임을 진다.<p></p>
+                                    ⑥ 사용자가 본 조 제2항 내지 제5항을 위반하여 제3자 또는 회사에 손해가 발생하여 회사가 이를 배상한 때에는 회사는 사용자에게 구상권을 행사할 수 있다.<p></p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+    </div>
+
+</div>
+
+
+{% endblock %}

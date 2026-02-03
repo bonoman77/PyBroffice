@@ -1,0 +1,30 @@
+{% macro cal(dt) %}
+
+    <div class="text-center">
+        <h1>
+            {{dt | month}}월
+        </h1>
+        <table class="table table-bordered">
+            <thead>
+                <tr>
+                {%- for w in '일월화수목금토' %}
+                    <th class="text-center">
+                        {{w}}
+                    </th>
+                {% endfor -%}
+                </tr>
+            </thead>
+            <tbody>
+                <!-- batch filter를 이용하여 편리하게 달력 구성 -->
+                {% for row in range(dt | sdt, dt | edt) | batch(7, '&nbsp;') %}
+                    <tr>
+                        {% for col in row %}
+                            <td class="text-center">{% if ((col|int) <= 0) %} &nbsp; {% else %} {{col | safe}} {% endif %} </td>
+                        {% endfor %}
+                    </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+
+{% endmacro %}

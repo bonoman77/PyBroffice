@@ -1,0 +1,29 @@
+{% extends "layout.html" %}
+
+{% block title %}업체통보{% endblock %}
+
+{% block content %}
+<div class="container-fluid">
+    <div class="row">
+        <div class="col-12">
+            <h4 class="mb-4">
+                {% if task_kind_id == 4 %}
+                    <i class="bi bi-broom me-2"></i>청소 업체통보
+                {% elif task_kind_id == 5 %}
+                    <i class="bi bi-cup-straw me-2"></i>간식 업체통보
+                {% elif task_kind_id == 6 %}
+                    <i class="bi bi-box-seam me-2"></i>비품 업체통보
+                {% else %}
+                    <i class="bi bi-send me-2"></i>업체통보
+                {% endif %}
+            </h4>
+            
+            <div class="card">
+                <div class="card-body">
+                    <p class="text-muted">업무완료 통보 페이지입니다. (task_kind_id: {{ task_kind_id }})</p>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

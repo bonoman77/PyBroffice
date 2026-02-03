@@ -1,0 +1,203 @@
+{% extends "layout.html" %}
+{% block title %}회사소개{% endblock %}
+
+{% block content %}
+<!-- Page Header -->
+<div class="card mb-4" style="background: linear-gradient(135deg, #3b82f6 0%, #1d4ed8 100%); color: white; border: none;">
+  <div class="card-body py-5">
+    <div class="text-center">
+      <h1 class="mb-2" style="color: white;">회사소개</h1>
+      <p class="mb-0" style="color: rgba(255,255,255,0.9);">브로피스는 전문적인 업무 관리 서비스를 제공합니다</p>
+    </div>
+  </div>
+</div>
+
+<!-- Content -->
+<div class="row justify-content-center">
+  <div class="col-lg-10">
+    
+    <!-- 회사 개요 -->
+    <div class="card mb-4">
+      <div class="card-body p-4 p-lg-5">
+        <div class="text-center mb-5">
+          <h2 class="mb-3">브로피스</h2>
+          <p class="lead text-muted">전문성과 신뢰를 바탕으로 최상의 서비스를 제공합니다</p>
+        </div>
+
+        <div class="row g-4 mb-5">
+          <div class="col-md-4">
+            <div class="text-center">
+              <div class="bg-primary bg-opacity-10 p-4 rounded-circle d-inline-flex mb-3" style="width: 80px; height: 80px; align-items: center; justify-content: center;">
+                <i class="bi bi-award" style="font-size: 32px;"></i>
+              </div>
+              <h5>전문성</h5>
+              <p class="text-muted small">오랜 경험과 노하우를 바탕으로 전문적인 서비스를 제공합니다</p>
+            </div>
+          </div>
+          <div class="col-md-4">
+            <div class="text-center">
+              <div class="bg-success bg-opacity-10 p-4 rounded-circle d-inline-flex mb-3" style="width: 80px; height: 80px; align-items: center; justify-content: center;">
+                <i class="bi bi-shield-check" style="font-size: 32px;"></i>
+              </div>
+              <h5>신뢰성</h5>
+              <p class="text-muted small">고객과의 약속을 최우선으로 생각하며 책임감 있게 업무를 수행합니다</p>
+            </div>
+          </div>
+          <div class="col-md-4">
+            <div class="text-center">
+              <div class="bg-info bg-opacity-10 p-4 rounded-circle d-inline-flex mb-3" style="width: 80px; height: 80px; align-items: center; justify-content: center;">
+                <i class="bi bi-people" style="font-size: 32px;"></i>
+              </div>
+              <h5>고객만족</h5>
+              <p class="text-muted small">고객의 니즈를 정확히 파악하여 최상의 만족도를 제공합니다</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- 주요 서비스 -->
+    <div class="card mb-4">
+      <div class="card-header">
+        <h4 class="mb-0">주요 서비스</h4>
+      </div>
+      <div class="card-body p-4">
+        <div class="row g-4">
+          <div class="col-md-6">
+            <div class="card h-100 border">
+              <div class="position-relative" style="height: 200px; overflow: hidden; background: linear-gradient(135deg, #e0f2fe 0%, #bae6fd 100%);">
+                <div class="position-absolute top-50 start-50 translate-middle">
+                  <i class="bi bi-water" style="font-size: 80px; color: rgba(59, 130, 246, 0.6);"></i>
+                </div>
+              </div>
+              <div class="card-body">
+                <h5 class="mb-3">청소 관리</h5>
+                <p class="text-muted mb-3">사무실, 상가, 아파트 등 다양한 공간의 청소 서비스를 제공합니다. 전문 장비와 친환경 세제를 사용하여 깨끗하고 쾌적한 환경을 만들어드립니다.</p>
+                <ul class="list-unstyled mb-0">
+                  <li class="mb-2"><i class="bi bi-check-circle text-success me-2"></i>정기 청소 서비스</li>
+                  <li class="mb-2"><i class="bi bi-check-circle text-success me-2"></i>특별 청소 (입주/이사)</li>
+                  <li><i class="bi bi-check-circle text-success me-2"></i>소독 및 방역</li>
+                </ul>
+              </div>
+            </div>
+          </div>
+
+          <div class="col-md-6">
+            <div class="card h-100 border">
+              <div class="position-relative" style="height: 200px; overflow: hidden; background: linear-gradient(135deg, #dcfce7 0%, #bbf7d0 100%);">
+                <div class="position-absolute top-50 start-50 translate-middle">
+                  <i class="bi bi-cup-hot" style="font-size: 80px; color: rgba(34, 197, 94, 0.6);"></i>
+                </div>
+              </div>
+              <div class="card-body">
+                <h5 class="mb-3">간식 관리</h5>
+                <p class="text-muted mb-3">사무실 간식 및 음료 공급 서비스를 제공합니다. 신선하고 다양한 간식으로 직원들의 만족도를 높여드립니다.</p>
+                <ul class="list-unstyled mb-0">
+                  <li class="mb-2"><i class="bi bi-check-circle text-success me-2"></i>정기 간식 배송</li>
+                  <li class="mb-2"><i class="bi bi-check-circle text-success me-2"></i>맞춤형 간식 구성</li>
+                  <li><i class="bi bi-check-circle text-success me-2"></i>음료 및 커피 공급</li>
+                </ul>
+              </div>
+            </div>
+          </div>
+
+          <div class="col-md-6">
+            <div class="card h-100 border">
+              <div class="position-relative" style="height: 200px; overflow: hidden; background: linear-gradient(135deg, #fef3c7 0%, #fde68a 100%);">
+                <div class="position-absolute top-50 start-50 translate-middle">
+                  <i class="bi bi-box-seam" style="font-size: 80px; color: rgba(234, 179, 8, 0.6);"></i>
+                </div>
+              </div>
+              <div class="card-body">
+                <h5 class="mb-3">비품 관리</h5>
+                <p class="text-muted mb-3">사무용품 및 소모품 공급 서비스를 제공합니다. 필요한 비품을 적시에 공급하여 업무 효율성을 높여드립니다.</p>
+                <ul class="list-unstyled mb-0">
+                  <li class="mb-2"><i class="bi bi-check-circle text-success me-2"></i>사무용품 공급</li>
+                  <li class="mb-2"><i class="bi bi-check-circle text-success me-2"></i>소모품 재고 관리</li>
+                  <li><i class="bi bi-check-circle text-success me-2"></i>정기 배송 서비스</li>
+                </ul>
+              </div>
+            </div>
+          </div>
+
+          <div class="col-md-6">
+            <div class="card h-100 border">
+              <div class="position-relative" style="height: 200px; overflow: hidden; background: linear-gradient(135deg, #dbeafe 0%, #bfdbfe 100%);">
+                <div class="position-absolute top-50 start-50 translate-middle">
+                  <i class="bi bi-clipboard-data" style="font-size: 80px; color: rgba(14, 165, 233, 0.6);"></i>
+                </div>
+              </div>
+              <div class="card-body">
+                <h5 class="mb-3">통합 관리 시스템</h5>
+                <p class="text-muted mb-3">모든 서비스를 하나의 플랫폼에서 관리할 수 있는 통합 시스템을 제공합니다. 실시간으로 업무 진행 상황을 확인하고 관리할 수 있습니다.</p>
+                <ul class="list-unstyled mb-0">
+                  <li class="mb-2"><i class="bi bi-check-circle text-success me-2"></i>실시간 업무 현황 확인</li>
+                  <li class="mb-2"><i class="bi bi-check-circle text-success me-2"></i>업무 보고서 관리</li>
+                  <li><i class="bi bi-check-circle text-success me-2"></i>통계 및 분석 리포트</li>
+                </ul>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- 회사 정보 -->
+    <div class="card mb-4">
+      <div class="card-header">
+        <h4 class="mb-0">회사 정보</h4>
+      </div>
+      <div class="card-body p-4">
+        <div class="row g-4">
+          <div class="col-md-6">
+            <div class="mb-4">
+              <h6 class="text-muted mb-2">회사명</h6>
+              <p class="mb-0">브로피스</p>
+            </div>
+            <div class="mb-4">
+              <h6 class="text-muted mb-2">대표자</h6>
+              <p class="mb-0">박준규</p>
+            </div>
+            <div class="mb-4">
+              <h6 class="text-muted mb-2">사업자등록번호</h6>
+              <p class="mb-0">214-13-38110</p>
+            </div>
+          </div>
+          <div class="col-md-6">
+            <div class="mb-4">
+              <h6 class="text-muted mb-2">주소</h6>
+              <p class="mb-0">서울시 강남구 테헤란로63길 12</p>
+            </div>
+            <div class="mb-4">
+              <h6 class="text-muted mb-2">전화번호</h6>
+              <p class="mb-0">1661-5945</p>
+            </div>
+            <div class="mb-4">
+              <h6 class="text-muted mb-2">이메일</h6>
+              <p class="mb-0">broclean@nate.com</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- 문의하기 -->
+    <div class="card" style="background: linear-gradient(135deg, #f3f4f6 0%, #e5e7eb 100%); border: none;">
+      <div class="card-body p-4 p-lg-5 text-center">
+        <h4 class="mb-3">서비스 문의</h4>
+        <p class="text-muted mb-4">브로피스의 서비스에 대해 궁금하신 점이 있으시면 언제든지 문의해주세요.</p>
+        <div class="d-flex justify-content-center gap-3">
+          <a href="tel:02-1234-5678" class="btn btn-primary">
+            <i class="bi bi-telephone me-2"></i>전화 문의
+          </a>
+          <a href="mailto:contact@broffice.com" class="btn btn-outline-primary">
+            <i class="bi bi-envelope me-2"></i>이메일 문의
+          </a>
+        </div>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+{% endblock %}

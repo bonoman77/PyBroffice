@@ -1,0 +1,493 @@
+
+{% extends "layout.html" %}
+{% from "macros/form.html" import input, textarea %}
+{% block title %}업체목록{% endblock %}
+
+{% block content %}
+<!-- Page Header -->
+<div class="page-header">
+  <div>
+    <h1 class="page-title">업체목록</h1>
+    <nav>
+      <ol class="breadcrumb">
+        <li class="breadcrumb-item"><a href="/">홈</a></li>
+        <li class="breadcrumb-item">회원관리</li>
+        <li class="breadcrumb-item active">업체목록</li>
+      </ol>
+    </nav>
+  </div>
+</div>
+
+<!-- Client Stats Strip -->
+<div class="users-stats">
+  <div class="users-stat-card">
+    <div class="users-stat-icon primary"><i class="ph-duotone ph-buildings"></i></div>
+    <div class="users-stat-body">
+      <div class="users-stat-value">{{ total_clients|default(0) }}</div>
+      <div class="users-stat-label">전체 업체</div>
+    </div>
+  </div>
+  <div class="users-stat-card">
+    <div class="users-stat-icon success"><i class="ph-duotone ph-broom"></i></div>
+    <div class="users-stat-body">
+      <div class="users-stat-value">{{ cleaning_clients|default(0) }}</div>
+      <div class="users-stat-label">청소</div>
+    </div>
+  </div>
+  <div class="users-stat-card">
+    <div class="users-stat-icon warning"><i class="ph-duotone ph-hamburger"></i></div>
+    <div class="users-stat-body">
+      <div class="users-stat-value">{{ snack_clients|default(0) }}</div>
+      <div class="users-stat-label">간식</div>
+    </div>
+  </div>
+  <div class="users-stat-card">
+    <div class="users-stat-icon danger"><i class="ph-duotone ph-package"></i></div>
+    <div class="users-stat-body">
+      <div class="users-stat-value">{{ supplies_clients|default(0) }}</div>
+      <div class="users-stat-label">비품</div>
+    </div>
+  </div>
+</div>
+
+<!-- Clients Table Card -->
+<div class="card">
+  <div class="users-toolbar">
+    <div class="users-toolbar-left">
+      <div class="users-search">
+        <i class="ph ph-magnifying-glass"></i>
+        <input type="text" placeholder="업체 검색..." id="clientSearch">
+      </div>
+      <div class="users-filter-group">
+        <div class="dropdown">
+          <button class="users-filter-btn" data-bs-toggle="dropdown">
+            <i class="ph ph-funnel"></i> 업종
+            <i class="ph ph-caret-down"></i>
+          </button>
+          <ul class="dropdown-menu">
+            <li><a class="dropdown-item active" href="#" data-filter="type" data-value="all">전체 업종</a></li>
+            <li><a class="dropdown-item" href="#" data-filter="type" data-value="cleaning">청소</a></li>
+            <li><a class="dropdown-item" href="#" data-filter="type" data-value="snack">간식</a></li>
+            <li><a class="dropdown-item" href="#" data-filter="type" data-value="supplies">비품</a></li>
+          </ul>
+        </div>
+        <div class="dropdown">
+          <button class="users-filter-btn" data-bs-toggle="dropdown">
+            <i class="ph ph-circle-half"></i> 상태
+            <i class="ph ph-caret-down"></i>
+          </button>
+          <ul class="dropdown-menu">
+            <li><a class="dropdown-item active" href="#" data-filter="status" data-value="all">전체 상태</a></li>
+            <li><a class="dropdown-item" href="#" data-filter="status" data-value="active">활성</a></li>
+            <li><a class="dropdown-item" href="#" data-filter="status" data-value="pending">검토중</a></li>
+            <li><a class="dropdown-item" href="#" data-filter="status" data-value="inactive">비활성</a></li>
+          </ul>
+        </div>
+      </div>
+    </div>
+    <button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#addClientModal">
+      <i class="ph ph-plus me-1"></i> 업체 등록
+    </button>
+  </div>
+
+  <div class="users-table-wrap">
+    <table class="users-table">
+      <thead>
+        <tr>
+          <th class="users-th-check">
+            <div class="form-check">
+              <input class="form-check-input" type="checkbox" id="selectAll">
+            </div>
+          </th>
+          <th>업체명</th>
+          <th>업종</th>
+          <th>담당자</th>
+          <th>연락처</th>
+          <th>상태</th>
+          <th>등록일</th>
+          <th class="users-th-actions">작업</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% if clients %}
+          {% for client in clients %}
+          <tr>
+            <td>
+              <div class="form-check"><input class="form-check-input" type="checkbox"></div>
+            </td>
+            <td>
+              <div class="users-cell-user">
+                <div class="users-cell-avatar" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);">
+                  <i class="ph ph-buildings"></i>
+                </div>
+                <div>
+                  <a href="/clients/view/{{ client.id }}" class="users-cell-name">{{ client.name }}</a>
+                  <div class="users-cell-email">{{ client.business_number|default('사업자번호 미등록') }}</div>
+                </div>
+              </div>
+            </td>
+            <td>
+              {% if client.type == 'cleaning' %}
+              <span class="users-role" style="background: #e0f2fe; color: #0369a1;"><i class="ph-fill ph-broom"></i> 청소</span>
+              {% elif client.type == 'snack' %}
+              <span class="users-role" style="background: #fef3c7; color: #92400e;"><i class="ph-fill ph-hamburger"></i> 간식</span>
+              {% elif client.type == 'supplies' %}
+              <span class="users-role" style="background: #e0e7ff; color: #3730a3;"><i class="ph-fill ph-package"></i> 비품</span>
+              {% else %}
+              <span class="users-role user"><i class="ph-fill ph-briefcase"></i> 기타</span>
+              {% endif %}
+            </td>
+            <td>{{ client.manager_name|default('-') }}</td>
+            <td class="users-cell-meta">{{ client.phone|default('-') }}</td>
+            <td>
+              {% if client.status == 'active' %}
+              <span class="users-status active"><span class="users-status-dot"></span> 활성</span>
+              {% elif client.status == 'pending' %}
+              <span class="users-status pending"><span class="users-status-dot"></span> 검토중</span>
+              {% else %}
+              <span class="users-status inactive"><span class="users-status-dot"></span> 비활성</span>
+              {% endif %}
+            </td>
+            <td class="users-cell-meta">{{ client.registered_date|default('알 수 없음') }}</td>
+            <td>
+              <div class="users-actions">
+                <a href="/clients/view/{{ client.id }}" class="users-action-btn" title="보기"><i class="ph ph-eye"></i></a>
+                <a href="/clients/edit/{{ client.id }}" class="users-action-btn" title="수정"><i class="ph ph-pencil-simple"></i></a>
+                <button class="users-action-btn danger" title="삭제" onclick="deleteClient({{ client.id }})"><i class="ph ph-trash"></i></button>
+              </div>
+            </td>
+          </tr>
+          {% endfor %}
+        {% else %}
+          <tr>
+            <td colspan="8" class="text-center py-5">
+              <div class="text-muted">
+                <i class="ph ph-buildings" style="font-size: 48px; opacity: 0.3;"></i>
+                <p class="mt-3 mb-0">등록된 업체가 없습니다.</p>
+              </div>
+            </td>
+          </tr>
+        {% endif %}
+      </tbody>
+    </table>
+  </div>
+
+  <!-- Pagination -->
+  {% if clients and clients|length > 0 %}
+  <div class="users-pagination">
+    <div class="users-pagination-info">
+      Showing <strong>1-{{ clients|length }}</strong> of <strong>{{ total_clients|default(clients|length) }}</strong> clients
+    </div>
+    <nav>
+      <ul class="pagination mb-0">
+        <li class="page-item disabled">
+          <a class="page-link" href="#"><i class="ph ph-caret-left"></i></a>
+        </li>
+        <li class="page-item active"><a class="page-link" href="#">1</a></li>
+        <li class="page-item"><a class="page-link" href="#">2</a></li>
+        <li class="page-item"><a class="page-link" href="#">3</a></li>
+        <li class="page-item">
+          <a class="page-link" href="#"><i class="ph ph-caret-right"></i></a>
+        </li>
+      </ul>
+    </nav>
+  </div>
+  {% endif %}
+</div>
+
+<!-- Add Client Modal -->
+<div class="modal fade" id="addClientModal" tabindex="-1" aria-labelledby="addClientModalLabel" aria-hidden="true">
+  <div class="modal-dialog modal-lg">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="addClientModalLabel">업체 등록</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body">
+        <form id="addClientForm" action="{{ url_for('accounts.client_insert_post') }}" method="post">
+          <div class="row">
+            <div class="col-md-6 mb-3">
+              <label for="clientName" class="form-label">업체명 <span class="text-danger">*</span></label>
+              {{ input('text', 'clientName', '', opt='required') }}
+            </div>
+            <div class="col-md-6 mb-3">
+              <label for="clientBusinessNumber" class="form-label">사업자등록번호</label>
+              {{ input('text', 'clientBusinessNumber', '', placeholder='000-00-00000') }}
+            </div>
+          </div>
+          <div class="row">
+            <div class="col-md-6 mb-3">
+              <label for="clientPhone" class="form-label">업체 연락처 <span class="text-danger">*</span></label>
+              {{ input('tel', 'clientPhone', '', opt='required') }}
+            </div>
+            <div class="col-md-6 mb-3">
+              <label for="contractDate" class="form-label">계약일 <span class="text-danger">*</span></label>
+              {{ input('date', 'contractDate', '', opt='required') }}
+            </div>
+          </div>
+          <div class="row">
+            <div class="col-md-4 mb-3">
+              <label for="clientManager" class="form-label">담당자명</label>
+              {{ input('text', 'clientManager', '') }}
+            </div>
+            <div class="col-md-4 mb-3">
+              <label for="managerPosition" class="form-label">담당자 직급</label>
+              {{ input('text', 'managerPosition', '', placeholder='예: 과장, 팀장') }}
+            </div>
+            <div class="col-md-4 mb-3">
+              <label for="managerPhone" class="form-label">담당자 연락처</label>
+              {{ input('tel', 'managerPhone', '', placeholder='010-0000-0000') }}
+            </div>
+          </div>
+          <div class="mb-3">
+            <label class="form-label">업무 종류 <span class="text-danger">*</span></label>
+            <div class="d-flex gap-3">
+              <div class="form-check">
+                <input class="form-check-input" type="checkbox" id="taskCleaning" name="taskKind[]" value="4">
+                <label class="form-check-label" for="taskCleaning">청소</label>
+              </div>
+              <div class="form-check">
+                <input class="form-check-input" type="checkbox" id="taskSnack" name="taskKind[]" value="5">
+                <label class="form-check-label" for="taskSnack">스낵</label>
+              </div>
+              <div class="form-check">
+                <input class="form-check-input" type="checkbox" id="taskSupply" name="taskKind[]" value="6">
+                <label class="form-check-label" for="taskSupply">비품</label>
+              </div>
+            </div>
+          </div>
+          <div class="mb-3">
+            <label for="clientAddress" class="form-label">주소</label>
+            {{ input('text', 'clientAddress', '') }}
+          </div>
+          <div class="mb-3">
+            <label for="memo" class="form-label">비고</label>
+            {{ textarea('memo', '', rows='3') }}
+          </div>
+        </form>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">취소</button>
+        <button type="button" class="btn btn-primary" onclick="submitAddClient()">등록</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Edit Client Modal -->
+<div class="modal fade" id="editClientModal" tabindex="-1" aria-labelledby="editClientModalLabel" aria-hidden="true">
+  <div class="modal-dialog modal-lg">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="editClientModalLabel">업체 수정</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body">
+        <form id="editClientForm" action="{{ url_for('accounts.client_update_post') }}" method="post">
+          <input type="hidden" id="editClientId" name="clientId">
+          <div class="row">
+            <div class="col-md-6 mb-3">
+              <label for="editClientName" class="form-label">업체명 <span class="text-danger">*</span></label>
+              {{ input('text', 'editClientName', '', opt='required') }}
+            </div>
+            <div class="col-md-6 mb-3">
+              <label for="editClientBusinessNumber" class="form-label">사업자등록번호</label>
+              {{ input('text', 'editClientBusinessNumber', '', placeholder='000-00-00000') }}
+            </div>
+          </div>
+          <div class="row">
+            <div class="col-md-6 mb-3">
+              <label for="editClientPhone" class="form-label">업체 연락처 <span class="text-danger">*</span></label>
+              {{ input('tel', 'editClientPhone', '', opt='required') }}
+            </div>
+            <div class="col-md-6 mb-3">
+              <label for="editContractDate" class="form-label">계약일 <span class="text-danger">*</span></label>
+              {{ input('date', 'editContractDate', '', opt='required') }}
+            </div>
+          </div>
+          <div class="row">
+            <div class="col-md-4 mb-3">
+              <label for="editClientManager" class="form-label">담당자명</label>
+              {{ input('text', 'editClientManager', '') }}
+            </div>
+            <div class="col-md-4 mb-3">
+              <label for="editManagerPosition" class="form-label">담당자 직급</label>
+              {{ input('text', 'editManagerPosition', '', placeholder='예: 과장, 팀장') }}
+            </div>
+            <div class="col-md-4 mb-3">
+              <label for="editManagerPhone" class="form-label">담당자 연락처</label>
+              {{ input('tel', 'editManagerPhone', '', placeholder='010-0000-0000') }}
+            </div>
+          </div>
+          <div class="mb-3">
+            <label class="form-label">업무 종류 <span class="text-danger">*</span></label>
+            <div class="d-flex gap-3">
+              <div class="form-check">
+                <input class="form-check-input" type="checkbox" id="editTaskCleaning" name="editTaskKind[]" value="4">
+                <label class="form-check-label" for="editTaskCleaning">청소</label>
+              </div>
+              <div class="form-check">
+                <input class="form-check-input" type="checkbox" id="editTaskSnack" name="editTaskKind[]" value="5">
+                <label class="form-check-label" for="editTaskSnack">스낵</label>
+              </div>
+              <div class="form-check">
+                <input class="form-check-input" type="checkbox" id="editTaskSupply" name="editTaskKind[]" value="6">
+                <label class="form-check-label" for="editTaskSupply">비품</label>
+              </div>
+            </div>
+          </div>
+          <div class="mb-3">
+            <label for="editClientAddress" class="form-label">주소</label>
+            {{ input('text', 'editClientAddress', '') }}
+          </div>
+          <div class="mb-3">
+            <label for="editMemo" class="form-label">비고</label>
+            {{ textarea('editMemo', '', rows='3') }}
+          </div>
+        </form>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">취소</button>
+        <button type="button" class="btn btn-primary" onclick="submitEditClient()">수정</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+{% endblock %}
+
+{% block extra_js %}
+<script>
+// Select All Checkbox
+document.getElementById('selectAll')?.addEventListener('change', function() {
+  const checkboxes = document.querySelectorAll('.users-table tbody input[type="checkbox"]');
+  checkboxes.forEach(cb => cb.checked = this.checked);
+});
+
+// Search Functionality
+document.getElementById('clientSearch')?.addEventListener('input', function(e) {
+  const searchTerm = e.target.value.toLowerCase();
+  const rows = document.querySelectorAll('.users-table tbody tr');
+  
+  rows.forEach(row => {
+    const name = row.querySelector('.users-cell-name')?.textContent.toLowerCase() || '';
+    const businessNumber = row.querySelector('.users-cell-email')?.textContent.toLowerCase() || '';
+    
+    if (name.includes(searchTerm) || businessNumber.includes(searchTerm)) {
+      row.style.display = '';
+    } else {
+      row.style.display = 'none';
+    }
+  });
+});
+
+// Filter Functionality
+document.querySelectorAll('[data-filter]').forEach(item => {
+  item.addEventListener('click', function(e) {
+    e.preventDefault();
+    const filterType = this.dataset.filter;
+    const filterValue = this.dataset.value;
+    
+    // Update active state
+    this.closest('.dropdown-menu').querySelectorAll('.dropdown-item').forEach(i => {
+      i.classList.remove('active');
+    });
+    this.classList.add('active');
+    
+    // Apply filter
+    const rows = document.querySelectorAll('.users-table tbody tr');
+    rows.forEach(row => {
+      if (filterValue === 'all') {
+        row.style.display = '';
+      } else {
+        const cellText = row.querySelector(filterType === 'type' ? '.users-role' : '.users-status')?.textContent.toLowerCase() || '';
+        if (cellText.includes(filterValue === 'cleaning' ? '청소' : filterValue === 'snack' ? '간식' : filterValue === 'supplies' ? '비품' : filterValue)) {
+          row.style.display = '';
+        } else {
+          row.style.display = 'none';
+        }
+      }
+    });
+  });
+});
+
+// Add Client Form Submit
+function submitAddClient() {
+  const form = document.getElementById('addClientForm');
+  
+  // Check if at least one task kind is selected
+  const taskKinds = Array.from(document.querySelectorAll('input[name="taskKind[]"]:checked')).map(cb => cb.value);
+  if (taskKinds.length === 0) {
+    alert('업무 종류를 최소 1개 이상 선택해주세요.');
+    return;
+  }
+  
+  if (form.checkValidity()) {
+    form.submit();
+  } else {
+    form.reportValidity();
+  }
+}
+
+// Edit Client - Load data into modal
+function editClient(clientId, clientData) {
+  // Populate form fields
+  document.getElementById('editClientId').value = clientId;
+  document.getElementById('editClientName').value = clientData.name || '';
+  document.getElementById('editClientBusinessNumber').value = clientData.business_number || '';
+  document.getElementById('editClientPhone').value = clientData.phone || '';
+  document.getElementById('editContractDate').value = clientData.contract_date || '';
+  document.getElementById('editClientManager').value = clientData.manager || '';
+  document.getElementById('editManagerPosition').value = clientData.manager_position || '';
+  document.getElementById('editManagerPhone').value = clientData.manager_phone || '';
+  document.getElementById('editClientAddress').value = clientData.address || '';
+  document.getElementById('editMemo').value = clientData.memo || '';
+  
+  // Set task kind checkboxes
+  document.getElementById('editTaskCleaning').checked = false;
+  document.getElementById('editTaskSnack').checked = false;
+  document.getElementById('editTaskSupply').checked = false;
+  
+  if (clientData.task_kinds) {
+    const taskKinds = Array.isArray(clientData.task_kinds) ? clientData.task_kinds : [clientData.task_kinds];
+    taskKinds.forEach(kind => {
+      if (kind == 4) document.getElementById('editTaskCleaning').checked = true;
+      if (kind == 5) document.getElementById('editTaskSnack').checked = true;
+      if (kind == 6) document.getElementById('editTaskSupply').checked = true;
+    });
+  }
+  
+  // Show modal
+  const modal = new bootstrap.Modal(document.getElementById('editClientModal'));
+  modal.show();
+}
+
+// Edit Client Form Submit
+function submitEditClient() {
+  const form = document.getElementById('editClientForm');
+  
+  // Check if at least one task kind is selected
+  const taskKinds = Array.from(document.querySelectorAll('input[name="editTaskKind[]"]:checked')).map(cb => cb.value);
+  if (taskKinds.length === 0) {
+    alert('업무 종류를 최소 1개 이상 선택해주세요.');
+    return;
+  }
+  
+  if (form.checkValidity()) {
+    form.submit();
+  } else {
+    form.reportValidity();
+  }
+}
+
+// Delete Client
+function deleteClient(clientId) {
+  if (confirm('정말로 이 업체를 삭제하시겠습니까?')) {
+    // TODO: Send AJAX request to delete client
+    console.log('Deleting client:', clientId);
+    alert('업체가 삭제되었습니다.');
+    location.reload();
+  }
+}
+</script>
+{% endblock %}

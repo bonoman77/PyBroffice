@@ -1,0 +1,131 @@
+<header class="header">
+  <!-- Header Left -->
+  <div class="header-left">
+    <a href="/" class="header-logo">
+      <img src="/static/img/logo.webp" alt="브로피스">
+      <span>브로피스</span>
+    </a>
+    <button class="sidebar-toggle" title="Toggle Sidebar">
+      <i class="bi bi-list"></i>
+    </button>
+    <!-- Quick Access -->
+    <div class="header-action dropdown quickaccess-dropdown">
+      <button class="dropdown-toggle" data-bs-toggle="dropdown" aria-expanded="false" title="Quick Access">
+        <i class="bi bi-grid"></i>
+      </button>
+      <div class="dropdown-menu">
+        <div class="quickaccess-header">
+          <h6>빠른 접근</h6>
+          <span class="quickaccess-subtitle">자주 사용하는 메뉴</span>
+        </div>
+        <div class="quickaccess-grid">
+          <a href="/" class="quickaccess-item">
+            <span class="quickaccess-icon" style="--qa-color: var(--accent-color)">
+              <i class="bi bi-speedometer2"></i>
+            </span>
+            <span class="quickaccess-label">대시보드</span>
+          </a>
+          <a href="/samples/apps-calendar" class="quickaccess-item">
+            <span class="quickaccess-icon" style="--qa-color: #ec4899">
+              <i class="bi bi-calendar3"></i>
+            </span>
+            <span class="quickaccess-label">캘린더</span>
+          </a>
+          <a href="/samples/settings" class="quickaccess-item">
+            <span class="quickaccess-icon" style="--qa-color: var(--muted-color)">
+              <i class="bi bi-gear"></i>
+            </span>
+            <span class="quickaccess-label">설정</span>
+          </a>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Header Search -->
+  <!-- <div class="header-search">
+    <form class="search-form" action="/search" method="GET">
+      <i class="bi bi-search search-icon"></i>
+      <input type="search" name="q" placeholder="검색..." autocomplete="off">
+      <kbd class="search-shortcut">/</kbd>
+    </form>
+  </div> -->
+
+  <!-- Header Right -->
+  <div class="header-right">
+    <!-- Desktop Actions -->
+    <div class="header-actions-desktop">
+      <!-- Notifications -->
+      <div class="header-action dropdown notification-dropdown">
+        <button class="dropdown-toggle" data-bs-toggle="dropdown" aria-expanded="false">
+          <i class="bi bi-bell"></i>
+          <span class="badge">0</span>
+        </button>
+        <div class="dropdown-menu dropdown-menu-end">
+          <div class="notification-header">
+            <div class="notification-header-left">
+              <h6>알림</h6>
+              <span class="notification-count">새 알림 없음</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Theme Toggle -->
+      <button class="header-action theme-toggle" title="Toggle Theme">
+        <i class="ph ph-moon theme-icon-dark"></i>
+        <i class="ph ph-sun theme-icon-light"></i>
+      </button>
+
+      <!-- User Dropdown -->
+      <div class="header-action dropdown user-dropdown">
+
+        <button class="dropdown-toggle" data-bs-toggle="dropdown" aria-expanded="false">
+          {% if session.login_user and session.login_user.user_email %}
+            <div class="avatar avatar-initial">{{ session.login_user.user_email[0]|upper }}</div>
+          {% else %}
+            <div class="avatar avatar-initial">U</div>
+          {% endif %}
+          <span class="avatar-status"></span>
+        </button>
+
+        <div class="dropdown-menu dropdown-menu-end">
+          <div class="user-dropdown-header">
+            {% if session.login_user and session.login_user.user_email %}
+              <div class="user-dropdown-avatar avatar-initial-lg">{{ session.login_user.user_email[0]|upper }}</div>
+            {% else %}
+              <div class="user-dropdown-avatar avatar-initial-lg">U</div>
+            {% endif %}
+            <div class="user-dropdown-info">
+              <h6>{% if session.login_user %}{{ session.login_user.user_name }}{% else %}사용자{% endif %}</h6>
+              <span>{% if session.login_user %}{{ session.login_user.user_email }}{% else %}user@example.com{% endif %}</span>
+            </div>
+          </div>
+          <div class="user-dropdown-body">
+            <a class="dropdown-item" href="{{ url_for('accounts.user_profile') }}">
+              <i class="bi bi-person"></i> 내 프로필
+            </a>
+            <a class="dropdown-item" href="/samples/settings">
+              <i class="bi bi-gear"></i> 설정
+            </a>
+          </div>
+          <div class="user-dropdown-footer">
+            <a class="dropdown-item dropdown-item-danger" href="{{ url_for('accounts.logout') }}">
+              <i class="bi bi-box-arrow-right"></i> 로그아웃
+            </a>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Mobile Actions -->
+    <div class="header-actions-mobile">
+      <button class="header-action search-toggle" title="Search">
+        <i class="bi bi-search"></i>
+      </button>
+      <button class="header-action mobile-menu-toggle" title="More">
+        <i class="bi bi-three-dots-vertical"></i>
+      </button>
+    </div>
+  </div>
+</header>

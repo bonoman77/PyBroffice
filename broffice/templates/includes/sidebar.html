@@ -1,0 +1,136 @@
+<aside class="sidebar">
+  <!-- Icon Bar (Left narrow panel) -->
+  <div class="sidebar-iconbar">
+    <!-- Logo -->
+    <div class="sidebar-iconbar-logo">
+      <a href="/">
+        <img src="/static/img/logo.webp" alt="브로피스">
+      </a>
+    </div>
+
+    <!-- Icon Navigation -->
+    <nav class="sidebar-iconbar-nav">
+      <ul class="iconbar-menu">
+        <li>
+          <button class="iconbar-item {{ 'active' if request.endpoint and request.endpoint.startswith('homes.') else '' }}" data-panel="home" data-bs-toggle="tooltip" data-bs-placement="right" data-bs-title="홈">
+            <i class="ph-duotone ph-house"></i>
+          </button>
+        </li>
+        {% if session.get('login_user') and session.login_user.user_kind_id == 1 %}
+        <li>
+          <button class="iconbar-item {{ 'active' if request.endpoint and request.endpoint.startswith('accounts.') else '' }}" data-panel="members" data-bs-toggle="tooltip" data-bs-placement="right" data-bs-title="회원관리">
+            <i class="ph-duotone ph-users"></i>
+          </button>
+        </li>
+        <li>
+          <button class="iconbar-item {{ 'active' if request.endpoint and request.endpoint.startswith('tasks.') and request.args.get('task_kind_id') == '4' else '' }}" data-panel="cleaning" data-bs-toggle="tooltip" data-bs-placement="right" data-bs-title="청소관리">
+            <i class="ph-duotone ph-broom"></i>
+          </button>
+        </li>
+        <li>
+          <button class="iconbar-item {{ 'active' if request.endpoint and request.endpoint.startswith('tasks.') and request.args.get('task_kind_id') == '5' else '' }}" data-panel="snack" data-bs-toggle="tooltip" data-bs-placement="right" data-bs-title="간식관리">
+            <i class="ph-duotone ph-hamburger"></i>
+          </button>
+        </li>
+        <li>
+          <button class="iconbar-item {{ 'active' if request.endpoint and request.endpoint.startswith('tasks.') and request.args.get('task_kind_id') == '6' else '' }}" data-panel="supplies" data-bs-toggle="tooltip" data-bs-placement="right" data-bs-title="비품관리">
+            <i class="ph-duotone ph-package"></i>
+          </button>
+        </li>
+        <li>
+          <button class="iconbar-item {{ 'active' if request.endpoint and request.endpoint.startswith('report.') else '' }}" data-panel="report" data-bs-toggle="tooltip" data-bs-placement="right" data-bs-title="리포트">
+            <i class="ph-duotone ph-chart-bar"></i>
+          </button>
+        </li>
+        {% endif %}
+      </ul>
+    </nav>
+  </div>
+
+  <!-- Nav Panel (Right text panel) -->
+  <div class="sidebar-panel">
+    <!-- Panel: 홈 -->
+    <div class="sidebar-panel-section {{ 'active' if request.endpoint and request.endpoint.startswith('homes.') else '' }}" data-section="home">
+      <div class="sidebar-panel-header">
+        <h6>홈</h6>
+        <button class="sidebar-panel-close btn-close" aria-label="Close"></button>
+      </div>
+      <ul class="panel-nav">
+        {% if session.get('login_user') %}
+        <li><a class="panel-link {{ 'active' if request.endpoint == 'homes.index' else '' }}" href="/"><i class="bi bi-speedometer2 me-2"></i>대시보드</a></li>
+        <li><a class="panel-link {{ 'active' if request.endpoint == 'homes.notice_list' else '' }}" href="{{ url_for('homes.notice_list') }}"><i class="bi bi-megaphone me-2"></i>공지사항</a></li>
+        {% endif %}
+        <li><a class="panel-link {{ 'active' if request.endpoint == 'homes.about' else '' }}" href="/about"><i class="bi bi-building me-2"></i>회사소개</a></li>
+        <li><a class="panel-link {{ 'active' if request.endpoint == 'homes.terms' else '' }}" href="{{ url_for('homes.terms') }}"><i class="bi bi-file-text me-2"></i>이용약관</a></li>
+        <li><a class="panel-link {{ 'active' if request.endpoint == 'homes.privacy' else '' }}" href="{{ url_for('homes.privacy') }}"><i class="bi bi-shield-check me-2"></i>개인정보처리방침</a></li>
+      </ul>
+    </div>
+
+    <!-- Panel: 회원관리 -->
+    <div class="sidebar-panel-section {{ 'active' if request.endpoint and request.endpoint.startswith('accounts.') else '' }}" data-section="members">
+      <div class="sidebar-panel-header">
+        <h6>회원관리</h6>
+        <button class="sidebar-panel-close btn-close" aria-label="Close"></button>
+      </div>
+      <ul class="panel-nav">
+        <li><a class="panel-link {{ 'active' if request.endpoint == 'accounts.client_list' else '' }}" href="{{ url_for('accounts.client_list') }}"><i class="bi bi-building-check me-2"></i>업체목록</a></li>
+        <li><a class="panel-link {{ 'active' if request.endpoint == 'accounts.user_list' else '' }}" href="{{ url_for('accounts.user_list') }}"><i class="bi bi-person-lines-fill me-2"></i>회원목록</a></li>
+      </ul>
+    </div>
+
+    <!-- Panel: 청소관리 -->
+    <div class="sidebar-panel-section {{ 'active' if request.endpoint and request.endpoint.startswith('tasks.') and request.args.get('task_kind_id') == '4' else '' }}" data-section="cleaning">
+      <div class="sidebar-panel-header">
+        <h6>청소관리</h6>
+        <button class="sidebar-panel-close btn-close" aria-label="Close"></button>
+      </div>
+      <ul class="panel-nav">
+        <li><a class="panel-link {{ 'active' if request.endpoint == 'tasks.client_list' and request.args.get('task_kind_id') == '4' else '' }}" href="{{ url_for('tasks.client_list', task_kind_id=4) }}"><i class="bi bi-clipboard-plus me-2"></i>업무등록</a></li>
+        <li><a class="panel-link {{ 'active' if request.endpoint == 'tasks.assign' and request.args.get('task_kind_id') == '4' else '' }}" href="{{ url_for('tasks.assign', task_kind_id=4) }}"><i class="bi bi-person-badge me-2"></i>직원연결</a></li>
+        <li><a class="panel-link {{ 'active' if request.endpoint == 'tasks.result' and request.args.get('task_kind_id') == '4' else '' }}" href="{{ url_for('tasks.result', task_kind_id=4) }}"><i class="bi bi-clipboard-check me-2"></i>업무결과</a></li>
+        <li><a class="panel-link {{ 'active' if request.endpoint == 'tasks.notify' and request.args.get('task_kind_id') == '4' else '' }}" href="{{ url_for('tasks.notify', task_kind_id=4) }}"><i class="bi bi-send me-2"></i>업체통보</a></li>
+      </ul>
+    </div>
+
+    <!-- Panel: 간식관리 -->
+    <div class="sidebar-panel-section {{ 'active' if request.endpoint and request.endpoint.startswith('tasks.') and request.args.get('task_kind_id') == '5' else '' }}" data-section="snack">
+      <div class="sidebar-panel-header">
+        <h6>간식관리</h6>
+        <button class="sidebar-panel-close btn-close" aria-label="Close"></button>
+      </div>
+      <ul class="panel-nav">
+        <li><a class="panel-link {{ 'active' if request.endpoint == 'tasks.client_list' and request.args.get('task_kind_id') == '5' else '' }}" href="{{ url_for('tasks.client_list', task_kind_id=5) }}"><i class="bi bi-clipboard-plus me-2"></i>업무등록</a></li>
+        <li><a class="panel-link {{ 'active' if request.endpoint == 'tasks.assign' and request.args.get('task_kind_id') == '5' else '' }}" href="{{ url_for('tasks.assign', task_kind_id=5) }}"><i class="bi bi-person-badge me-2"></i>직원연결</a></li>
+        <li><a class="panel-link {{ 'active' if request.endpoint == 'tasks.result' and request.args.get('task_kind_id') == '5' else '' }}" href="{{ url_for('tasks.result', task_kind_id=5) }}"><i class="bi bi-clipboard-check me-2"></i>업무결과</a></li>
+        <li><a class="panel-link {{ 'active' if request.endpoint == 'tasks.notify' and request.args.get('task_kind_id') == '5' else '' }}" href="{{ url_for('tasks.notify', task_kind_id=5) }}"><i class="bi bi-send me-2"></i>업체통보</a></li>
+      </ul>
+    </div>
+
+    <!-- Panel: 비품관리 -->
+    <div class="sidebar-panel-section {{ 'active' if request.endpoint and request.endpoint.startswith('tasks.') and request.args.get('task_kind_id') == '6' else '' }}" data-section="supplies">
+      <div class="sidebar-panel-header">
+        <h6>비품관리</h6>
+        <button class="sidebar-panel-close btn-close" aria-label="Close"></button>
+      </div>
+      <ul class="panel-nav">
+        <li><a class="panel-link {{ 'active' if request.endpoint == 'tasks.client_list' and request.args.get('task_kind_id') == '6' else '' }}" href="{{ url_for('tasks.client_list', task_kind_id=6) }}"><i class="bi bi-clipboard-plus me-2"></i>업무등록</a></li>
+        <li><a class="panel-link {{ 'active' if request.endpoint == 'tasks.assign' and request.args.get('task_kind_id') == '6' else '' }}" href="{{ url_for('tasks.assign', task_kind_id=6) }}"><i class="bi bi-person-badge me-2"></i>직원연결</a></li>
+        <li><a class="panel-link {{ 'active' if request.endpoint == 'tasks.result' and request.args.get('task_kind_id') == '6' else '' }}" href="{{ url_for('tasks.result', task_kind_id=6) }}"><i class="bi bi-clipboard-check me-2"></i>업무결과</a></li>
+        <li><a class="panel-link {{ 'active' if request.endpoint == 'tasks.notify' and request.args.get('task_kind_id') == '6' else '' }}" href="{{ url_for('tasks.notify', task_kind_id=6) }}"><i class="bi bi-send me-2"></i>업체통보</a></li>
+      </ul>
+    </div>
+
+    <!-- Panel: 리포트 -->
+    <div class="sidebar-panel-section {{ 'active' if request.endpoint and request.endpoint.startswith('report.') else '' }}" data-section="report">
+      <div class="sidebar-panel-header">
+        <h6>리포트</h6>
+        <button class="sidebar-panel-close btn-close" aria-label="Close"></button>
+      </div>
+      <ul class="panel-nav">
+        <li><a class="panel-link {{ 'active' if request.endpoint == 'report.tasks' else '' }}" href="/report/tasks"><i class="bi bi-clipboard-data me-2"></i>업무목록</a></li>
+        <li><a class="panel-link {{ 'active' if request.endpoint == 'report.results' else '' }}" href="/report/results"><i class="bi bi-clipboard-check me-2"></i>업무결과확인</a></li>
+        <li><a class="panel-link {{ 'active' if request.endpoint == 'report.statistics' else '' }}" href="/report/statistics"><i class="bi bi-graph-up me-2"></i>통계분석</a></li>
+      </ul>
+    </div>
+  </div>
+</aside>

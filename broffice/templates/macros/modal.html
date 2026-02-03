@@ -1,0 +1,77 @@
+{% macro modal(id='', title='', size='', footer=True) -%}
+<div class="modal fade" id="{{id}}" tabindex="-1" aria-labelledby="{{id}}Label" aria-hidden="true">
+  <div class="modal-dialog {% if size %}modal-{{size}}{% endif %} modal-dialog-centered">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="{{id}}Label">{{title}}</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body">
+        {{ caller() }}
+      </div>
+      {% if footer %}
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">닫기</button>
+        <button type="button" class="btn btn-primary">확인</button>
+      </div>
+      {% endif %}
+    </div>
+  </div>
+</div>
+{%- endmacro %}
+
+{% macro confirm_modal(id='', title='', confirm_text='확인', cancel_text='취소') -%}
+<div class="modal fade" id="{{id}}" tabindex="-1" aria-labelledby="{{id}}Label" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="{{id}}Label">{{title}}</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body">
+        {{ caller() }}
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">{{cancel_text}}</button>
+        <button type="button" class="btn btn-primary" id="{{id}}Confirm">{{confirm_text}}</button>
+      </div>
+    </div>
+  </div>
+</div>
+{%- endmacro %}
+
+{% macro alert_modal(id='', title='', type='primary') -%}
+<div class="modal fade" id="{{id}}" tabindex="-1" aria-labelledby="{{id}}Label" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered">
+    <div class="modal-content">
+      <div class="modal-header border-0">
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body text-center py-4">
+        <div class="mb-3">
+          {% if type == 'success' %}
+          <i class="ph-duotone ph-check-circle text-success" style="font-size: 64px;"></i>
+          {% elif type == 'danger' %}
+          <i class="ph-duotone ph-x-circle text-danger" style="font-size: 64px;"></i>
+          {% elif type == 'warning' %}
+          <i class="ph-duotone ph-warning text-warning" style="font-size: 64px;"></i>
+          {% else %}
+          <i class="ph-duotone ph-info text-primary" style="font-size: 64px;"></i>
+          {% endif %}
+        </div>
+        <h4 class="mb-3">{{title}}</h4>
+        <p class="text-muted mb-0">{{ caller() }}</p>
+      </div>
+      <div class="modal-footer border-0 justify-content-center">
+        <button type="button" class="btn btn-{{type}}" data-bs-dismiss="modal">확인</button>
+      </div>
+    </div>
+  </div>
+</div>
+{%- endmacro %}
+
+
+
+
+
+

@@ -1,0 +1,195 @@
+{% extends "layout.html" %}
+
+{% block content %}
+<div class="page-header">
+  <div>
+    <h1 class="page-title">내 프로필</h1>
+    <nav>
+      <ol class="breadcrumb">
+        <li class="breadcrumb-item"><a href="/">홈</a></li>
+        <li class="breadcrumb-item active">프로필</li>
+      </ol>
+    </nav>
+  </div>
+</div>
+
+<!-- Profile Header -->
+<div class="uview-header">
+  {% if user_profile and user_profile.user_email %}
+    <div class="uview-avatar avatar-initial-lg" style="width: 120px; height: 120px; font-size: 3rem;">
+      {{ user_profile.user_email[0]|upper }}
+    </div>
+  {% else %}
+    <div class="uview-avatar avatar-initial-lg" style="width: 120px; height: 120px; font-size: 3rem;">U</div>
+  {% endif %}
+  <div class="uview-info">
+    <h2 class="uview-name">{{ user_profile.user_name if user_profile else '사용자' }}</h2>
+    <p class="uview-email">{{ user_profile.user_email if user_profile else 'user@example.com' }}</p>
+    <div class="uview-badges">
+      {% if user_profile %}
+        {% if user_profile.user_kind_id == 1 %}
+          <span class="users-role admin"><i class="ph-fill ph-shield-chevron"></i> 관리자</span>
+        {% elif user_profile.user_kind_id == 2 %}
+          <span class="users-role" style="background: var(--success-color-light); color: var(--success-color);"><i class="ph-fill ph-user"></i> 직원</span>
+        {% elif user_profile.user_kind_id == 3 %}
+          <span class="users-role" style="background: var(--info-color-light); color: var(--info-color);"><i class="ph-fill ph-briefcase"></i> 업체담당자</span>
+        {% endif %}
+      {% endif %}
+      <span class="users-status active"><span class="users-status-dot"></span> 활성</span>
+    </div>
+  </div>
+</div>
+
+<!-- Content Grid -->
+<div class="uview-grid">
+  <!-- Main Content -->
+  <div>
+    <div class="card">
+      <div class="uview-tabs" role="tablist">
+        <button class="uview-tab nav-link active" role="tab" data-bs-toggle="tab" data-bs-target="#tab-overview">개요</button>
+        <button class="uview-tab nav-link" role="tab" data-bs-toggle="tab" data-bs-target="#tab-edit">프로필 수정</button>
+        <button class="uview-tab nav-link" role="tab" data-bs-toggle="tab" data-bs-target="#tab-password">비밀번호 변경</button>
+      </div>
+      <div class="card-body tab-content">
+
+        <!-- Overview Tab -->
+        <div class="tab-pane fade show active profile-overview" id="tab-overview">
+          <div class="uview-detail-group">
+            <div class="uview-detail-title">개인 정보</div>
+            <div class="uview-detail-row">
+              <div class="uview-detail-label">이름</div>
+              <div class="uview-detail-value">{{ user_profile.user_name if user_profile else '-' }}</div>
+            </div>
+            <div class="uview-detail-row">
+              <div class="uview-detail-label">이메일</div>
+              <div class="uview-detail-value">{{ user_profile.user_email if user_profile else '-' }}</div>
+            </div>
+            <div class="uview-detail-row">
+              <div class="uview-detail-label">전화번호</div>
+              <div class="uview-detail-value">{{ user_profile.user_mobile if user_profile and user_profile.user_mobile else '-' }}</div>
+            </div>
+          </div>
+
+          <div class="uview-detail-group">
+            <div class="uview-detail-title">소속 정보</div>
+            <div class="uview-detail-row">
+              <div class="uview-detail-label">사용자 유형</div>
+              <div class="uview-detail-value">{{ user_profile.user_kind_name if user_profile else '-' }}</div>
+            </div>
+            {% if user_profile and user_profile.user_kind_id == 3 and user_profile.client_name %}
+            <div class="uview-detail-row">
+              <div class="uview-detail-label">소속 업체</div>
+              <div class="uview-detail-value">{{ user_profile.client_name }}</div>
+            </div>
+            {% endif %}
+            <div class="uview-detail-row">
+              <div class="uview-detail-label">계정 상태</div>
+              <div class="uview-detail-value">
+                {% if user_profile and user_profile.use_yn == 1 and user_profile.admin_authed_at %}
+                  <span class="badge bg-success">활성</span>
+                {% elif user_profile and user_profile.use_yn == 1 and not user_profile.admin_authed_at %}
+                  <span class="badge bg-warning">대기</span>
+                {% else %}
+                  <span class="badge bg-secondary">비활성</span>
+                {% endif %}
+              </div>
+            </div>
+            <div class="uview-detail-row">
+              <div class="uview-detail-label">가입일</div>
+              <div class="uview-detail-value">{{ user_profile.joined_date if user_profile else '-' }}</div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Edit Profile Tab -->
+        <div class="tab-pane fade" id="tab-edit">
+          <form action="{{ url_for('accounts.user_profile_update_post') }}" method="POST" class="profile-edit-form">
+            <div class="uview-detail-group">
+              <div class="uview-detail-title">개인 정보 수정</div>
+              <div class="row">
+                <div class="col-md-6 mb-3">
+                  <label class="form-label">이름</label>
+                  <input type="text" class="form-control" name="user_name" value="{{ user_profile.user_name if user_profile else '' }}" required>
+                </div>
+                <div class="col-md-6 mb-3">
+                  <label class="form-label">이메일</label>
+                  <input type="email" class="form-control" name="user_email" value="{{ user_profile.user_email if user_profile else '' }}" required>
+                </div>
+                <div class="col-md-6 mb-3">
+                  <label class="form-label">전화번호</label>
+                  <input type="tel" class="form-control" name="user_mobile" value="{{ user_profile.user_mobile if user_profile else '' }}" placeholder="010-0000-0000">
+                </div>
+              </div>
+            </div>
+
+            <div class="uedit-form-actions">
+              <button type="button" class="btn btn-secondary" onclick="window.location.reload()">취소</button>
+              <button type="submit" class="btn btn-primary">
+                <i class="ph ph-check me-1"></i> 저장
+              </button>
+            </div>
+          </form>
+        </div>
+
+        <!-- Password Tab -->
+        <div class="tab-pane fade" id="tab-password">
+          <form action="{{ url_for('accounts.user_pass_update_post') }}" method="POST">
+            <div class="uview-detail-group">
+              <div class="uview-detail-title">비밀번호 변경</div>
+              <div class="row">
+                <div class="col-md-6 mb-3">
+                  <label class="form-label">현재 비밀번호</label>
+                  <input type="password" class="form-control" name="old_passwd" placeholder="현재 비밀번호 입력" required>
+                </div>
+                <div class="col-md-6"></div>
+                <div class="col-md-6 mb-3">
+                  <label class="form-label">새 비밀번호</label>
+                  <input type="password" class="form-control" name="new_passwd" placeholder="새 비밀번호 입력" required>
+                </div>
+                <div class="col-md-6 mb-3">
+                  <label class="form-label">새 비밀번호 확인</label>
+                  <input type="password" class="form-control" name="confirm_passwd" placeholder="새 비밀번호 확인" required>
+                </div>
+              </div>
+            </div>
+
+            <div class="uedit-form-actions">
+              <button type="button" class="btn btn-secondary" onclick="window.location.reload()">취소</button>
+              <button type="submit" class="btn btn-primary">
+                <i class="ph ph-check me-1"></i> 비밀번호 변경
+              </button>
+            </div>
+          </form>
+        </div>
+
+      </div>
+    </div>
+  </div>
+
+  <!-- Sidebar -->
+  <div>
+    <!-- Account Info -->
+    <div class="card">
+      <div class="card-header">
+        <h5 class="card-title mb-0">계정 정보</h5>
+      </div>
+      <div class="card-body">
+        <div class="uview-status-list">
+          <div class="uview-status-item">
+            <span class="uview-status-label">이메일 인증</span>
+            <span class="uview-status-value text-success"><i class="ph-fill ph-check-circle"></i> 완료</span>
+          </div>
+          <div class="uview-status-item">
+            <span class="uview-status-label">계정 상태</span>
+            <span class="uview-status-value text-success"><i class="ph-fill ph-check-circle"></i> 활성</span>
+          </div>
+          <div class="uview-status-item">
+            <span class="uview-status-label">마지막 로그인</span>
+            <span class="uview-status-value">{{ user_profile.last_login if user_profile and user_profile.last_login else '정보 없음' }}</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}

@@ -1,0 +1,72 @@
+{% extends "layout_login.html" %}
+{% from "macros/form.html" import input %}
+{% block title %} 비밀번호 초기화 {% endblock %}
+
+{% block section %}
+
+<div class="main-content">
+    <!-- Header -->
+    <div class="header bg-gradient-success py-7 py-lg-8 pt-lg-9">
+      <div class="container">
+        <div class="header-body text-center mb-5">
+          <div class="row justify-content-center">
+            <div class="col-xl-5 col-lg-6 col-md-8 px-5">
+              <h1 class="text-white">비밀번호 초기화</h1>
+              <p class="text-lead text-white"></p>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="separator separator-bottom separator-skew zindex-100">
+        <svg x="0" y="0" viewBox="0 0 2560 100" preserveAspectRatio="none" version="1.1" xmlns="http://www.w3.org/2000/svg">
+          <polygon class="fill-default" points="2560 0 2560 100 0 100"></polygon>
+        </svg>
+      </div>
+    </div>
+    <!-- Page content -->
+    <div class="container mt--8 pb-5">
+      <div class="row justify-content-center">
+        <div class="col-lg-5 col-md-7">
+          <div class="card bg-secondary border-0 mb-0">
+            <div class="card-body px-lg-5 py-lg-5">
+              <div class="text-center text-muted mb-4">
+				<p class="description">아래의 정보를 정확히 넣고 비밀번호 초기화 신청을 하면 유효한 안내 메일이 개인 계정으로 발송됩니다.
+				</div>
+              <form class="form" action="/accounts/user_pass_reset" method="post">
+                <div class="form-group mb-3">
+                  <div class="input-group input-group-merge input-group-alternative">
+                    <div class="input-group-prepend">
+                      <span class="input-group-text"><i class="ni ni-email-83"></i></span>
+                    </div>
+                    {{ input('email', 'user_email', user_email, opt='required', placeholder='사내 이메일') }}
+                  </div>
+                </div>
+                <div class="form-group">
+                  <div class="input-group input-group-merge input-group-alternative">
+                    <div class="input-group-prepend">
+                      <span class="input-group-text"><i class="ni ni-circle-08"></i></span>
+                    </div>
+                    {{ input('text', 'user_name', user_name, opt='required', placeholder='사원명') }}
+                  </div>
+                </div>
+                <div class="text-center">
+                  <button type="submit" class="btn btn-primary my-4">Submit</button>
+                </div>
+              </form>
+            </div>
+          </div>
+          <div class="row mt-3">
+            <div class="col-6">
+              <a href="{{ url_for('accounts.auth_mail_resend') }}" class="text-light"><small>아직 인증이 안되었나요?</small></a>
+            </div>
+            <div class="col-6 text-right">
+              <a href="{{ url_for('accounts.user_insert') }}" class="text-light"><small>계정이 없으신가요?</small></a>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+</div>
+
+{% endblock %}
+

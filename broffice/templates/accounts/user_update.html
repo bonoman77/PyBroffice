@@ -1,0 +1,106 @@
+{% extends "layout_login.html" %}
+{% from "macros/form.html" import input, password_toggle %}
+
+{% block title %}사용자정보 변경{% endblock %}
+
+{% block auth_content %}
+<div class="auth-card-header">
+  <h1 class="auth-title">사용자정보 변경</h1>
+  <p class="auth-subtitle">정보를 수정하세요</p>
+</div>
+
+<form class="auth-form" id="updateForm" method="POST" action="{{ url_for('accounts.user_update_post') }}" novalidate>
+  <div class="row">
+    <div class="col-md-6">
+      <div class="form-group">
+        <label for="user_mobile" class="form-label">연락처 <span class="text-danger">*</span></label>
+        {{ input('tel', 'user_mobile', user_mobile, placeholder='010-0000-0000', opt='required') }}
+        <div class="invalid-feedback">연락처를 입력해주세요.</div>
+      </div>
+    </div>
+    <div class="col-md-6">
+      <div class="form-group">
+        <label for="user_email" class="form-label">이메일</label>
+        {{ input('email', 'user_email', user_email, placeholder='name@example.com') }}
+        <div class="invalid-feedback">올바른 이메일 주소를 입력해주세요.</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="row">
+    <div class="col-md-6">
+      <div class="form-group">
+        <label for="user_passwd" class="form-label">새 비밀번호</label>
+        {{ password_toggle('user_passwd', placeholder='새 비밀번호 (변경 시에만 입력)', min='8') }}
+        <div class="form-text">변경하지 않으려면 비워두세요.</div>
+        <div class="invalid-feedback">비밀번호는 최소 8자 이상이어야 합니다.</div>
+      </div>
+    </div>
+    <div class="col-md-6">
+      <div class="form-group">
+        <label for="user_passwd_confirm" class="form-label">비밀번호 확인</label>
+        {{ password_toggle('user_passwd_confirm', placeholder='비밀번호 확인', min='8') }}
+        <div class="invalid-feedback">비밀번호가 일치하지 않습니다.</div>
+      </div>
+    </div>
+  </div>
+
+  <button type="submit" class="btn btn-primary btn-block">정보 수정</button>
+</form>
+
+<p class="auth-footer-text">
+  <a href="/" class="auth-link">홈으로 돌아가기</a>
+</p>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+  // Password Toggle
+  document.querySelectorAll('[data-toggle-password]').forEach(button => {
+    button.addEventListener('click', function() {
+      const input = this.parentElement.querySelector('input');
+      const icon = this.querySelector('i');
+      
+      if (input.type === 'password') {
+        input.type = 'text';
+        icon.classList.remove('ph-eye');
+        icon.classList.add('ph-eye-slash');
+      } else {
+        input.type = 'password';
+        icon.classList.remove('ph-eye-slash');
+        icon.classList.add('ph-eye');
+      }
+    });
+  });
+
+  // Form Validation
+  const form = document.getElementById('updateForm');
+  form.addEventListener('submit', function(event) {
+    const password = document.getElementById('user_passwd').value;
+    const passwordConfirm = document.getElementById('user_passwd_confirm').value;
+    
+    // Check password match only if password is entered
+    if (password || passwordConfirm) {
+      if (password !== passwordConfirm) {
+        event.preventDefault();
+        event.stopPropagation();
+        document.getElementById('user_passwd_confirm').setCustomValidity('비밀번호가 일치하지 않습니다.');
+      } else {
+        document.getElementById('user_passwd_confirm').setCustomValidity('');
+      }
+    }
+    
+    if (!form.checkValidity()) {
+      event.preventDefault();
+      event.stopPropagation();
+    }
+    
+    form.classList.add('was-validated');
+  }, false);
+
+  // Reset custom validity on input
+  document.getElementById('user_passwd_confirm').addEventListener('input', function() {
+    this.setCustomValidity('');
+  });
+</script>
+{% endblock %}

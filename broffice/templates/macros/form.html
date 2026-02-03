@@ -1,0 +1,41 @@
+{% macro input(type='text', name='', value='', class='', opt='', min='', max='', placeholder='') -%}
+    <input type="{{type}}" id="{{name}}" name="{{name}}" value="{{value}}" class="form-control {{class}}" minlength="{{min}}" maxlength="{{max}}" placeholder="{{placeholder}}" {{opt}}>
+{%- endmacro %}
+
+{% macro password_toggle(name='', value='', placeholder='비밀번호를 입력하세요', min='8', opt='required') -%}
+    <div class="input-group">
+        <input type="password" id="{{name}}" name="{{name}}" value="{{value}}" class="form-control" placeholder="{{placeholder}}" minlength="{{min}}" {{opt}}>
+        <button class="btn btn-outline-secondary" type="button" data-toggle-password>
+            <i class="ph ph-eye"></i>
+        </button>
+    </div>
+{%- endmacro %}
+
+{% macro textarea(name='', value='', rows='5', placeholder='', opt='') -%}
+    <textarea id="{{name}}" name="{{name}}" rows="{{rows}}" class="form-control" placeholder="{{placeholder}}" {{opt}}>{{value}}</textarea>
+{%- endmacro %}
+
+{% macro select(name, select_lst, title='', opt='') -%}
+    <select class="form-select" name="{{name}}" id="{{name}}" {{opt}}>
+        {% if title %}
+            <option value="">{{title}}</option>
+        {% endif %}
+        {% for s in select_lst %}
+            <option value="{{s.ID}}" {% if s.Selected %} selected {% endif %}>{{s.Item}}</option>
+        {% endfor %}
+    </select>
+{%- endmacro %}
+
+{% macro checkbox(name='', value='', checked=False, label='') -%}
+    <div class="form-check">
+        <input class="form-check-input" name="{{name}}" id="{{name}}_{{value}}" type="checkbox" value="{{value}}" {{"checked" if checked}}>
+        <label class="form-check-label" for="{{name}}_{{value}}">{{label}}</label>
+    </div>
+{%- endmacro %}
+
+{% macro radio(name='', value='', checked=False, label='') -%}
+    <div class="form-check">
+        <input class="form-check-input" name="{{name}}" id="{{name}}_{{value}}" type="radio" value="{{value}}" {{"checked" if checked}}>
+        <label class="form-check-label" for="{{name}}_{{value}}">{{label}}</label>
+    </div>
+{%- endmacro %}
