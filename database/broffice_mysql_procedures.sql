@@ -446,10 +446,10 @@ DROP PROCEDURE IF EXISTS get_user_list$$
 CREATE PROCEDURE get_user_list()
 BEGIN
     SELECT 
-        u.user_id AS id,
-        u.user_name AS name,
-        u.user_email AS email,
-        u.user_mobile AS phone,
+        u.user_id,
+        u.user_name,
+        u.user_email,
+        u.user_mobile,
         u.user_kind_id,
         c.client_name,
         CASE 

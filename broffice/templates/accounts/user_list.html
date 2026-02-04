@@ -115,8 +115,8 @@
             <td>
               <div class="users-cell-user">
                 <div>
-                  <a href="/members/view/{{ user.id }}" class="users-cell-name">{{ user.name }}</a>
-                  <div class="users-cell-email">{{ user.email }}</div>
+                  <a href="/members/view/{{ user.user_id }}" class="users-cell-name">{{ user.user_name }}</a>
+                  <div class="users-cell-email">{{ user.user_email }}</div>
                 </div>
               </div>
             </td>
@@ -145,14 +145,14 @@
               <div class="users-actions">
                 <a href="{{ url_for('accounts.user_profile') }}" class="users-action-btn" title="보기"><i class="ph ph-eye"></i></a>
                 <button class="users-action-btn edit-user-btn" title="수정" 
-                        data-user-id="{{ user.id }}"
-                        data-user-name="{{ user.name }}"
-                        data-user-email="{{ user.email }}"
-                        data-user-mobile="{{ user.phone }}"
+                        data-user-id="{{ user.user_id }}"
+                        data-user-name="{{ user.user_name }}"
+                        data-user-email="{{ user.user_email }}"
+                        data-user-mobile="{{ user.user_mobile }}"
                         data-user-kind-id="{{ user.user_kind_id }}">
                   <i class="ph ph-pencil-simple"></i>
                 </button>
-                <button class="users-action-btn danger" title="삭제" data-user-id="{{ user.id }}" onclick="deleteUser({{ user.id }})"><i class="ph ph-trash"></i></button>
+                <button class="users-action-btn danger" title="삭제" data-user-id="{{ user.user_id }}" onclick="deleteUser({{ user.user_id }})"><i class="ph ph-trash"></i></button>
               </div>
             </td>
           </tr>
