@@ -1,0 +1,559 @@
+[2026-02-03 10:56:05] INFO in log_handler: 로거 초기화 완료 - 레벨: DEBUG, 파일: C:\SeungKyun\PyProject\PyWeb\Broffice\logs\broffice.log
+[2026-02-03 10:56:05] INFO in __init__: Flask-Mail 초기화 완료
+[2026-02-03 10:56:05] INFO in __init__: 필터 등록 완료
+[2026-02-03 10:56:05] ERROR in dbconns: 데이터베이스 연결 생성 중 오류: (1045, "Access denied for user 'root'@'localhost' (using password: NO)")
+[2026-02-03 10:57:35] INFO in log_handler: 로거 초기화 완료 - 레벨: DEBUG, 파일: C:\SeungKyun\PyProject\PyWeb\Broffice\logs\broffice.log
+[2026-02-03 10:57:35] INFO in __init__: Flask-Mail 초기화 완료
+[2026-02-03 10:57:35] INFO in __init__: 필터 등록 완료
+[2026-02-03 10:57:36] ERROR in dbconns: 데이터베이스 연결 생성 중 오류: (1045, "Access denied for user 'root'@'localhost' (using password: NO)")
+[2026-02-03 10:59:14] INFO in log_handler: 로거 초기화 완료 - 레벨: DEBUG, 파일: C:\SeungKyun\PyProject\PyWeb\Broffice\logs\broffice.log
+[2026-02-03 10:59:15] INFO in __init__: Flask-Mail 초기화 완료
+[2026-02-03 10:59:15] INFO in __init__: 필터 등록 완료
+[2026-02-03 10:59:15] ERROR in dbconns: 데이터베이스 연결 생성 중 오류: (1045, "Access denied for user 'root'@'localhost' (using password: NO)")
+[2026-02-03 10:59:33] INFO in log_handler: 로거 초기화 완료 - 레벨: DEBUG, 파일: C:\SeungKyun\PyProject\PyWeb\Broffice\logs\broffice.log
+[2026-02-03 10:59:33] INFO in __init__: Flask-Mail 초기화 완료
+[2026-02-03 10:59:33] INFO in __init__: 필터 등록 완료
+[2026-02-03 10:59:33] ERROR in dbconns: 데이터베이스 연결 생성 중 오류: (2059, "Authentication plugin 'b'auth_gssapi_client'' not configured")
+[2026-02-03 11:01:38] INFO in log_handler: 로거 초기화 완료 - 레벨: DEBUG, 파일: C:\SeungKyun\PyProject\PyWeb\Broffice\logs\broffice.log
+[2026-02-03 11:01:38] INFO in __init__: Flask-Mail 초기화 완료
+[2026-02-03 11:01:38] INFO in __init__: 필터 등록 완료
+[2026-02-03 11:01:39] INFO in __init__: 애플리케이션 초기화 완료
+[2026-02-03 11:01:40] INFO in log_handler: 로거 초기화 완료 - 레벨: DEBUG, 파일: C:\SeungKyun\PyProject\PyWeb\Broffice\logs\broffice.log
+[2026-02-03 11:01:40] INFO in __init__: Flask-Mail 초기화 완료
+[2026-02-03 11:01:40] INFO in __init__: 필터 등록 완료
+[2026-02-03 11:01:40] INFO in __init__: 애플리케이션 초기화 완료
+[2026-02-03 11:54:49] INFO in log_handler: 로거 초기화 완료 - 레벨: DEBUG, 파일: C:\SeungKyun\PyProject\PyWeb\Broffice\logs\broffice.log
+[2026-02-03 11:54:49] INFO in __init__: Flask-Mail 초기화 완료
+[2026-02-03 11:54:49] INFO in __init__: 필터 등록 완료
+[2026-02-03 11:54:50] INFO in __init__: 애플리케이션 초기화 완료
+[2026-02-03 11:57:05] INFO in log_handler: 로거 초기화 완료 - 레벨: DEBUG, 파일: C:\SeungKyun\PyProject\PyWeb\Broffice\logs\broffice.log
+[2026-02-03 11:57:05] INFO in __init__: Flask-Mail 초기화 완료
+[2026-02-03 11:57:05] INFO in __init__: 필터 등록 완료
+[2026-02-03 11:57:06] INFO in __init__: 애플리케이션 초기화 완료
+[2026-02-03 14:28:01] INFO in log_handler: 로거 초기화 완료 - 레벨: DEBUG, 파일: C:\SeungKyun\PyProject\PyWeb\Broffice\logs\broffice.log
+[2026-02-03 14:28:01] INFO in __init__: Flask-Mail 초기화 완료
+[2026-02-03 14:28:01] INFO in __init__: 필터 등록 완료
+[2026-02-03 14:28:02] INFO in __init__: 애플리케이션 초기화 완료
+[2026-02-03 14:28:10] INFO in log_handler: 로거 초기화 완료 - 레벨: DEBUG, 파일: C:\SeungKyun\PyProject\PyWeb\Broffice\logs\broffice.log
+[2026-02-03 14:28:10] INFO in __init__: Flask-Mail 초기화 완료
+[2026-02-03 14:28:10] INFO in __init__: 필터 등록 완료
+[2026-02-03 14:38:58] INFO in log_handler: 로거 초기화 완료 - 레벨: DEBUG, 파일: C:\SeungKyun\PyProject\PyWeb\Broffice\logs\broffice.log
+[2026-02-03 14:38:58] INFO in __init__: Flask-Mail 초기화 완료
+[2026-02-03 14:38:58] INFO in __init__: 필터 등록 완료
+[2026-02-03 14:38:58] INFO in __init__: 애플리케이션 초기화 완료
+[2026-02-03 14:38:59] INFO in log_handler: 로거 초기화 완료 - 레벨: DEBUG, 파일: C:\SeungKyun\PyProject\PyWeb\Broffice\logs\broffice.log
+[2026-02-03 14:38:59] INFO in __init__: Flask-Mail 초기화 완료
+[2026-02-03 14:38:59] INFO in __init__: 필터 등록 완료
+[2026-02-03 14:38:59] INFO in __init__: 애플리케이션 초기화 완료
+[2026-02-03 14:39:26] INFO in log_handler: 로거 초기화 완료 - 레벨: DEBUG, 파일: C:\SeungKyun\PyProject\PyWeb\Broffice\logs\broffice.log
+[2026-02-03 14:39:26] INFO in __init__: Flask-Mail 초기화 완료
+[2026-02-03 14:39:26] INFO in __init__: 필터 등록 완료
+[2026-02-03 14:39:26] INFO in __init__: 애플리케이션 초기화 완료
+[2026-02-03 14:39:33] INFO in log_handler: 로거 초기화 완료 - 레벨: DEBUG, 파일: C:\SeungKyun\PyProject\PyWeb\Broffice\logs\broffice.log
+[2026-02-03 14:39:33] INFO in __init__: Flask-Mail 초기화 완료
+[2026-02-03 14:39:33] INFO in __init__: 필터 등록 완료
+[2026-02-03 14:39:33] INFO in __init__: 애플리케이션 초기화 완료
+[2026-02-03 14:39:39] INFO in log_handler: 로거 초기화 완료 - 레벨: DEBUG, 파일: C:\SeungKyun\PyProject\PyWeb\Broffice\logs\broffice.log
+[2026-02-03 14:39:39] INFO in __init__: Flask-Mail 초기화 완료
+[2026-02-03 14:39:39] INFO in __init__: 필터 등록 완료
+[2026-02-03 14:39:39] INFO in __init__: 애플리케이션 초기화 완료
+[2026-02-03 14:39:51] INFO in log_handler: 로거 초기화 완료 - 레벨: DEBUG, 파일: C:\SeungKyun\PyProject\PyWeb\Broffice\logs\broffice.log
+[2026-02-03 14:39:52] INFO in __init__: Flask-Mail 초기화 완료
+[2026-02-03 14:39:52] INFO in __init__: 필터 등록 완료
+[2026-02-03 14:39:52] INFO in __init__: 애플리케이션 초기화 완료
+[2026-02-03 14:45:42] INFO in log_handler: 로거 초기화 완료 - 레벨: DEBUG, 파일: C:\SeungKyun\PyProject\PyWeb\Broffice\logs\broffice.log
+[2026-02-03 14:45:42] INFO in __init__: Flask-Mail 초기화 완료
+[2026-02-03 14:45:42] INFO in __init__: 필터 등록 완료
+[2026-02-03 14:45:42] INFO in __init__: 애플리케이션 초기화 완료
+[2026-02-03 14:45:49] INFO in log_handler: 로거 초기화 완료 - 레벨: DEBUG, 파일: C:\SeungKyun\PyProject\PyWeb\Broffice\logs\broffice.log
+[2026-02-03 14:45:49] INFO in __init__: Flask-Mail 초기화 완료
+[2026-02-03 14:45:49] INFO in __init__: 필터 등록 완료
+[2026-02-03 14:45:49] INFO in __init__: 애플리케이션 초기화 완료
+[2026-02-03 14:46:19] INFO in log_handler: 로거 초기화 완료 - 레벨: DEBUG, 파일: C:\SeungKyun\PyProject\PyWeb\Broffice\logs\broffice.log
+[2026-02-03 14:46:19] INFO in __init__: Flask-Mail 초기화 완료
+[2026-02-03 14:46:19] INFO in __init__: 필터 등록 완료
+[2026-02-03 14:46:20] INFO in __init__: 애플리케이션 초기화 완료
+[2026-02-03 14:47:41] INFO in log_handler: 로거 초기화 완료 - 레벨: DEBUG, 파일: C:\SeungKyun\PyProject\PyWeb\Broffice\logs\broffice.log
+[2026-02-03 14:47:41] INFO in __init__: Flask-Mail 초기화 완료
+[2026-02-03 14:47:41] INFO in __init__: 필터 등록 완료
+[2026-02-03 14:47:42] INFO in __init__: 애플리케이션 초기화 완료
+[2026-02-03 14:47:48] INFO in log_handler: 로거 초기화 완료 - 레벨: DEBUG, 파일: C:\SeungKyun\PyProject\PyWeb\Broffice\logs\broffice.log
+[2026-02-03 14:47:48] INFO in __init__: Flask-Mail 초기화 완료
+[2026-02-03 14:47:48] INFO in __init__: 필터 등록 완료
+[2026-02-03 14:56:59] INFO in log_handler: 로거 초기화 완료 - 레벨: DEBUG, 파일: C:\SeungKyun\PyProject\PyWeb\Broffice\logs\broffice.log
+[2026-02-03 14:57:00] INFO in __init__: Flask-Mail 초기화 완료
+[2026-02-03 14:57:00] INFO in __init__: 필터 등록 완료
+[2026-02-03 14:57:00] INFO in __init__: 애플리케이션 초기화 완료
+[2026-02-03 14:57:01] INFO in log_handler: 로거 초기화 완료 - 레벨: DEBUG, 파일: C:\SeungKyun\PyProject\PyWeb\Broffice\logs\broffice.log
+[2026-02-03 14:57:01] INFO in __init__: Flask-Mail 초기화 완료
+[2026-02-03 14:57:01] INFO in __init__: 필터 등록 완료
+[2026-02-03 14:57:01] INFO in __init__: 애플리케이션 초기화 완료
+[2026-02-03 15:00:01] INFO in log_handler: 로거 초기화 완료 - 레벨: DEBUG, 파일: C:\SeungKyun\PyProject\PyWeb\Broffice\logs\broffice.log
+[2026-02-03 15:00:01] INFO in __init__: Flask-Mail 초기화 완료
+[2026-02-03 15:00:01] INFO in __init__: 필터 등록 완료
+[2026-02-03 15:00:01] INFO in __init__: 애플리케이션 초기화 완료
+[2026-02-03 15:06:06] INFO in log_handler: 로거 초기화 완료 - 레벨: DEBUG, 파일: C:\SeungKyun\PyProject\PyWeb\Broffice\logs\broffice.log
+[2026-02-03 15:06:06] INFO in __init__: Flask-Mail 초기화 완료
+[2026-02-03 15:06:06] INFO in __init__: 필터 등록 완료
+[2026-02-03 15:06:06] INFO in __init__: 애플리케이션 초기화 완료
+[2026-02-03 15:21:31] INFO in log_handler: 로거 초기화 완료 - 레벨: DEBUG, 파일: C:\SeungKyun\PyProject\PyWeb\Broffice\logs\broffice.log
+[2026-02-03 15:21:31] INFO in __init__: Flask-Mail 초기화 완료
+[2026-02-03 15:21:31] INFO in __init__: 필터 등록 완료
+[2026-02-03 15:21:31] INFO in __init__: 애플리케이션 초기화 완료
+[2026-02-03 15:21:35] INFO in log_handler: 로거 초기화 완료 - 레벨: DEBUG, 파일: C:\SeungKyun\PyProject\PyWeb\Broffice\logs\broffice.log
+[2026-02-03 15:21:35] INFO in __init__: Flask-Mail 초기화 완료
+[2026-02-03 15:21:35] INFO in __init__: 필터 등록 완료
+[2026-02-03 15:21:35] INFO in __init__: 애플리케이션 초기화 완료
+[2026-02-03 15:25:00] INFO in log_handler: 로거 초기화 완료 - 레벨: DEBUG, 파일: C:\SeungKyun\PyProject\PyWeb\Broffice\logs\broffice.log
+[2026-02-03 15:25:00] INFO in __init__: Flask-Mail 초기화 완료
+[2026-02-03 15:25:00] INFO in __init__: 필터 등록 완료
+[2026-02-03 15:25:36] INFO in log_handler: 로거 초기화 완료 - 레벨: DEBUG, 파일: C:\SeungKyun\PyProject\PyWeb\Broffice\logs\broffice.log
+[2026-02-03 15:25:36] INFO in __init__: Flask-Mail 초기화 완료
+[2026-02-03 15:25:36] INFO in __init__: 필터 등록 완료
+[2026-02-03 15:25:36] INFO in __init__: 애플리케이션 초기화 완료
+[2026-02-03 15:25:37] INFO in log_handler: 로거 초기화 완료 - 레벨: DEBUG, 파일: C:\SeungKyun\PyProject\PyWeb\Broffice\logs\broffice.log
+[2026-02-03 15:25:37] INFO in __init__: Flask-Mail 초기화 완료
+[2026-02-03 15:25:37] INFO in __init__: 필터 등록 완료
+[2026-02-03 15:25:37] INFO in __init__: 애플리케이션 초기화 완료
+[2026-02-03 15:29:59] INFO in log_handler: 로거 초기화 완료 - 레벨: DEBUG, 파일: C:\SeungKyun\PyProject\PyWeb\Broffice\logs\broffice.log
+[2026-02-03 15:29:59] INFO in __init__: Flask-Mail 초기화 완료
+[2026-02-03 15:29:59] INFO in __init__: 필터 등록 완료
+[2026-02-03 15:29:59] INFO in __init__: 애플리케이션 초기화 완료
+[2026-02-03 15:30:12] INFO in log_handler: 로거 초기화 완료 - 레벨: DEBUG, 파일: C:\SeungKyun\PyProject\PyWeb\Broffice\logs\broffice.log
+[2026-02-03 15:30:12] INFO in __init__: Flask-Mail 초기화 완료
+[2026-02-03 15:30:12] INFO in __init__: 필터 등록 완료
+[2026-02-03 15:30:13] INFO in __init__: 애플리케이션 초기화 완료
+[2026-02-03 15:30:20] INFO in log_handler: 로거 초기화 완료 - 레벨: DEBUG, 파일: C:\SeungKyun\PyProject\PyWeb\Broffice\logs\broffice.log
+[2026-02-03 15:30:20] INFO in __init__: Flask-Mail 초기화 완료
+[2026-02-03 15:30:20] INFO in __init__: 필터 등록 완료
+[2026-02-03 15:30:20] INFO in __init__: 애플리케이션 초기화 완료
+[2026-02-03 15:30:23] INFO in log_handler: 로거 초기화 완료 - 레벨: DEBUG, 파일: C:\SeungKyun\PyProject\PyWeb\Broffice\logs\broffice.log
+[2026-02-03 15:30:23] INFO in __init__: Flask-Mail 초기화 완료
+[2026-02-03 15:30:23] INFO in __init__: 필터 등록 완료
+[2026-02-03 15:30:23] INFO in __init__: 애플리케이션 초기화 완료
+[2026-02-03 16:00:52] INFO in log_handler: 로거 초기화 완료 - 레벨: DEBUG, 파일: C:\SeungKyun\PyProject\PyWeb\Broffice\logs\broffice.log
+[2026-02-03 16:00:52] INFO in __init__: Flask-Mail 초기화 완료
+[2026-02-03 16:00:52] INFO in __init__: 필터 등록 완료
+[2026-02-03 16:00:52] INFO in __init__: 애플리케이션 초기화 완료
+[2026-02-03 16:00:53] INFO in log_handler: 로거 초기화 완료 - 레벨: DEBUG, 파일: C:\SeungKyun\PyProject\PyWeb\Broffice\logs\broffice.log
+[2026-02-03 16:00:53] INFO in __init__: Flask-Mail 초기화 완료
+[2026-02-03 16:00:53] INFO in __init__: 필터 등록 완료
+[2026-02-03 16:00:53] INFO in __init__: 애플리케이션 초기화 완료
+[2026-02-03 16:22:31] ERROR in dbconns: 데이터베이스 연결 생성 중 오류: (2003, "Can't connect to MySQL server on '127.0.0.1' ([WinError 10061] 대상 컴퓨터에서 연결을 거부했으므로 연결하지 못했습니다)")
+[2026-02-03 16:22:31] ERROR in dbconns: 새 연결 생성 중 오류: (2003, "Can't connect to MySQL server on '127.0.0.1' ([WinError 10061] 대상 컴퓨터에서 연결을 거부했으므로 연결하지 못했습니다)")
+[2026-02-03 16:22:31] ERROR in dbconns: 데이터베이스 연결 사용 중 오류: (2003, "Can't connect to MySQL server on '127.0.0.1' ([WinError 10061] 대상 컴퓨터에서 연결을 거부했으므로 연결하지 못했습니다)")
+[2026-02-03 16:22:31] ERROR in dbconns: 프로시저 실행 중 오류 (단일 결과): get_user_login, (2003, "Can't connect to MySQL server on '127.0.0.1' ([WinError 10061] 대상 컴퓨터에서 연결을 거부했으므로 연결하지 못했습니다)")
+[2026-02-03 16:22:31] ERROR in __init__: 처리되지 않은 예외: OperationalError - (2003, "Can't connect to MySQL server on '127.0.0.1' ([WinError 10061] 대상 컴퓨터에서 연결을 거부했으므로 연결하지 못했습니다)")
+Traceback (most recent call last):
+  File "C:\Users\tuntun\AppData\Local\Programs\Python\Python313\Lib\site-packages\pymysql\connections.py", line 649, in connect
+    sock = socket.create_connection(
+        (self.host, self.port), self.connect_timeout, **kwargs
+    )
+  File "C:\Users\tuntun\AppData\Local\Programs\Python\Python313\Lib\socket.py", line 864, in create_connection
+    raise exceptions[0]
+  File "C:\Users\tuntun\AppData\Local\Programs\Python\Python313\Lib\socket.py", line 849, in create_connection
+    sock.connect(sa)
+    ~~~~~~~~~~~~^^^^
+ConnectionRefusedError: [WinError 10061] 대상 컴퓨터에서 연결을 거부했으므로 연결하지 못했습니다
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "C:\Users\tuntun\AppData\Local\Programs\Python\Python313\Lib\site-packages\flask\app.py", line 917, in full_dispatch_request
+    rv = self.dispatch_request()
+  File "C:\Users\tuntun\AppData\Local\Programs\Python\Python313\Lib\site-packages\flask\app.py", line 902, in dispatch_request
+    return self.ensure_sync(self.view_functions[rule.endpoint])(**view_args)  # type: ignore[no-any-return]
+           ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^
+  File "C:\SeungKyun\PyProject\PyWeb\Broffice\broffice\router\accounts.py", line 24, in login_post
+    res = conn.execute_return('get_user_login', [user_account, user_passwd])
+  File "C:\SeungKyun\PyProject\PyWeb\Broffice\broffice\dbconns.py", line 259, in execute_return
+    with get_db_connection() as conn:
+         ~~~~~~~~~~~~~~~~~^^
+  File "C:\Users\tuntun\AppData\Local\Programs\Python\Python313\Lib\contextlib.py", line 141, in __enter__
+    return next(self.gen)
+  File "C:\SeungKyun\PyProject\PyWeb\Broffice\broffice\dbconns.py", line 194, in get_db_connection
+    conn = connection_pool.get_connection()
+  File "C:\SeungKyun\PyProject\PyWeb\Broffice\broffice\dbconns.py", line 123, in get_connection
+    conn = self._create_connection()
+  File "C:\SeungKyun\PyProject\PyWeb\Broffice\broffice\dbconns.py", line 88, in _create_connection
+    conn = pymysql.connect(**self.db_config)
+  File "C:\Users\tuntun\AppData\Local\Programs\Python\Python313\Lib\site-packages\pymysql\connections.py", line 361, in __init__
+    self.connect()
+    ~~~~~~~~~~~~^^
+  File "C:\Users\tuntun\AppData\Local\Programs\Python\Python313\Lib\site-packages\pymysql\connections.py", line 716, in connect
+    raise exc
+pymysql.err.OperationalError: (2003, "Can't connect to MySQL server on '127.0.0.1' ([WinError 10061] 대상 컴퓨터에서 연결을 거부했으므로 연결하지 못했습니다)")
+[2026-02-03 16:23:56] ERROR in dbconns: 데이터베이스 연결 사용 중 오류: (1054, "Unknown column 'u.admin_auth_at' in 'field list'")
+[2026-02-03 16:23:56] ERROR in dbconns: 프로시저 실행 중 오류 (단일 결과): get_user_login, (1054, "Unknown column 'u.admin_auth_at' in 'field list'")
+[2026-02-03 16:23:56] ERROR in __init__: 처리되지 않은 예외: OperationalError - (1054, "Unknown column 'u.admin_auth_at' in 'field list'")
+Traceback (most recent call last):
+  File "C:\Users\tuntun\AppData\Local\Programs\Python\Python313\Lib\site-packages\flask\app.py", line 917, in full_dispatch_request
+    rv = self.dispatch_request()
+  File "C:\Users\tuntun\AppData\Local\Programs\Python\Python313\Lib\site-packages\flask\app.py", line 902, in dispatch_request
+    return self.ensure_sync(self.view_functions[rule.endpoint])(**view_args)  # type: ignore[no-any-return]
+           ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^
+  File "C:\SeungKyun\PyProject\PyWeb\Broffice\broffice\router\accounts.py", line 24, in login_post
+    res = conn.execute_return('get_user_login', [user_account, user_passwd])
+  File "C:\SeungKyun\PyProject\PyWeb\Broffice\broffice\dbconns.py", line 262, in execute_return
+    cursor.execute(call_sql, params if params else [])
+    ~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\tuntun\AppData\Local\Programs\Python\Python313\Lib\site-packages\pymysql\cursors.py", line 153, in execute
+    result = self._query(query)
+  File "C:\Users\tuntun\AppData\Local\Programs\Python\Python313\Lib\site-packages\pymysql\cursors.py", line 322, in _query
+    conn.query(q)
+    ~~~~~~~~~~^^^
+  File "C:\Users\tuntun\AppData\Local\Programs\Python\Python313\Lib\site-packages\pymysql\connections.py", line 563, in query
+    self._affected_rows = self._read_query_result(unbuffered=unbuffered)
+                          ~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\tuntun\AppData\Local\Programs\Python\Python313\Lib\site-packages\pymysql\connections.py", line 825, in _read_query_result
+    result.read()
+    ~~~~~~~~~~~^^
+  File "C:\Users\tuntun\AppData\Local\Programs\Python\Python313\Lib\site-packages\pymysql\connections.py", line 1199, in read
+    first_packet = self.connection._read_packet()
+  File "C:\Users\tuntun\AppData\Local\Programs\Python\Python313\Lib\site-packages\pymysql\connections.py", line 775, in _read_packet
+    packet.raise_for_error()
+    ~~~~~~~~~~~~~~~~~~~~~~^^
+  File "C:\Users\tuntun\AppData\Local\Programs\Python\Python313\Lib\site-packages\pymysql\protocol.py", line 219, in raise_for_error
+    err.raise_mysql_exception(self._data)
+    ~~~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^
+  File "C:\Users\tuntun\AppData\Local\Programs\Python\Python313\Lib\site-packages\pymysql\err.py", line 150, in raise_mysql_exception
+    raise errorclass(errno, errval)
+pymysql.err.OperationalError: (1054, "Unknown column 'u.admin_auth_at' in 'field list'")
+[2026-02-03 16:25:42] ERROR in __init__: 처리되지 않은 예외: AttributeError - 'dict' object has no attribute 'admin_auth_yn'
+Traceback (most recent call last):
+  File "C:\Users\tuntun\AppData\Local\Programs\Python\Python313\Lib\site-packages\flask\app.py", line 917, in full_dispatch_request
+    rv = self.dispatch_request()
+  File "C:\Users\tuntun\AppData\Local\Programs\Python\Python313\Lib\site-packages\flask\app.py", line 902, in dispatch_request
+    return self.ensure_sync(self.view_functions[rule.endpoint])(**view_args)  # type: ignore[no-any-return]
+           ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^
+  File "C:\SeungKyun\PyProject\PyWeb\Broffice\broffice\router\accounts.py", line 27, in login_post
+    if bool(res.admin_auth_yn):
+            ^^^^^^^^^^^^^^^^^
+AttributeError: 'dict' object has no attribute 'admin_auth_yn'
+[2026-02-03 16:25:57] ERROR in __init__: 처리되지 않은 예외: AttributeError - 'dict' object has no attribute 'admin_auth_yn'
+Traceback (most recent call last):
+  File "C:\Users\tuntun\AppData\Local\Programs\Python\Python313\Lib\site-packages\flask\app.py", line 917, in full_dispatch_request
+    rv = self.dispatch_request()
+  File "C:\Users\tuntun\AppData\Local\Programs\Python\Python313\Lib\site-packages\flask\app.py", line 902, in dispatch_request
+    return self.ensure_sync(self.view_functions[rule.endpoint])(**view_args)  # type: ignore[no-any-return]
+           ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^
+  File "C:\SeungKyun\PyProject\PyWeb\Broffice\broffice\router\accounts.py", line 27, in login_post
+    if bool(res.admin_auth_yn):
+            ^^^^^^^^^^^^^^^^^
+AttributeError: 'dict' object has no attribute 'admin_auth_yn'
+[2026-02-03 16:27:08] INFO in log_handler: 로거 초기화 완료 - 레벨: DEBUG, 파일: C:\SeungKyun\PyProject\PyWeb\Broffice\logs\broffice.log
+[2026-02-03 16:27:08] INFO in __init__: Flask-Mail 초기화 완료
+[2026-02-03 16:27:09] INFO in __init__: 필터 등록 완료
+[2026-02-03 16:27:09] INFO in __init__: 애플리케이션 초기화 완료
+[2026-02-03 16:27:26] INFO in log_handler: 로거 초기화 완료 - 레벨: DEBUG, 파일: C:\SeungKyun\PyProject\PyWeb\Broffice\logs\broffice.log
+[2026-02-03 16:27:26] INFO in __init__: Flask-Mail 초기화 완료
+[2026-02-03 16:27:26] INFO in __init__: 필터 등록 완료
+[2026-02-03 16:27:27] INFO in __init__: 애플리케이션 초기화 완료
+[2026-02-03 16:28:41] ERROR in __init__: 처리되지 않은 예외: BuildError - Could not build url for endpoint 'homes.get_notice_content'. Did you mean 'homes.notice_list' instead?
+Traceback (most recent call last):
+  File "C:\Users\tuntun\AppData\Local\Programs\Python\Python313\Lib\site-packages\flask\app.py", line 917, in full_dispatch_request
+    rv = self.dispatch_request()
+  File "C:\Users\tuntun\AppData\Local\Programs\Python\Python313\Lib\site-packages\flask\app.py", line 902, in dispatch_request
+    return self.ensure_sync(self.view_functions[rule.endpoint])(**view_args)  # type: ignore[no-any-return]
+           ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^
+  File "C:\SeungKyun\PyProject\PyWeb\Broffice\broffice\router\homes.py", line 54, in notice_list
+    return render_template('homes/notice_list.html')
+  File "C:\Users\tuntun\AppData\Local\Programs\Python\Python313\Lib\site-packages\flask\templating.py", line 150, in render_template
+    return _render(app, template, context)
+  File "C:\Users\tuntun\AppData\Local\Programs\Python\Python313\Lib\site-packages\flask\templating.py", line 131, in _render
+    rv = template.render(context)
+  File "C:\Users\tuntun\AppData\Local\Programs\Python\Python313\Lib\site-packages\jinja2\environment.py", line 1295, in render
+    self.environment.handle_exception()
+    ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^^
+  File "C:\Users\tuntun\AppData\Local\Programs\Python\Python313\Lib\site-packages\jinja2\environment.py", line 942, in handle_exception
+    raise rewrite_traceback_stack(source=source)
+  File "C:\SeungKyun\PyProject\PyWeb\Broffice\broffice\templates\homes\notice_list.html", line 1, in top-level template code
+    {% extends "layout.html" %}
+    ^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\SeungKyun\PyProject\PyWeb\Broffice\broffice\templates\layout.html", line 120, in top-level template code
+    {% block extra_js %}{% endblock %}
+    ^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\SeungKyun\PyProject\PyWeb\Broffice\broffice\templates\homes\notice_list.html", line 174, in block 'extra_js'
+    fetch('{{ url_for("homes.get_notice_content") }}?channel_notice_id=' + noticeId)
+    ^^^^^^^^^^^^^^^^^^^^^
+  File "C:\SeungKyun\PyProject\PyWeb\Broffice\broffice\__init__.py", line 85, in dated_url_for
+    return url_for(endpoint, **values)
+  File "C:\Users\tuntun\AppData\Local\Programs\Python\Python313\Lib\site-packages\flask\helpers.py", line 232, in url_for
+    return current_app.url_for(
+           ~~~~~~~~~~~~~~~~~~~^
+        endpoint,
+        ^^^^^^^^^
+    ...<4 lines>...
+        **values,
+        ^^^^^^^^^
+    )
+    ^
+  File "C:\Users\tuntun\AppData\Local\Programs\Python\Python313\Lib\site-packages\flask\app.py", line 1121, in url_for
+    return self.handle_url_build_error(error, endpoint, values)
+           ~~~~~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\tuntun\AppData\Local\Programs\Python\Python313\Lib\site-packages\flask\app.py", line 1110, in url_for
+    rv = url_adapter.build(  # type: ignore[union-attr]
+        endpoint,
+    ...<3 lines>...
+        force_external=_external,
+    )
+  File "C:\Users\tuntun\AppData\Local\Programs\Python\Python313\Lib\site-packages\werkzeug\routing\map.py", line 924, in build
+    raise BuildError(endpoint, values, method, self)
+werkzeug.routing.exceptions.BuildError: Could not build url for endpoint 'homes.get_notice_content'. Did you mean 'homes.notice_list' instead?
+[2026-02-03 16:28:46] ERROR in __init__: 처리되지 않은 예외: BuildError - Could not build url for endpoint 'homes.get_notice_content'. Did you mean 'homes.notice_list' instead?
+Traceback (most recent call last):
+  File "C:\Users\tuntun\AppData\Local\Programs\Python\Python313\Lib\site-packages\flask\app.py", line 917, in full_dispatch_request
+    rv = self.dispatch_request()
+  File "C:\Users\tuntun\AppData\Local\Programs\Python\Python313\Lib\site-packages\flask\app.py", line 902, in dispatch_request
+    return self.ensure_sync(self.view_functions[rule.endpoint])(**view_args)  # type: ignore[no-any-return]
+           ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^
+  File "C:\SeungKyun\PyProject\PyWeb\Broffice\broffice\router\homes.py", line 54, in notice_list
+    return render_template('homes/notice_list.html')
+  File "C:\Users\tuntun\AppData\Local\Programs\Python\Python313\Lib\site-packages\flask\templating.py", line 150, in render_template
+    return _render(app, template, context)
+  File "C:\Users\tuntun\AppData\Local\Programs\Python\Python313\Lib\site-packages\flask\templating.py", line 131, in _render
+    rv = template.render(context)
+  File "C:\Users\tuntun\AppData\Local\Programs\Python\Python313\Lib\site-packages\jinja2\environment.py", line 1295, in render
+    self.environment.handle_exception()
+    ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^^
+  File "C:\Users\tuntun\AppData\Local\Programs\Python\Python313\Lib\site-packages\jinja2\environment.py", line 942, in handle_exception
+    raise rewrite_traceback_stack(source=source)
+  File "C:\SeungKyun\PyProject\PyWeb\Broffice\broffice\templates\homes\notice_list.html", line 1, in top-level template code
+    {% extends "layout.html" %}
+    ^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\SeungKyun\PyProject\PyWeb\Broffice\broffice\templates\layout.html", line 120, in top-level template code
+    {% block extra_js %}{% endblock %}
+    ^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\SeungKyun\PyProject\PyWeb\Broffice\broffice\templates\homes\notice_list.html", line 174, in block 'extra_js'
+    fetch('{{ url_for("homes.get_notice_content") }}?channel_notice_id=' + noticeId)
+    ^^^^^^^^^^^^^^^^^^^^^
+  File "C:\SeungKyun\PyProject\PyWeb\Broffice\broffice\__init__.py", line 85, in dated_url_for
+    return url_for(endpoint, **values)
+  File "C:\Users\tuntun\AppData\Local\Programs\Python\Python313\Lib\site-packages\flask\helpers.py", line 232, in url_for
+    return current_app.url_for(
+           ~~~~~~~~~~~~~~~~~~~^
+        endpoint,
+        ^^^^^^^^^
+    ...<4 lines>...
+        **values,
+        ^^^^^^^^^
+    )
+    ^
+  File "C:\Users\tuntun\AppData\Local\Programs\Python\Python313\Lib\site-packages\flask\app.py", line 1121, in url_for
+    return self.handle_url_build_error(error, endpoint, values)
+           ~~~~~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\tuntun\AppData\Local\Programs\Python\Python313\Lib\site-packages\flask\app.py", line 1110, in url_for
+    rv = url_adapter.build(  # type: ignore[union-attr]
+        endpoint,
+    ...<3 lines>...
+        force_external=_external,
+    )
+  File "C:\Users\tuntun\AppData\Local\Programs\Python\Python313\Lib\site-packages\werkzeug\routing\map.py", line 924, in build
+    raise BuildError(endpoint, values, method, self)
+werkzeug.routing.exceptions.BuildError: Could not build url for endpoint 'homes.get_notice_content'. Did you mean 'homes.notice_list' instead?
+[2026-02-03 16:36:04] INFO in log_handler: 로거 초기화 완료 - 레벨: DEBUG, 파일: C:\SeungKyun\PyProject\PyWeb\Broffice\logs\broffice.log
+[2026-02-03 16:36:04] INFO in __init__: Flask-Mail 초기화 완료
+[2026-02-03 16:36:04] INFO in __init__: 필터 등록 완료
+[2026-02-03 16:36:05] INFO in __init__: 애플리케이션 초기화 완료
+[2026-02-03 16:36:20] INFO in log_handler: 로거 초기화 완료 - 레벨: DEBUG, 파일: C:\SeungKyun\PyProject\PyWeb\Broffice\logs\broffice.log
+[2026-02-03 16:36:20] INFO in __init__: Flask-Mail 초기화 완료
+[2026-02-03 16:36:21] INFO in __init__: 필터 등록 완료
+[2026-02-03 16:36:21] INFO in __init__: 애플리케이션 초기화 완료
+[2026-02-03 16:44:03] ERROR in dbconns: 데이터베이스 연결 사용 중 오류: (1064, "You have an error in your SQL syntax; check the manual that corresponds to your MySQL server version for the right syntax to use near '@UserID=?(1)' at line 1")
+[2026-02-03 16:44:03] ERROR in dbconns: 프로시저 실행 중 오류 (단일 결과): uspGetChannelAdminYn @UserID=?, (1064, "You have an error in your SQL syntax; check the manual that corresponds to your MySQL server version for the right syntax to use near '@UserID=?(1)' at line 1")
+[2026-02-03 16:44:03] ERROR in __init__: 처리되지 않은 예외: ProgrammingError - (1064, "You have an error in your SQL syntax; check the manual that corresponds to your MySQL server version for the right syntax to use near '@UserID=?(1)' at line 1")
+Traceback (most recent call last):
+  File "C:\Users\tuntun\AppData\Local\Programs\Python\Python313\Lib\site-packages\flask\app.py", line 917, in full_dispatch_request
+    rv = self.dispatch_request()
+  File "C:\Users\tuntun\AppData\Local\Programs\Python\Python313\Lib\site-packages\flask\app.py", line 902, in dispatch_request
+    return self.ensure_sync(self.view_functions[rule.endpoint])(**view_args)  # type: ignore[no-any-return]
+           ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^
+  File "C:\SeungKyun\PyProject\PyWeb\Broffice\broffice\utils\auth_handler.py", line 39, in decorated_function
+    if not is_admin(user_id):
+           ~~~~~~~~^^^^^^^^^
+  File "C:\SeungKyun\PyProject\PyWeb\Broffice\broffice\utils\auth_handler.py", line 51, in is_admin
+    result = conn.execute_return(f'{ADMIN_CHECK_PROC} @UserID=?', user_id)
+  File "C:\SeungKyun\PyProject\PyWeb\Broffice\broffice\dbconns.py", line 262, in execute_return
+    cursor.execute(call_sql, params if params else [])
+    ~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\tuntun\AppData\Local\Programs\Python\Python313\Lib\site-packages\pymysql\cursors.py", line 153, in execute
+    result = self._query(query)
+  File "C:\Users\tuntun\AppData\Local\Programs\Python\Python313\Lib\site-packages\pymysql\cursors.py", line 322, in _query
+    conn.query(q)
+    ~~~~~~~~~~^^^
+  File "C:\Users\tuntun\AppData\Local\Programs\Python\Python313\Lib\site-packages\pymysql\connections.py", line 563, in query
+    self._affected_rows = self._read_query_result(unbuffered=unbuffered)
+                          ~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\tuntun\AppData\Local\Programs\Python\Python313\Lib\site-packages\pymysql\connections.py", line 825, in _read_query_result
+    result.read()
+    ~~~~~~~~~~~^^
+  File "C:\Users\tuntun\AppData\Local\Programs\Python\Python313\Lib\site-packages\pymysql\connections.py", line 1199, in read
+    first_packet = self.connection._read_packet()
+  File "C:\Users\tuntun\AppData\Local\Programs\Python\Python313\Lib\site-packages\pymysql\connections.py", line 775, in _read_packet
+    packet.raise_for_error()
+    ~~~~~~~~~~~~~~~~~~~~~~^^
+  File "C:\Users\tuntun\AppData\Local\Programs\Python\Python313\Lib\site-packages\pymysql\protocol.py", line 219, in raise_for_error
+    err.raise_mysql_exception(self._data)
+    ~~~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^
+  File "C:\Users\tuntun\AppData\Local\Programs\Python\Python313\Lib\site-packages\pymysql\err.py", line 150, in raise_mysql_exception
+    raise errorclass(errno, errval)
+pymysql.err.ProgrammingError: (1064, "You have an error in your SQL syntax; check the manual that corresponds to your MySQL server version for the right syntax to use near '@UserID=?(1)' at line 1")
+[2026-02-03 16:44:17] ERROR in dbconns: 데이터베이스 연결 사용 중 오류: (1064, "You have an error in your SQL syntax; check the manual that corresponds to your MySQL server version for the right syntax to use near '@UserID=?(1)' at line 1")
+[2026-02-03 16:44:17] ERROR in dbconns: 프로시저 실행 중 오류 (단일 결과): uspGetChannelAdminYn @UserID=?, (1064, "You have an error in your SQL syntax; check the manual that corresponds to your MySQL server version for the right syntax to use near '@UserID=?(1)' at line 1")
+[2026-02-03 16:44:17] ERROR in __init__: 처리되지 않은 예외: ProgrammingError - (1064, "You have an error in your SQL syntax; check the manual that corresponds to your MySQL server version for the right syntax to use near '@UserID=?(1)' at line 1")
+Traceback (most recent call last):
+  File "C:\Users\tuntun\AppData\Local\Programs\Python\Python313\Lib\site-packages\flask\app.py", line 917, in full_dispatch_request
+    rv = self.dispatch_request()
+  File "C:\Users\tuntun\AppData\Local\Programs\Python\Python313\Lib\site-packages\flask\app.py", line 902, in dispatch_request
+    return self.ensure_sync(self.view_functions[rule.endpoint])(**view_args)  # type: ignore[no-any-return]
+           ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^
+  File "C:\SeungKyun\PyProject\PyWeb\Broffice\broffice\utils\auth_handler.py", line 39, in decorated_function
+    if not is_admin(user_id):
+           ~~~~~~~~^^^^^^^^^
+  File "C:\SeungKyun\PyProject\PyWeb\Broffice\broffice\utils\auth_handler.py", line 51, in is_admin
+    result = conn.execute_return(f'{ADMIN_CHECK_PROC} @UserID=?', user_id)
+  File "C:\SeungKyun\PyProject\PyWeb\Broffice\broffice\dbconns.py", line 262, in execute_return
+    cursor.execute(call_sql, params if params else [])
+    ~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\tuntun\AppData\Local\Programs\Python\Python313\Lib\site-packages\pymysql\cursors.py", line 153, in execute
+    result = self._query(query)
+  File "C:\Users\tuntun\AppData\Local\Programs\Python\Python313\Lib\site-packages\pymysql\cursors.py", line 322, in _query
+    conn.query(q)
+    ~~~~~~~~~~^^^
+  File "C:\Users\tuntun\AppData\Local\Programs\Python\Python313\Lib\site-packages\pymysql\connections.py", line 563, in query
+    self._affected_rows = self._read_query_result(unbuffered=unbuffered)
+                          ~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\tuntun\AppData\Local\Programs\Python\Python313\Lib\site-packages\pymysql\connections.py", line 825, in _read_query_result
+    result.read()
+    ~~~~~~~~~~~^^
+  File "C:\Users\tuntun\AppData\Local\Programs\Python\Python313\Lib\site-packages\pymysql\connections.py", line 1199, in read
+    first_packet = self.connection._read_packet()
+  File "C:\Users\tuntun\AppData\Local\Programs\Python\Python313\Lib\site-packages\pymysql\connections.py", line 775, in _read_packet
+    packet.raise_for_error()
+    ~~~~~~~~~~~~~~~~~~~~~~^^
+  File "C:\Users\tuntun\AppData\Local\Programs\Python\Python313\Lib\site-packages\pymysql\protocol.py", line 219, in raise_for_error
+    err.raise_mysql_exception(self._data)
+    ~~~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^
+  File "C:\Users\tuntun\AppData\Local\Programs\Python\Python313\Lib\site-packages\pymysql\err.py", line 150, in raise_mysql_exception
+    raise errorclass(errno, errval)
+pymysql.err.ProgrammingError: (1064, "You have an error in your SQL syntax; check the manual that corresponds to your MySQL server version for the right syntax to use near '@UserID=?(1)' at line 1")
+[2026-02-03 16:45:57] INFO in log_handler: 로거 초기화 완료 - 레벨: DEBUG, 파일: C:\SeungKyun\PyProject\PyWeb\Broffice\logs\broffice.log
+[2026-02-03 16:45:57] INFO in __init__: Flask-Mail 초기화 완료
+[2026-02-03 16:45:58] INFO in __init__: 필터 등록 완료
+[2026-02-03 16:45:58] INFO in __init__: 애플리케이션 초기화 완료
+[2026-02-03 16:49:13] ERROR in __init__: 처리되지 않은 예외: BuildError - Could not build url for endpoint 'homes.get_notice_content'. Did you mean 'homes.notice_list' instead?
+Traceback (most recent call last):
+  File "C:\Users\tuntun\AppData\Local\Programs\Python\Python313\Lib\site-packages\flask\app.py", line 917, in full_dispatch_request
+    rv = self.dispatch_request()
+  File "C:\Users\tuntun\AppData\Local\Programs\Python\Python313\Lib\site-packages\flask\app.py", line 902, in dispatch_request
+    return self.ensure_sync(self.view_functions[rule.endpoint])(**view_args)  # type: ignore[no-any-return]
+           ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^
+  File "C:\SeungKyun\PyProject\PyWeb\Broffice\broffice\router\homes.py", line 54, in notice_list
+    return render_template('homes/notice_list.html')
+  File "C:\Users\tuntun\AppData\Local\Programs\Python\Python313\Lib\site-packages\flask\templating.py", line 150, in render_template
+    return _render(app, template, context)
+  File "C:\Users\tuntun\AppData\Local\Programs\Python\Python313\Lib\site-packages\flask\templating.py", line 131, in _render
+    rv = template.render(context)
+  File "C:\Users\tuntun\AppData\Local\Programs\Python\Python313\Lib\site-packages\jinja2\environment.py", line 1295, in render
+    self.environment.handle_exception()
+    ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^^
+  File "C:\Users\tuntun\AppData\Local\Programs\Python\Python313\Lib\site-packages\jinja2\environment.py", line 942, in handle_exception
+    raise rewrite_traceback_stack(source=source)
+  File "C:\SeungKyun\PyProject\PyWeb\Broffice\broffice\templates\homes\notice_list.html", line 1, in top-level template code
+    {% extends "layout.html" %}
+    ^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\SeungKyun\PyProject\PyWeb\Broffice\broffice\templates\layout.html", line 120, in top-level template code
+    {% block extra_js %}{% endblock %}
+    ^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\SeungKyun\PyProject\PyWeb\Broffice\broffice\templates\homes\notice_list.html", line 174, in block 'extra_js'
+    fetch('{{ url_for("homes.get_notice_content") }}?channel_notice_id=' + noticeId)
+    ^^^^^^^^^^^^^^^^^^^^^
+  File "C:\SeungKyun\PyProject\PyWeb\Broffice\broffice\__init__.py", line 85, in dated_url_for
+    return url_for(endpoint, **values)
+  File "C:\Users\tuntun\AppData\Local\Programs\Python\Python313\Lib\site-packages\flask\helpers.py", line 232, in url_for
+    return current_app.url_for(
+           ~~~~~~~~~~~~~~~~~~~^
+        endpoint,
+        ^^^^^^^^^
+    ...<4 lines>...
+        **values,
+        ^^^^^^^^^
+    )
+    ^
+  File "C:\Users\tuntun\AppData\Local\Programs\Python\Python313\Lib\site-packages\flask\app.py", line 1121, in url_for
+    return self.handle_url_build_error(error, endpoint, values)
+           ~~~~~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\tuntun\AppData\Local\Programs\Python\Python313\Lib\site-packages\flask\app.py", line 1110, in url_for
+    rv = url_adapter.build(  # type: ignore[union-attr]
+        endpoint,
+    ...<3 lines>...
+        force_external=_external,
+    )
+  File "C:\Users\tuntun\AppData\Local\Programs\Python\Python313\Lib\site-packages\werkzeug\routing\map.py", line 924, in build
+    raise BuildError(endpoint, values, method, self)
+werkzeug.routing.exceptions.BuildError: Could not build url for endpoint 'homes.get_notice_content'. Did you mean 'homes.notice_list' instead?
+[2026-02-03 16:58:11] ERROR in __init__: 처리되지 않은 예외: BuildError - Could not build url for endpoint 'accounts.user_profile'. Did you mean 'accounts.user_insert' instead?
+Traceback (most recent call last):
+  File "C:\Users\tuntun\AppData\Local\Programs\Python\Python313\Lib\site-packages\flask\app.py", line 917, in full_dispatch_request
+    rv = self.dispatch_request()
+  File "C:\Users\tuntun\AppData\Local\Programs\Python\Python313\Lib\site-packages\flask\app.py", line 902, in dispatch_request
+    return self.ensure_sync(self.view_functions[rule.endpoint])(**view_args)  # type: ignore[no-any-return]
+           ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^
+  File "C:\SeungKyun\PyProject\PyWeb\Broffice\broffice\utils\auth_handler.py", line 21, in decorated_function
+    return func(*args, **kwargs)
+  File "C:\SeungKyun\PyProject\PyWeb\Broffice\broffice\router\homes.py", line 17, in index
+    return render_template('homes/index.html')
+  File "C:\Users\tuntun\AppData\Local\Programs\Python\Python313\Lib\site-packages\flask\templating.py", line 150, in render_template
+    return _render(app, template, context)
+  File "C:\Users\tuntun\AppData\Local\Programs\Python\Python313\Lib\site-packages\flask\templating.py", line 131, in _render
+    rv = template.render(context)
+  File "C:\Users\tuntun\AppData\Local\Programs\Python\Python313\Lib\site-packages\jinja2\environment.py", line 1295, in render
+    self.environment.handle_exception()
+    ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^^
+  File "C:\Users\tuntun\AppData\Local\Programs\Python\Python313\Lib\site-packages\jinja2\environment.py", line 942, in handle_exception
+    raise rewrite_traceback_stack(source=source)
+  File "C:\SeungKyun\PyProject\PyWeb\Broffice\broffice\templates\homes\index.html", line 1, in top-level template code
+    {% extends "layout.html" %}
+    ^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\SeungKyun\PyProject\PyWeb\Broffice\broffice\templates\layout.html", line 41, in top-level template code
+    {% include 'includes/header.html' ignore missing %}
+    ^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\SeungKyun\PyProject\PyWeb\Broffice\broffice\templates\includes\header.html", line 105, in top-level template code
+    <a class="dropdown-item" href="{{ url_for('accounts.user_profile') }}">
+    ^^^^^^^^^^^^^
+  File "C:\SeungKyun\PyProject\PyWeb\Broffice\broffice\__init__.py", line 85, in dated_url_for
+    return url_for(endpoint, **values)
+  File "C:\Users\tuntun\AppData\Local\Programs\Python\Python313\Lib\site-packages\flask\helpers.py", line 232, in url_for
+    return current_app.url_for(
+           ~~~~~~~~~~~~~~~~~~~^
+        endpoint,
+        ^^^^^^^^^
+    ...<4 lines>...
+        **values,
+        ^^^^^^^^^
+    )
+    ^
+  File "C:\Users\tuntun\AppData\Local\Programs\Python\Python313\Lib\site-packages\flask\app.py", line 1121, in url_for
+    return self.handle_url_build_error(error, endpoint, values)
+           ~~~~~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\tuntun\AppData\Local\Programs\Python\Python313\Lib\site-packages\flask\app.py", line 1110, in url_for
+    rv = url_adapter.build(  # type: ignore[union-attr]
+        endpoint,
+    ...<3 lines>...
+        force_external=_external,
+    )
+  File "C:\Users\tuntun\AppData\Local\Programs\Python\Python313\Lib\site-packages\werkzeug\routing\map.py", line 924, in build
+    raise BuildError(endpoint, values, method, self)
+werkzeug.routing.exceptions.BuildError: Could not build url for endpoint 'accounts.user_profile'. Did you mean 'accounts.user_insert' instead?
+[2026-02-03 16:58:24] INFO in log_handler: 로거 초기화 완료 - 레벨: DEBUG, 파일: C:\SeungKyun\PyProject\PyWeb\Broffice\logs\broffice.log
+[2026-02-03 16:58:24] INFO in __init__: Flask-Mail 초기화 완료
+[2026-02-03 16:58:24] INFO in __init__: 필터 등록 완료
+[2026-02-03 16:58:24] INFO in __init__: 애플리케이션 초기화 완료
+[2026-02-03 17:00:12] INFO in log_handler: 로거 초기화 완료 - 레벨: DEBUG, 파일: C:\SeungKyun\PyProject\PyWeb\Broffice\logs\broffice.log
+[2026-02-03 17:00:12] INFO in __init__: Flask-Mail 초기화 완료
+[2026-02-03 17:00:12] INFO in __init__: 필터 등록 완료
+[2026-02-03 17:00:12] INFO in __init__: 애플리케이션 초기화 완료
+[2026-02-03 17:00:26] INFO in log_handler: 로거 초기화 완료 - 레벨: DEBUG, 파일: C:\SeungKyun\PyProject\PyWeb\Broffice\logs\broffice.log
+[2026-02-03 17:00:26] INFO in __init__: Flask-Mail 초기화 완료
+[2026-02-03 17:00:26] INFO in __init__: 필터 등록 완료
+[2026-02-03 17:00:27] INFO in __init__: 애플리케이션 초기화 완료

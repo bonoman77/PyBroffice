@@ -9,7 +9,7 @@
   <p class="auth-subtitle">계정에 접속하려면 로그인하세요</p>
 </div>
 
-<form class="auth-form" action="{{ url_for('accounts.login_post') }}" method="post" novalidate>
+<form class="auth-form" action="{{ url_for('accounts.login_post') }}" method="post">
   <div class="form-group">
     <label for="user_email" class="form-label">이메일 계정</label>
     {{ input('email', 'user_email', user_email, opt='autofocus required', placeholder='name@example.com') }}

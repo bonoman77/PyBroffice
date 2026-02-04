@@ -96,7 +96,7 @@
             </div>
             <div class="uview-detail-row">
               <div class="uview-detail-label">가입일</div>
-              <div class="uview-detail-value">{{ user_profile.joined_date if user_profile else '-' }}</div>
+              <div class="uview-detail-value">{{ user_profile.joined_at if user_profile else '-' }}</div>
             </div>
           </div>
         </div>
@@ -107,14 +107,6 @@
             <div class="uview-detail-group">
               <div class="uview-detail-title">개인 정보 수정</div>
               <div class="row">
-                <div class="col-md-6 mb-3">
-                  <label class="form-label">이름</label>
-                  <input type="text" class="form-control" name="user_name" value="{{ user_profile.user_name if user_profile else '' }}" required>
-                </div>
-                <div class="col-md-6 mb-3">
-                  <label class="form-label">이메일</label>
-                  <input type="email" class="form-control" name="user_email" value="{{ user_profile.user_email if user_profile else '' }}" required>
-                </div>
                 <div class="col-md-6 mb-3">
                   <label class="form-label">전화번호</label>
                   <input type="tel" class="form-control" name="user_mobile" value="{{ user_profile.user_mobile if user_profile else '' }}" placeholder="010-0000-0000">
@@ -176,16 +168,20 @@
       <div class="card-body">
         <div class="uview-status-list">
           <div class="uview-status-item">
-            <span class="uview-status-label">이메일 인증</span>
-            <span class="uview-status-value text-success"><i class="ph-fill ph-check-circle"></i> 완료</span>
+            <span class="uview-status-label">계정 상태</span>
+            {% if user_profile and user_profile.use_yn == 1 %}
+              <span class="uview-status-value text-success"><i class="ph-fill ph-check-circle"></i> 활성</span>
+            {% else %}
+              <span class="uview-status-value text-secondary"><i class="ph-fill ph-x-circle"></i> 비활성</span>
+            {% endif %}
           </div>
           <div class="uview-status-item">
-            <span class="uview-status-label">계정 상태</span>
-            <span class="uview-status-value text-success"><i class="ph-fill ph-check-circle"></i> 활성</span>
+            <span class="uview-status-label">관리자 승인</span>
+            <span class="uview-status-value">{{ user_profile.admin_auth_at if user_profile and user_profile.admin_auth_at else '정보 없음' }}</span>
           </div>
           <div class="uview-status-item">
             <span class="uview-status-label">마지막 로그인</span>
-            <span class="uview-status-value">{{ user_profile.last_login if user_profile and user_profile.last_login else '정보 없음' }}</span>
+            <span class="uview-status-value">{{ user_profile.last_login_at if user_profile and user_profile.last_login_at else '정보 없음' }}</span>
           </div>
         </div>
       </div>

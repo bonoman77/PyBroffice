@@ -18,6 +18,7 @@ DROP TABLE IF EXISTS task_sets;
 DROP TABLE IF EXISTS user_login_logs;
 DROP TABLE IF EXISTS users;
 DROP TABLE IF EXISTS commons;
+DROP TABLE IF EXISTS notices;
 DROP TABLE IF EXISTS clients;
 
 -- ============================================================
@@ -107,6 +108,28 @@ CREATE TABLE users (
 ALTER TABLE users
   ADD CONSTRAINT fk_clients_users
   FOREIGN KEY (client_id) REFERENCES clients(client_id);
+
+
+-- ============================================================
+-- TABLE: notices (공지사항)
+-- ============================================================
+CREATE TABLE notices (
+    notice_id       INT NOT NULL AUTO_INCREMENT COMMENT '공지사항ID',
+    user_id   INT NOT NULL COMMENT '사용자ID',
+    content         NVARCHAR(3000) NOT NULL COMMENT '공지사항내용',
+    display_yn      TINYINT(1) NOT NULL DEFAULT 0 COMMENT '공지사항노출여부',
+    top_expose_yn   TINYINT(1) NOT NULL DEFAULT 0 COMMENT '상단노출여부',
+    created_at      DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT '등록일',
+    updated_at      DATETIME NULL COMMENT '수정일',
+    deleted_at      DATETIME NULL COMMENT '삭제일',
+    PRIMARY KEY (notice_id),
+    KEY idx_notices_user_id (user_id)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='notices 공지사항';
+
+ALTER TABLE notices
+  ADD CONSTRAINT fk_users_notices
+  FOREIGN KEY (user_id) REFERENCES users(user_id);
+
 
 -- ============================================================
 -- TABLE: user_login_logs (사용자로그인로그)

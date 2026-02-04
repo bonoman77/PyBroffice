@@ -67,7 +67,7 @@
             <li><a class="dropdown-item active" href="#" data-filter="role" data-value="all">전체 역할</a></li>
             <li><a class="dropdown-item" href="#" data-filter="role" data-value="admin">관리자</a></li>
             <li><a class="dropdown-item" href="#" data-filter="role" data-value="staff">현장직원</a></li>
-            <li><a class="dropdown-item" href="#" data-filter="role" data-value="company">업체담당자</a></li>
+            <li><a class="dropdown-item" href="#" data-filter="role" data-value="client">업체담당자</a></li>
           </ul>
         </div>
         <div class="dropdown">
@@ -101,7 +101,6 @@
           <th>회원</th>
           <th>역할</th>
           <th>상태</th>
-          <th>최근 활동</th>
           <th>가입일</th>
           <th class="users-th-actions">작업</th>
         </tr>
@@ -141,13 +140,19 @@
               <span class="users-status inactive"><span class="users-status-dot"></span> 비활성</span>
               {% endif %}
             </td>
-            <td class="users-cell-meta">{{ user.last_active|default('알 수 없음') }}</td>
             <td class="users-cell-meta">{{ user.joined_date|default('알 수 없음') }}</td>
             <td>
               <div class="users-actions">
-                <a href="/members/view/{{ user.id }}" class="users-action-btn" title="보기"><i class="ph ph-eye"></i></a>
-                <a href="/members/edit/{{ user.id }}" class="users-action-btn" title="수정"><i class="ph ph-pencil-simple"></i></a>
-                <button class="users-action-btn danger" title="삭제" onclick="deleteUser({{ user.id }})"><i class="ph ph-trash"></i></button>
+                <a href="{{ url_for('accounts.user_profile') }}" class="users-action-btn" title="보기"><i class="ph ph-eye"></i></a>
+                <button class="users-action-btn edit-user-btn" title="수정" 
+                        data-user-id="{{ user.id }}"
+                        data-user-name="{{ user.name }}"
+                        data-user-email="{{ user.email }}"
+                        data-user-mobile="{{ user.phone }}"
+                        data-user-kind-id="{{ user.user_kind_id }}">
+                  <i class="ph ph-pencil-simple"></i>
+                </button>
+                <button class="users-action-btn danger" title="삭제" data-user-id="{{ user.id }}" onclick="deleteUser({{ user.id }})"><i class="ph ph-trash"></i></button>
               </div>
             </td>
           </tr>
@@ -167,26 +172,16 @@
   </div>
 
   <!-- Pagination -->
-  {% if users and users|length > 0 %}
-  <div class="users-pagination">
-    <div class="users-pagination-info">
-      Showing <strong>1-{{ users|length }}</strong> of <strong>{{ total_users|default(users|length) }}</strong> users
+  <div class="users-pagination" id="usersPagination" style="display: none;">
+    <div class="users-pagination-info" id="paginationInfo">
+      Showing <strong id="showingRange">1-10</strong> of <strong id="totalCount">0</strong> users
     </div>
     <nav>
-      <ul class="pagination mb-0">
-        <li class="page-item disabled">
-          <a class="page-link" href="#"><i class="ph ph-caret-left"></i></a>
-        </li>
-        <li class="page-item active"><a class="page-link" href="#">1</a></li>
-        <li class="page-item"><a class="page-link" href="#">2</a></li>
-        <li class="page-item"><a class="page-link" href="#">3</a></li>
-        <li class="page-item">
-          <a class="page-link" href="#"><i class="ph ph-caret-right"></i></a>
-        </li>
+      <ul class="pagination mb-0" id="paginationList">
+        <!-- 페이지 버튼이 동적으로 생성됩니다 -->
       </ul>
     </nav>
   </div>
-  {% endif %}
 </div>
 
 <!-- Add User Modal -->
@@ -209,32 +204,28 @@
               {{ input('text', 'userName', '', opt='required') }}
             </div>
             <div class="col-md-6 mb-3">
-              <label for="userAccount" class="form-label">아이디 <span class="text-danger">*</span></label>
-              {{ input('text', 'userAccount', '', opt='required') }}
+              <label for="userEmail" class="form-label">이메일 (계정) <span class="text-danger">*</span></label>
+              {{ input('email', 'userEmail', '', opt='required') }}
             </div>
           </div>
           <div class="row">
             <div class="col-md-6 mb-3">
-              <label for="userEmail" class="form-label">이메일</label>
-              {{ input('email', 'userEmail', '') }}
+              <label for="userMobile" class="form-label">연락처 <span class="text-danger">*</span></label>
+              {{ input('tel', 'userMobile', '', placeholder='010-0000-0000', opt='required') }}
             </div>
             <div class="col-md-6 mb-3">
-              <label for="userPhone" class="form-label">연락처 <span class="text-danger">*</span></label>
-              {{ input('tel', 'userPhone', '', placeholder='010-0000-0000', opt='required') }}
+              <label for="userKindId" class="form-label">역할 <span class="text-danger">*</span></label>
+              <select class="form-select" id="userKindId" name="userKindId" required>
+                <option value="">선택하세요</option>
+                <option value="1">관리자</option>
+                <option value="2">현장직원</option>
+                <option value="3">업체담당자</option>
+              </select>
             </div>
           </div>
           <div class="mb-3">
-            <label for="userRole" class="form-label">역할 <span class="text-danger">*</span></label>
-            <select class="form-select" id="userRole" name="userRole" required>
-              <option value="">선택하세요</option>
-              <option value="1">관리자</option>
-              <option value="2">본사 직원</option>
-              <option value="3">의뢰 업체</option>
-            </select>
-          </div>
-          <div class="mb-3">
-            <label for="userPassword" class="form-label">비밀번호 <span class="text-danger">*</span></label>
-            {{ password_toggle('userPassword', '', placeholder='비밀번호를 입력하세요', min='8', opt='required') }}
+            <label for="userPasswd" class="form-label">비밀번호 <span class="text-danger">*</span></label>
+            {{ password_toggle('userPasswd', '', placeholder='비밀번호를 입력하세요', min='8', opt='required') }}
             <div class="form-text">최소 8자 이상 입력해주세요.</div>
           </div>
         </form>
@@ -264,33 +255,29 @@
               {{ input('text', 'editUserName', '', opt='required') }}
             </div>
             <div class="col-md-6 mb-3">
-              <label for="editUserAccount" class="form-label">아이디 <span class="text-danger">*</span></label>
-              {{ input('text', 'editUserAccount', '', opt='required disabled') }}
-              <div class="form-text">아이디는 변경할 수 없습니다.</div>
+              <label for="editUserEmail" class="form-label">이메일 (계정) <span class="text-danger">*</span></label>
+              {{ input('email', 'editUserEmail', '', opt='required disabled') }}
+              <div class="form-text">이메일은 변경할 수 없습니다.</div>
             </div>
           </div>
           <div class="row">
             <div class="col-md-6 mb-3">
-              <label for="editUserEmail" class="form-label">이메일</label>
-              {{ input('email', 'editUserEmail', '') }}
+              <label for="editUserMobile" class="form-label">연락처 <span class="text-danger">*</span></label>
+              {{ input('tel', 'editUserMobile', '', placeholder='010-0000-0000', opt='required') }}
             </div>
             <div class="col-md-6 mb-3">
-              <label for="editUserPhone" class="form-label">연락처 <span class="text-danger">*</span></label>
-              {{ input('tel', 'editUserPhone', '', placeholder='010-0000-0000', opt='required') }}
+              <label for="editUserKindId" class="form-label">역할 <span class="text-danger">*</span></label>
+              <select class="form-select" id="editUserKindId" name="editUserKindId" required>
+                <option value="">선택하세요</option>
+                <option value="1">관리자</option>
+                <option value="2">현장직원</option>
+                <option value="3">업체담당자</option>
+              </select>
             </div>
           </div>
           <div class="mb-3">
-            <label for="editUserRole" class="form-label">역할 <span class="text-danger">*</span></label>
-            <select class="form-select" id="editUserRole" name="editUserRole" required>
-              <option value="">선택하세요</option>
-              <option value="1">관리자</option>
-              <option value="2">본사 직원</option>
-              <option value="3">의뢰 업체</option>
-            </select>
-          </div>
-          <div class="mb-3">
-            <label for="editUserPassword" class="form-label">비밀번호</label>
-            {{ password_toggle('editUserPassword', '', placeholder='변경하지 않으려면 비워두세요', min='8') }}
+            <label for="editUserPasswd" class="form-label">비밀번호</label>
+            {{ password_toggle('editUserPasswd', '', placeholder='변경하지 않으려면 비워두세요', min='8') }}
             <div class="form-text">비밀번호를 변경하려면 입력하세요 (최소 8자). 비워두면 기존 비밀번호 유지됩니다.</div>
           </div>
         </form>
@@ -307,56 +294,72 @@
 
 {% block extra_js %}
 <script>
+// 페이징 인스턴스 생성 (커스텀 필터 포함)
+const userPagination = new TablePagination({
+  tableSelector: '.users-table tbody',
+  paginationSelector: '#usersPagination',
+  itemsPerPage: 10
+});
+
+// 커스텀 필터 함수 정의
+userPagination.customFilter = function(row, filters) {
+  // 역할 필터
+  if (filters.role && filters.role !== 'all') {
+    const roleElement = row.querySelector('.users-role');
+    if (roleElement) {
+      const roleClass = roleElement.className;
+      let roleType = '';
+      if (roleClass.includes('admin')) roleType = 'admin';
+      else if (roleClass.includes('manager')) roleType = 'staff';
+      else if (roleClass.includes('user')) roleType = 'client';
+      
+      if (roleType !== filters.role) return false;
+    }
+  }
+  
+  // 상태 필터
+  if (filters.status && filters.status !== 'all') {
+    const statusElement = row.querySelector('.users-status');
+    if (statusElement) {
+      const statusClass = statusElement.className;
+      let statusType = '';
+      if (statusClass.includes('active')) statusType = 'active';
+      else if (statusClass.includes('pending')) statusType = 'pending';
+      else if (statusClass.includes('inactive')) statusType = 'inactive';
+      
+      if (statusType !== filters.status) return false;
+    }
+  }
+  
+  return true;
+};
+
 // Select All Checkbox
 document.getElementById('selectAll')?.addEventListener('change', function() {
   const checkboxes = document.querySelectorAll('.users-table tbody input[type="checkbox"]');
   checkboxes.forEach(cb => cb.checked = this.checked);
 });
 
-// Search Functionality
+// 검색 기능
 document.getElementById('userSearch')?.addEventListener('input', function(e) {
-  const searchTerm = e.target.value.toLowerCase();
-  const rows = document.querySelectorAll('.users-table tbody tr');
-  
-  rows.forEach(row => {
-    const name = row.querySelector('.users-cell-name')?.textContent.toLowerCase() || '';
-    const email = row.querySelector('.users-cell-email')?.textContent.toLowerCase() || '';
-    
-    if (name.includes(searchTerm) || email.includes(searchTerm)) {
-      row.style.display = '';
-    } else {
-      row.style.display = 'none';
-    }
-  });
+  userPagination.applySearchFilter(e.target.value, ['.users-cell-name', '.users-cell-email']);
 });
 
-// Filter Functionality
+// 필터 기능
 document.querySelectorAll('[data-filter]').forEach(item => {
   item.addEventListener('click', function(e) {
     e.preventDefault();
     const filterType = this.dataset.filter;
     const filterValue = this.dataset.value;
     
-    // Update active state
+    // 활성 상태 업데이트
     this.closest('.dropdown-menu').querySelectorAll('.dropdown-item').forEach(i => {
       i.classList.remove('active');
     });
     this.classList.add('active');
     
-    // Apply filter
-    const rows = document.querySelectorAll('.users-table tbody tr');
-    rows.forEach(row => {
-      if (filterValue === 'all') {
-        row.style.display = '';
-      } else {
-        const cellText = row.querySelector(filterType === 'role' ? '.users-role' : '.users-status')?.textContent.toLowerCase() || '';
-        if (cellText.includes(filterValue)) {
-          row.style.display = '';
-        } else {
-          row.style.display = 'none';
-        }
-      }
-    });
+    // 필터 적용
+    userPagination.setFilter(filterType, filterValue);
   });
 });
 
@@ -371,19 +374,27 @@ function submitAddUser() {
 }
 
 // Edit User - Load data into modal
-function editUser(userId, userData) {
-  // Populate form fields
-  document.getElementById('editUserId').value = userId;
-  document.getElementById('editUserName').value = userData.name || '';
-  document.getElementById('editUserAccount').value = userData.account || '';
-  document.getElementById('editUserEmail').value = userData.email || '';
-  document.getElementById('editUserPhone').value = userData.phone || '';
-  document.getElementById('editUserRole').value = userData.role || '';
-  
-  // Show modal
-  const modal = new bootstrap.Modal(document.getElementById('editUserModal'));
-  modal.show();
-}
+document.querySelectorAll('.edit-user-btn').forEach(button => {
+  button.addEventListener('click', function() {
+    const userId = this.dataset.userId;
+    const userName = this.dataset.userName;
+    const userEmail = this.dataset.userEmail;
+    const userMobile = this.dataset.userMobile;
+    const userKindId = this.dataset.userKindId;
+    
+    // Populate form fields
+    document.getElementById('editUserId').value = userId;
+    document.getElementById('editUserName').value = userName;
+    document.getElementById('editUserEmail').value = userEmail;
+    document.getElementById('editUserMobile').value = userMobile;
+    document.getElementById('editUserKindId').value = userKindId;
+    document.getElementById('editUserPasswd').value = '';
+    
+    // Show modal
+    const modal = new bootstrap.Modal(document.getElementById('editUserModal'));
+    modal.show();
+  });
+});
 
 // Edit User Form Submit
 function submitEditUser() {

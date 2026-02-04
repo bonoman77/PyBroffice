@@ -41,10 +41,10 @@ def about():
     return render_template('homes/about.html')
 
 
-@bp.route("/version_history/<int:channel_id>", methods=['GET'])
+@bp.route("/version_history")
 @login_required
-def version_history(channel_id):
-    return render_template('homes/version_history.html', channel_id=channel_id)
+def version_history():
+    return render_template('homes/version_history.html')
 
 
 @bp.route("/notice_list", methods=['GET'])

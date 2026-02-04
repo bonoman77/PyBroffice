@@ -1,41 +1,23 @@
-<!-- Mobile Header Menu (Bottom Sheet) -->
+<!-- Mobile Header Menu -->
 <div class="mobile-header-menu">
-  <div class="mobile-menu-header">
-    <h6>메뉴</h6>
-    <button class="btn-close" data-bs-dismiss="offcanvas" aria-label="Close"></button>
-  </div>
-  <div class="mobile-menu-body">
-    <ul class="mobile-menu-list">
-      <li>
-        <a href="/" class="mobile-menu-item">
-          <i class="ph-duotone ph-moon"></i>
-          <span>테마 변경</span>
-        </a>
-      </li>
-      <li>
-        <a href="/notifications" class="mobile-menu-item">
-          <i class="ph-duotone ph-bell"></i>
-          <span>알림</span>
-        </a>
-      </li>
-      <li>
-        <a href="/samples/profile" class="mobile-menu-item">
-          <i class="ph-duotone ph-user"></i>
-          <span>프로필</span>
-        </a>
-      </li>
-      <li>
-        <a href="/samples/settings" class="mobile-menu-item">
-          <i class="ph-duotone ph-gear"></i>
-          <span>설정</span>
-        </a>
-      </li>
-      <li>
-        <a href="/accounts/logout" class="mobile-menu-item">
-          <i class="ph-duotone ph-sign-out"></i>
-          <span>로그아웃</span>
-        </a>
-      </li>
-    </ul>
+  <div class="mobile-header-menu-content">
+    <button class="mobile-menu-item theme-toggle" title="테마 변경">
+      <i class="ph ph-moon theme-icon-dark"></i>
+      <i class="ph ph-sun theme-icon-light"></i>
+      <span class="mobile-menu-label">테마</span>
+    </button>
+    <!-- <a href="{{ url_for('homes.notice_list') }}" class="mobile-menu-item">
+      <i class="bi bi-bell"></i>
+      <span class="badge">0</span>
+      <span class="mobile-menu-label">알림</span>
+    </a> -->
+    <a href="{{ url_for('accounts.user_profile') }}" class="mobile-menu-item">
+      <i class="bi bi-person"></i>
+      <span class="mobile-menu-label">프로필</span>
+    </a>
+    <a href="{{ url_for('accounts.logout') }}" class="mobile-menu-item mobile-menu-item-danger">
+      <i class="bi bi-box-arrow-right"></i>
+      <span class="mobile-menu-label">로그아웃</span>
+    </a>
   </div>
 </div>

@@ -82,31 +82,23 @@ def user_insert():
 
 @bp.route('/user_insert', methods=['POST'])
 def user_insert_post():
-    alphabet = 'abcdefghijklmnopqrstuvwxyz0123456789'
-    auth_code = "".join(random.choice(alphabet) for _ in range(4))
+    user_name = request.form.get('userName')
+    user_email = request.form.get('userEmail')
+    user_passwd = request.form.get('userPasswd')
+    user_mobile = request.form.get('userMobile')
+    user_kind_id = request.form.get('userKindId')
 
-    user_name = request.form.get('user_name')
-    user_email = request.form.get('user_email')
-    user_passwd = request.form.get('user_passwd')
-    user_account = request.form.get('user_account')
-    user_mobile = request.form.get('user_mobile')
-    user_kind_id = request.form.get('user_kind_id')
-    client_id = request.form.get('client_id')
+    res = conn.execute_return('set_user_insert', 
+                              [user_name, user_email, user_mobile, user_kind_id, user_passwd])
 
-    res = int(conn.execute_return('set_user_regist', 
-                                   [user_name, user_email, user_passwd, user_account, user_mobile, user_kind_id, client_id, auth_code])[0])
-
-    if res == 1:
-        # send_mail(user_email, user_name, auth_code, 'register')
-        return redirect(url_for('accounts.welcome', user_email=user_email))
+    if res['return_value'] == 1:
+        flash('회원이 성공적으로 등록되었습니다.', category='success')
+    elif res['return_value'] == 2:
+        flash('이미 사용중인 이메일입니다.', category='warning')
     else:
-        error_messages = {
-            0: "등록에 실패하였습니다. 관리자에게 문의해주세요.",
-            3: "이미 사용중인 계정입니다.",
-            2: "이미 사용중인 이메일입니다.", 
-        }
-        flash(error_messages.get(res, "알 수 없는 오류가 발생했습니다."), category="warning")   
-        return render_template('accounts/user_insert.html', user_name=user_name, user_email=user_email)
+        flash('회원 등록에 실패했습니다.', category='danger')
+    
+    return redirect(url_for('accounts.user_list'))
 
 
 @bp.route("/welcome", methods=['GET'])
@@ -137,31 +129,18 @@ def user_update():
 @login_required
 def user_profile_update_post():
     user_id = session['login_user']['user_id']
-    user_name = request.form.get('user_name')
-    user_email = request.form.get('user_email')
     user_mobile = request.form.get('user_mobile')
     user_passwd = request.form.get('user_passwd')  # 비어있으면 None
     
-    # 현재 user_kind_id 유지
-    user_kind_id = session['login_user']['user_kind_id']
-    
     # 프로시저 호출
-    res = conn.execute_return('set_user_update', [
+    res = conn.execute_return('set_user_profile_update', [
         user_id,
-        user_name,
-        user_email,
-        user_mobile,
-        user_kind_id,
-        user_passwd if user_passwd else None
+        user_mobile
     ])
     
     if res['return_value'] == 1:
         # 세션 정보 업데이트
-        session['login_user']['user_name'] = user_name
-        session['login_user']['user_email'] = user_email
         flash('개인 정보가 성공적으로 수정되었습니다.', category='success')
-    elif res['return_value'] == 2:
-        flash('이미 사용 중인 이메일입니다.', category='warning')
     else:
         flash('개인 정보 수정에 실패했습니다.', category='danger')
     
@@ -298,7 +277,6 @@ def auth_pass_update_post():
     if not res:
         flash("이메일 계정이 올바르지 않습니다. 변경 요청 절차를 다시 진행해주세요.", category="danger")
         return render_template('accounts/auth_pass_update.html', user_email=user_email)
-
     flash("암호가 정상적으로 수정되었습니다.", category="info")
     return redirect(url_for('accounts.login'))
 
@@ -307,42 +285,42 @@ def auth_pass_update_post():
 def user_list():
     # 프로시저 1: 사용자 목록 조회
     users = conn.return_list('get_user_list')
+    print(f"DEBUG: users count = {len(users) if users else 0}")
+    if users:
+        print(f"DEBUG: first user = {users[0]}")
     
     # 프로시저 2: 사용자 통계
     stats = conn.execute_return('get_user_stats')
+    print(f"DEBUG: stats = {stats}")
     
     return render_template('accounts/user_list.html',
                          users=users,
-                         total_users=stats['total_users'],
-                         active_users=stats['active_users'],
-                         pending_users=stats['pending_users'],
-                         inactive_users=stats['inactive_users'])
+                         total_users=stats.get('total_users', 0) if stats else 0,
+                         active_users=stats.get('active_users', 0) if stats else 0,
+                         pending_users=stats.get('pending_users', 0) if stats else 0,
+                         inactive_users=stats.get('inactive_users', 0) if stats else 0)
 
 
 @bp.route('/user_admin_update', methods=['POST'])
 def user_admin_update_post():
     user_id = request.form.get('userId')
     user_name = request.form.get('editUserName')
-    user_email = request.form.get('editUserEmail')
-    user_phone = request.form.get('editUserPhone')
-    user_role = request.form.get('editUserRole')
-    user_password = request.form.get('editUserPassword')  # 비어있으면 None
+    user_mobile = request.form.get('editUserMobile')
+    user_kind_id = request.form.get('editUserKindId')
+    user_passwd = request.form.get('editUserPasswd')  # 비어있으면 None
     
     # 프로시저 호출
-    res = conn.execute_return('set_user_update', [
+    res = conn.execute_return('set_user_admin_update', [
         user_id,
         user_name,
-        user_email,
-        user_phone,
-        user_role,
-        user_password if user_password else None
+        user_mobile,
+        user_kind_id,
+        user_passwd if user_passwd else None
     ])
     
     if res['return_value'] == 1:
         flash('회원 정보가 성공적으로 수정되었습니다.', category='success')
     elif res['return_value'] == 2:
-        flash('이미 사용 중인 이메일입니다.', category='warning')
-    elif res['return_value'] == 4:
         flash('회원을 찾을 수 없습니다.', category='danger')
     else:
         flash('회원 정보 수정에 실패했습니다.', category='danger')
@@ -369,27 +347,34 @@ def client_list():
 @bp.route('/client_insert', methods=['POST'])
 def client_insert_post():
     client_name = request.form.get('clientName')
-    manager_name = request.form.get('clientManager')
-    manager_mobile = request.form.get('managerPhone')
-    management_level = request.form.get('managerPosition')
+    client_phone = request.form.get('clientPhone')
     client_address = request.form.get('clientAddress')
+    client_business_number = request.form.get('clientBusinessNumber')
+    manager_name = request.form.get('managerName')
+    manager_mobile = request.form.get('managerMobile')
+    manager_position = request.form.get('managerPosition')
     contracted_at = request.form.get('contractDate')
     memo = request.form.get('memo')
     
-    # 업무 종류 (taskKind[]) - 체크박스에서 선택된 값들
-    task_kinds = request.form.getlist('taskKind[]')
-    task_kinds_str = ','.join(task_kinds) if task_kinds else ''
+    # 업무 종류 - 각 체크박스를 직접 확인하여 1/0 숫자로 변환
+    cleaning_yn = 1 if request.form.get('cleaningYn') else 0
+    snack_yn = 1 if request.form.get('snackYn') else 0
+    office_supplies_yn = 1 if request.form.get('officeSuppliesYn') else 0
     
     # 프로시저 호출
     res = conn.execute_return('set_client_insert', [
         client_name,
+        client_phone,
+        client_business_number,
+        client_address,
         manager_name,
         manager_mobile,
-        management_level,
-        client_address,
+        manager_position,
         contracted_at,
         memo,
-        task_kinds_str
+        cleaning_yn,
+        snack_yn,
+        office_supplies_yn
     ])
     
     if res['return_value'] == 1:
@@ -404,28 +389,35 @@ def client_insert_post():
 def client_update_post():
     client_id = request.form.get('clientId')
     client_name = request.form.get('editClientName')
-    manager_name = request.form.get('editClientManager')
-    manager_mobile = request.form.get('editManagerPhone')
-    management_level = request.form.get('editManagerPosition')
+    client_phone = request.form.get('editClientPhone')
     client_address = request.form.get('editClientAddress')
+    client_business_number = request.form.get('editBusinessNumber')
+    manager_name = request.form.get('editManagerName')
+    manager_mobile = request.form.get('editManagerMobile')
+    manager_position = request.form.get('editManagerPosition')
     contracted_at = request.form.get('editContractDate')
-    memo = request.form.get('editMemo')
+    memo = request.form.get('editMemo') 
     
-    # 업무 종류
-    task_kinds = request.form.getlist('editTaskKind[]')
-    task_kinds_str = ','.join(task_kinds) if task_kinds else ''
+    # 업무 종류 - 각 체크박스를 직접 확인하여 1/0 숫자로 변환
+    cleaning_yn = 1 if request.form.get('editCleaningYn') else 0
+    snack_yn = 1 if request.form.get('editSnackYn') else 0
+    office_supplies_yn = 1 if request.form.get('editOfficeSuppliesYn') else 0
     
     # 프로시저 호출
     res = conn.execute_return('set_client_update', [
         client_id,
         client_name,
+        client_phone,
+        client_address,
+        client_business_number,
         manager_name,
         manager_mobile,
-        management_level,
-        client_address,
+        manager_position,
         contracted_at,
         memo,
-        task_kinds_str
+        cleaning_yn,
+        snack_yn,
+        office_supplies_yn
     ])
     
     if res['return_value'] == 1:
