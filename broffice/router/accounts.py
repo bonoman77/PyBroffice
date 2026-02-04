@@ -285,10 +285,7 @@ def auth_pass_update_post():
 def user_list():
     # 프로시저 1: 사용자 목록 조회
     users = conn.return_list('get_user_list')
-    print(f"DEBUG: users count = {len(users) if users else 0}")
-    if users:
-        print(f"DEBUG: first user = {users[0]}")
-    
+
     # 프로시저 2: 사용자 통계
     stats = conn.execute_return('get_user_stats')
     print(f"DEBUG: stats = {stats}")
@@ -332,7 +329,7 @@ def user_admin_update_post():
 def client_list():
     # 프로시저 1: 업체 목록 조회
     clients = conn.return_list('get_client_list')
-    
+    print(clients)
     # 프로시저 2: 업무 종류별 통계
     stats = conn.execute_return('get_client_stats_by_task_kind')
     
@@ -365,8 +362,8 @@ def client_insert_post():
     res = conn.execute_return('set_client_insert', [
         client_name,
         client_phone,
-        client_business_number,
         client_address,
+        client_business_number,
         manager_name,
         manager_mobile,
         manager_position,
@@ -391,7 +388,7 @@ def client_update_post():
     client_name = request.form.get('editClientName')
     client_phone = request.form.get('editClientPhone')
     client_address = request.form.get('editClientAddress')
-    client_business_number = request.form.get('editBusinessNumber')
+    client_business_number = request.form.get('editClientBusinessNumber')
     manager_name = request.form.get('editManagerName')
     manager_mobile = request.form.get('editManagerMobile')
     manager_position = request.form.get('editManagerPosition')

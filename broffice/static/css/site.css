@@ -1,0 +1,19 @@
+.users-role.warning {
+  background: var(--warning-color-light);
+  color: var(--warning-color);
+}
+ 
+.users-role.danger {
+  background: var(--danger-color-light);
+  color: var(--danger-color);
+}
+ 
+.users-role.info {
+  background: var(--info-color-light);
+  color: var(--info-color);
+}
+ 
+.users-role.success {
+  background: var(--success-color-light);
+  color: var(--success-color);
+}

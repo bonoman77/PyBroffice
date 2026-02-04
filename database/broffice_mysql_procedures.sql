@@ -262,7 +262,8 @@ BEGIN
         c.office_supplies_yn,
         c.created_at,
         CASE WHEN c.use_yn = 1 THEN 'active' ELSE 'inactive' END AS status,
-        DATE_FORMAT(c.created_at, '%Y-%m-%d') AS registered_date
+        DATE_FORMAT(c.contracted_at, '%Y-%m-%d') AS contract_date,
+        DATE_FORMAT(c.created_at, '%Y-%m-%d') AS create_date
     FROM clients c
     WHERE c.deleted_at IS NULL
     ORDER BY c.created_at DESC;
@@ -281,9 +282,9 @@ CREATE PROCEDURE get_client_stats_by_task_kind()
 BEGIN
     SELECT 
         COUNT(DISTINCT c.client_id) AS total_clients,
-        COUNT(DISTINCT CASE WHEN c.cleaning_yn = 'Y' THEN c.client_id END) AS cleaning_clients,
-        COUNT(DISTINCT CASE WHEN c.snack_yn = 'Y' THEN c.client_id END) AS snack_clients,
-        COUNT(DISTINCT CASE WHEN c.office_supplies_yn = 'Y' THEN c.client_id END) AS supplies_clients
+        COUNT(DISTINCT CASE WHEN c.cleaning_yn = 1 THEN c.client_id END) AS cleaning_clients,
+        COUNT(DISTINCT CASE WHEN c.snack_yn = 1 THEN c.client_id END) AS snack_clients,
+        COUNT(DISTINCT CASE WHEN c.office_supplies_yn = 1 THEN c.client_id END) AS supplies_clients
     FROM clients c
     WHERE c.deleted_at IS NULL;
 END$$
@@ -464,7 +465,7 @@ BEGIN
             ELSE 'inactive'
         END AS status,
         u.use_yn,
-        DATE_FORMAT(u.created_at, '%Y-%m-%d') AS joined_date
+        DATE_FORMAT(u.created_at, '%Y-%m-%d') AS create_date
     FROM users u
     LEFT JOIN clients c ON u.client_id = c.client_id
     WHERE u.deleted_at IS NULL
@@ -531,7 +532,7 @@ BEGIN
             user_name,
             user_kind_id,
             user_mobile,
-            admin_authed_at,
+            use_yn, 
             created_at
         ) VALUES (
             p_user_email,
@@ -539,7 +540,7 @@ BEGIN
             p_user_name,
             p_user_kind_id,
             p_user_mobile,
-            NOW(),
+            1,
             NOW()
         );
         SET v_user_id = LAST_INSERT_ID();
