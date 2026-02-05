@@ -12,6 +12,9 @@ def login():
     if session.get('login_user'):
         return redirect(url_for('homes.index'))
 
+    # 홈에서 리다이렉트된 경우 등의 flash 메시지 소비
+    get_flashed_messages()
+
     return render_template('accounts/login.html')
 
 
