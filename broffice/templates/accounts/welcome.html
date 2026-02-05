@@ -1,97 +1,29 @@
 {% extends "layout_login.html" %}
-{% from "macros/form.html" import input %}
-{% block title %} 등록 성공 {% endblock %}
+{% block title %}회원가입 완료{% endblock %}
 
-{% block section %}
-<div class="main-content">
-    <!-- Header -->
-    <div class="header bg-gradient-orange py-7 py-lg-8 pt-lg-9">
-      <div class="container">
-        <div class="header-body text-center mb-5">
-          <div class="row justify-content-center">
-            <div class="col-xl-5 col-lg-6 col-md-8 px-5">
-              <h1 class="text-white">브로피스</h1>
-              <p class="text-lead text-white"></p>
-            </div>
-          </div>
-        </div>
-      </div>
-      <div class="separator separator-bottom separator-skew zindex-100">
-        <svg x="0" y="0" viewBox="0 0 2560 100" preserveAspectRatio="none" version="1.1" xmlns="http://www.w3.org/2000/svg">
-          <polygon class="fill-default" points="2560 0 2560 100 0 100"></polygon>
-        </svg>
-      </div>
-    </div>
-    <!-- Page content -->
-    <div class="container mt--8 pb-5">
-    <div class="row justify-content-center">
-      <div class="col-lg-10">
-        <div class="pricing card-group flex-column flex-md-row mb-3">
-          <div class="card card-pricing bg-gradient-success zoom-in shadow-lg rounded border-0 text-center mb-4">
-            <div class="card-header bg-transparent">
-              <h2 class="text-uppercase ls-1 text-white py-3 mb-0">가입을 환영합니다.</h2>
-            </div>
+{% block auth_content %}
+<div class="auth-card-header text-center">
+  <div class="mb-3">
+    <span class="bg-success-subtle text-success rounded-circle d-inline-flex align-items-center justify-content-center" style="width: 64px; height: 64px;">
+      <i class="bi bi-check-lg fs-1"></i>
+    </span>
+  </div>
+  <h1 class="auth-title">가입을 환영합니다</h1>
+  <p class="auth-subtitle">브로피스 회원가입이 완료되었습니다</p>
+</div>
 
-            <!-- <div class="card-body px-lg-7">
-              <span class="text-white">회원님의 이메일({{user_email}})로 인증 메일이 발송되었습니다. <br />메일함으로 가셔서 인증 링크를 클릭하면 사이트를 정상적으로 사용하실 수 있습니다.</span>
-            </div> -->
-
-            <div class="card-footer bg-transparent">
-                <button type="button" class="btn btn-secondary mb-3">로그인하기</button>
-            </div>
-          </div>
-        </div>
-      </div>
+<div class="alert alert-warning" role="alert">
+  <div class="d-flex align-items-start">
+    <i class="bi bi-info-circle-fill me-2 mt-1"></i>
+    <div>
+      <strong>관리자 승인 대기 중</strong><br>
+      사이트 로그인을 위해서는 관리자 승인이 필요합니다.<br><br>
+      조금만 기다려 주세요!
     </div>
   </div>
 </div>
 
-
-
-
-<!-- 
-
-
-
-<div class="product-page">
-    <div class="page-header" data-parallax="true" style="background-image: url('/static/images/main/bg_anyone.png');">
-	    <div class="container">
-	        <div class="row title-row">
-	            <div class="col-md-4 col-md-offset-8">
-	            </div>
-	        </div>
-	    </div>
-	</div>
-    <div class="section section-gray">
-        <div class="container">
-            <div class="main main-raised main-product">
-                <div class="row">
-                    <div class="col-md-12" style="height: 80px">
-                    </div>
-                </div>
-                <div class="row">
-                 <div class="col-md-8 col-md-offset-2">
-                    <div class="text-center">
-                       <img src="{{model_path}}" width="180px">
-                       <h3>튼튼영어 채널관리 가입을 환영합니다!</h3>
-                       <h5>회원님의 이메일({{user_email}})로 인증 메일이 발송되었습니다. 해당 메일을 확인하셔서 인증 링크를 클릭하면 사이트를 정상적으로 사용하실 수 있습니다.</h5>
-                    </div>
-                 </div>
-              </div>
-                <div class="row">
-                    <div class="col-md-12">
-                        <div class="form-group form-button text-center">
-                            <a href="{{ url_for('accounts.login') }}" class="btn btn-fill btn-facebook">로그인</a>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div> <!--section end -->
-</div> -->
-
-
-
+<div class="text-center mt-4">
+  <a href="{{ url_for('accounts.login') }}" class="btn btn-primary btn-block">로그인 페이지로 이동</a>
+</div>
 {% endblock %}
-
-

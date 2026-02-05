@@ -496,7 +496,7 @@ END$$
 -- Author:      김승균
 -- Create date: 2026-02-03
 -- Email:       bonoman77@gmail.com 
--- Description: 사용자 등록 (관리자용)
+-- Description: 사용자 등록 (공용)
 -- =============================================
 
 DROP PROCEDURE IF EXISTS set_user_insert$$
@@ -506,7 +506,8 @@ CREATE PROCEDURE set_user_insert(
     IN p_user_email VARCHAR(100),
     IN p_user_mobile VARCHAR(100),
     IN p_user_kind_id INT,
-    IN p_user_passwd VARCHAR(100)
+    IN p_user_passwd VARCHAR(100),
+    IN p_status VARCHAR(20)
 )
 BEGIN
     DECLARE v_return_value INT DEFAULT 0;
@@ -525,7 +526,7 @@ BEGIN
     IF v_email_count > 0 THEN
         SET v_return_value = 2; -- 이메일 중복
     ELSE
-        -- 사용자 등록
+        -- 사용자 등록 (상태에 따라 use_yn 설정)
         INSERT INTO users (
             user_email,
             user_passwd,
@@ -533,6 +534,7 @@ BEGIN
             user_kind_id,
             user_mobile,
             use_yn, 
+            admin_authed_at,
             created_at
         ) VALUES (
             p_user_email,
@@ -540,7 +542,8 @@ BEGIN
             p_user_name,
             p_user_kind_id,
             p_user_mobile,
-            1,
+            IF(p_status = 'active', 1, 0),
+            IF(p_status = 'active', NOW(), NULL),
             NOW()
         );
         SET v_user_id = LAST_INSERT_ID();
@@ -800,11 +803,15 @@ CREATE PROCEDURE set_user_admin_update(
     IN p_user_name VARCHAR(100),
     IN p_user_mobile VARCHAR(100),
     IN p_user_kind_id INT,
-    IN p_user_passwd VARCHAR(100)
+    IN p_user_passwd VARCHAR(100),
+    IN p_status VARCHAR(20)
 )
 BEGIN
     DECLARE v_return_value INT DEFAULT 0;
     DECLARE v_user_count INT DEFAULT 0;
+    DECLARE v_current_use_yn INT DEFAULT 0;
+    DECLARE v_use_yn INT DEFAULT 0;
+    DECLARE v_new_admin_authed_at DATETIME DEFAULT NULL;
     
     -- 트랜잭션 시작
     START TRANSACTION;
@@ -818,6 +825,35 @@ BEGIN
     IF v_user_count = 0 THEN
         SET v_return_value = 2; -- 사용자 없음
     ELSE
+        -- 현재 사용자 상태 조회
+        SELECT use_yn INTO v_current_use_yn
+        FROM users
+        WHERE user_id = p_user_id
+          AND deleted_at IS NULL;
+        
+        -- 상태에 따른 use_yn 및 admin_authed_at 설정
+        IF p_status = 'active' THEN
+            -- 활성: use_yn=1, 비활성->활성 전환 시에만 admin_authed_at 업데이트
+            SET v_use_yn = 1;
+            IF v_current_use_yn = 0 THEN
+                SET v_new_admin_authed_at = NOW();
+            ELSE
+                -- 이미 활성이면 기존 값 유지
+                SELECT admin_authed_at INTO v_new_admin_authed_at
+                FROM users
+                WHERE user_id = p_user_id
+                  AND deleted_at IS NULL;
+            END IF;
+        ELSEIF p_status = 'pending' THEN
+            -- 대기: use_yn=1, admin_authed_at=NULL
+            SET v_use_yn = 1;
+            SET v_new_admin_authed_at = NULL;
+        ELSE
+            -- 비활성: use_yn=0, admin_authed_at=NULL
+            SET v_use_yn = 0;
+            SET v_new_admin_authed_at = NULL;
+        END IF;
+        
         -- 비밀번호 변경 여부에 따라 업데이트
         IF p_user_passwd IS NOT NULL AND p_user_passwd != '' THEN
             UPDATE users
@@ -825,6 +861,8 @@ BEGIN
                 user_mobile = p_user_mobile,
                 user_kind_id = p_user_kind_id,
                 user_passwd = UNHEX(SHA2(p_user_passwd, 512)),
+                use_yn = v_use_yn,
+                admin_authed_at = v_new_admin_authed_at,
                 updated_at = NOW()
             WHERE user_id = p_user_id
               AND deleted_at IS NULL;
@@ -833,6 +871,8 @@ BEGIN
             SET user_name = p_user_name,
                 user_mobile = p_user_mobile,
                 user_kind_id = p_user_kind_id,
+                use_yn = v_use_yn,
+                admin_authed_at = v_new_admin_authed_at,
                 updated_at = NOW()
             WHERE user_id = p_user_id
               AND deleted_at IS NULL;
@@ -871,7 +911,8 @@ CREATE PROCEDURE set_client_insert(
     IN p_memo TEXT,
     IN p_cleaning_yn INT,
     IN p_snack_yn INT,
-    IN p_office_supplies_yn INT
+    IN p_office_supplies_yn INT,
+    IN p_status VARCHAR(20)
 )
 BEGIN
     DECLARE v_return_value INT DEFAULT 0;
@@ -894,6 +935,7 @@ BEGIN
         cleaning_yn,
         snack_yn,
         office_supplies_yn,
+        use_yn, 
         created_at
     ) VALUES (
         p_client_name,
@@ -908,6 +950,7 @@ BEGIN
         p_cleaning_yn,
         p_snack_yn,
         p_office_supplies_yn,
+        IF (p_status = 'active', 1, 0),
         NOW()
     );
     
@@ -945,7 +988,8 @@ CREATE PROCEDURE set_client_update(
     IN p_memo TEXT,
     IN p_cleaning_yn INT,
     IN p_snack_yn INT,
-    IN p_office_supplies_yn INT
+    IN p_office_supplies_yn INT,
+    IN p_status VARCHAR(20)
 )
 BEGIN
     DECLARE v_return_value INT DEFAULT 0;
@@ -976,6 +1020,97 @@ BEGIN
             cleaning_yn = p_cleaning_yn,
             snack_yn = p_snack_yn,
             office_supplies_yn = p_office_supplies_yn,
+            use_yn = IF (p_status = 'active', 1, 0),
+            updated_at = NOW()
+        WHERE client_id = p_client_id
+          AND deleted_at IS NULL;
+        
+        SET v_return_value = 1; -- 성공
+    END IF;
+    
+    -- 트랜잭션 커밋
+    COMMIT;
+    
+    -- 결과 반환
+    SELECT v_return_value AS return_value;
+    
+END$$
+
+
+-- =============================================
+-- Author:      김승균
+-- Create date: 2026-02-05
+-- Description: 회원 삭제 (소프트 삭제)
+-- =============================================
+DROP PROCEDURE IF EXISTS set_user_delete$$
+
+CREATE PROCEDURE set_user_delete(
+    IN p_user_id INT
+)
+BEGIN
+    DECLARE v_return_value INT DEFAULT 0;
+    DECLARE v_user_exists INT DEFAULT 0;
+    
+    -- 트랜잭션 시작
+    START TRANSACTION;
+    
+    -- 회원 존재 여부 확인
+    SELECT COUNT(*) INTO v_user_exists
+    FROM users
+    WHERE user_id = p_user_id
+      AND deleted_at IS NULL;
+    
+    IF v_user_exists = 0 THEN
+        SET v_return_value = 2; -- 회원 없음
+    ELSE
+        -- 소프트 삭제 (deleted_at 업데이트)
+        UPDATE users
+        SET deleted_at = NOW(),
+            updated_at = NOW()
+        WHERE user_id = p_user_id
+          AND deleted_at IS NULL;
+        
+        SET v_return_value = 1; -- 성공
+    END IF;
+    
+    -- 트랜잭션 커밋
+    COMMIT;
+    
+    -- 결과 반환
+    SELECT v_return_value AS return_value;
+    
+END$$
+
+
+-- =============================================
+-- Author:      김승균
+-- Create date: 2026-02-05
+-- Description: 업체 삭제 (소프트 삭제)
+-- =============================================
+DROP PROCEDURE IF EXISTS set_client_delete$$
+
+CREATE PROCEDURE set_client_delete(
+    IN p_client_id INT
+)
+BEGIN
+    DECLARE v_return_value INT DEFAULT 0;
+    DECLARE v_client_exists INT DEFAULT 0;
+    
+    -- 트랜잭션 시작
+    START TRANSACTION;
+    
+    -- 업체 존재 여부 확인
+    SELECT COUNT(*) INTO v_client_exists
+    FROM clients
+    WHERE client_id = p_client_id
+      AND deleted_at IS NULL;
+    
+    IF v_client_exists = 0 THEN
+        SET v_return_value = 2; -- 업체 없음
+    ELSE
+        -- 소프트 삭제 (deleted_at 업데이트)
+        UPDATE clients
+        SET deleted_at = NOW(),
             updated_at = NOW()
         WHERE client_id = p_client_id
           AND deleted_at IS NULL;

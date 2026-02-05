@@ -102,7 +102,7 @@
           <th>업무종류</th>
           <th>담당자</th>
           <th>상태</th>
-          <th>계역일</th>
+          <th>계약일</th>
           <th class="users-th-actions">작업</th>
         </tr>
       </thead>
@@ -116,7 +116,7 @@
             <td>
               <div class="users-cell-user">
                 <div>
-                  {{ client.client_name }}                  
+                  <div class="users-cell-name">{{ client.client_name }}</div>
                   <div class="users-cell-email">{{ client.client_business_number or '사업자번호 미등록' }}</div>
                 </div>
               </div>
@@ -130,11 +130,11 @@
               {% if task_types %}
                 {% for task in task_types %}
                   {% if task == '청소' %}
-                    <span class="text-success">청소</span>
+                    <span class="users-role" style="background: #e0f2fe; color: #0369a1;"><i class="ph-fill ph-broom"></i> 청소</span>
                   {% elif task == '간식' %}
-                    <span class="text-warning">간식</span>
+                    <span class="users-role" style="background: #fef3c7; color: #92400e;"><i class="ph-fill ph-hamburger"></i> 간식</span>
                   {% elif task == '비품' %}
-                    <span class="text-danger">비품</span>
+                    <span class="users-role" style="background: #e0e7ff; color: #3730a3;"><i class="ph-fill ph-package"></i> 비품</span>
                   {% endif %}
                 {% endfor %}
               {% else %}
@@ -169,10 +169,11 @@
                         data-memo="{{ client.memo|default('') }}"
                         data-cleaning-yn="{{ client.cleaning_yn }}"
                         data-snack-yn="{{ client.snack_yn }}"
-                        data-office-supplies-yn="{{ client.office_supplies_yn }}">
+                        data-office-supplies-yn="{{ client.office_supplies_yn }}"
+                        data-status="{{ client.status }}">
                   <i class="ph ph-pencil-simple"></i>
                 </button>
-                <button class="users-action-btn danger" title="삭제" onclick="deleteClient({{ client.client_id }})"><i class="ph ph-trash"></i></button>
+                <button class="users-action-btn danger" title="삭제" data-client-id="{{ client.client_id }}" data-client-name="{{ client.client_name }}" onclick="showDeleteClientModal(this)"><i class="ph ph-trash"></i></button>
               </div>
             </td>
           </tr>
@@ -248,20 +249,29 @@
               {{ input('tel', 'managerMobile', '', placeholder='010-0000-0000') }}
             </div>
           </div>
-          <div class="mb-3">
-            <label class="form-label">업무 종류 <span class="text-danger">*</span></label>
-            <div class="d-flex gap-3">
-              <div class="form-check">
-                <input class="form-check-input" type="checkbox" id="cleaningYn" name="cleaningYn">
-                <label class="form-check-label" for="cleaningYn">청소</label>
-              </div>
-              <div class="form-check">
-                <input class="form-check-input" type="checkbox" id="snackYn" name="snackYn">
-                <label class="form-check-label" for="snackYn">스낵</label>
-              </div>
-              <div class="form-check">
-                <input class="form-check-input" type="checkbox" id="officeSuppliesYn" name="officeSuppliesYn">
-                <label class="form-check-label" for="officeSuppliesYn">비품</label>
+          <div class="row">
+            <div class="col-md-6 mb-3">
+              <label for="status" class="form-label">상태</label>
+              <select class="form-select" id="status" name="status">
+                <option value="active" selected>활성</option>
+                <option value="inactive">비활성</option>
+              </select>
+            </div>
+            <div class="col-md-6 mb-3">
+              <label class="form-label">업무 종류 <span class="text-danger">*</span></label>
+              <div class="d-flex gap-3">
+                <div class="form-check">
+                  <input class="form-check-input" type="checkbox" id="cleaningYn" name="cleaningYn">
+                  <label class="form-check-label" for="cleaningYn">청소</label>
+                </div>
+                <div class="form-check">
+                  <input class="form-check-input" type="checkbox" id="snackYn" name="snackYn">
+                  <label class="form-check-label" for="snackYn">스낵</label>
+                </div>
+                <div class="form-check">
+                  <input class="form-check-input" type="checkbox" id="officeSuppliesYn" name="officeSuppliesYn">
+                  <label class="form-check-label" for="officeSuppliesYn">비품</label>
+                </div>
               </div>
             </div>
           </div>
@@ -278,6 +288,29 @@
       <div class="modal-footer">
         <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">취소</button>
         <button type="button" class="btn btn-primary" onclick="submitAddClient()">등록</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Delete Client Modal -->
+<div class="modal fade" id="deleteClientModal" tabindex="-1" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered">
+    <div class="modal-content">
+      <div class="modal-body text-center py-4">
+        <div class="mb-3">
+          <span class="bg-danger-subtle text-danger rounded-circle d-inline-flex align-items-center justify-content-center" style="width: 64px; height: 64px;">
+            <i class="bi bi-exclamation-triangle fs-1"></i>
+          </span>
+        </div>
+        <h5>업체 삭제</h5>
+        <p class="text-muted mb-2">정말로 <strong id="deleteClientName"></strong> 업체를 삭제하시겠습니까?</p>
+        <p class="text-muted mb-0 small">이 작업은 되돌릴 수 없습니다.</p>
+        <input type="hidden" id="deleteClientId">
+      </div>
+      <div class="modal-footer justify-content-center border-0 pt-0">
+        <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">취소</button>
+        <button type="button" class="btn btn-danger" onclick="confirmDeleteClient()">삭제</button>
       </div>
     </div>
   </div>
@@ -328,20 +361,29 @@
               {{ input('tel', 'editManagerMobile', '', placeholder='010-0000-0000') }}
             </div>
           </div>
-          <div class="mb-3">
-            <label class="form-label">업무 종류 <span class="text-danger">*</span></label>
-            <div class="d-flex gap-3">
-              <div class="form-check">
-                <input class="form-check-input" type="checkbox" id="editCleaningYn" name="editCleaningYn">
-                <label class="form-check-label" for="editCleaningYn">청소</label>
-              </div>
-              <div class="form-check">
-                <input class="form-check-input" type="checkbox" id="editSnackYn" name="editSnackYn">
-                <label class="form-check-label" for="editSnackYn">스낵</label>
-              </div>
-              <div class="form-check">
-                <input class="form-check-input" type="checkbox" id="editOfficeSuppliesYn" name="editOfficeSuppliesYn">
-                <label class="form-check-label" for="editOfficeSuppliesYn">비품</label>
+          <div class="row">
+            <div class="col-md-6 mb-3">
+              <label for="editStatus" class="form-label">상태</label>
+              <select class="form-select" id="editStatus" name="editStatus">
+                <option value="active">활성</option>
+                <option value="inactive">비활성</option>
+              </select>
+            </div>
+            <div class="col-md-6 mb-3">
+              <label class="form-label">업무 종류 <span class="text-danger">*</span></label>
+              <div class="d-flex gap-3">
+                <div class="form-check">
+                  <input class="form-check-input" type="checkbox" id="editCleaningYn" name="editCleaningYn">
+                  <label class="form-check-label" for="editCleaningYn">청소</label>
+                </div>
+                <div class="form-check">
+                  <input class="form-check-input" type="checkbox" id="editSnackYn" name="editSnackYn">
+                  <label class="form-check-label" for="editSnackYn">스낵</label>
+                </div>
+                <div class="form-check">
+                  <input class="form-check-input" type="checkbox" id="editOfficeSuppliesYn" name="editOfficeSuppliesYn">
+                  <label class="form-check-label" for="editOfficeSuppliesYn">비품</label>
+                </div>
               </div>
             </div>
           </div>
@@ -376,30 +418,44 @@ const clientPagination = new TablePagination({
 
 // 커스텀 필터 함수 정의
 clientPagination.customFilter = function(row, filters) {
-  // 업종 필터
+  console.log('customFilter called:', filters);
+  
+  // 업종 필터 - 복수 선택 지원
   if (filters.type && filters.type !== 'all') {
-    const typeElement = row.querySelector('.users-role');
-    if (typeElement) {
-      const typeText = typeElement.textContent.toLowerCase();
+    const typeElements = row.querySelectorAll('.users-role');
+    console.log('Type elements found:', typeElements.length);
+    if (typeElements.length > 0) {
+      const typeTexts = Array.from(typeElements).map(el => el.textContent);
+      console.log('Type texts:', typeTexts);
       const filterMap = {
         'cleaning': '청소',
         'snack': '간식',
-        'supplies': '비품'
+        'office_supplies': '비품'
       };
-      if (!typeText.includes(filterMap[filters.type])) return false;
+      
+      // 쾔마로 구분된 필터 값 분할 (예: "cleaning,snack")
+      const filterTypes = filters.type.split(',');
+      console.log('Filter types:', filterTypes);
+      
+      // 선택한 업종 중 하나라도 포함되어 있는지 확인
+      const hasMatch = filterTypes.some(filterType => {
+        const targetText = filterMap[filterType.trim()];
+        return targetText && typeTexts.some(text => text.includes(targetText));
+      });
+      
+      console.log('Has match:', hasMatch);
+      if (!hasMatch) return false;
     }
   }
   
   // 상태 필터
   if (filters.status && filters.status !== 'all') {
     const statusElement = row.querySelector('.users-status');
+    console.log('Status element:', statusElement);
     if (statusElement) {
-      const statusClass = statusElement.className;
-      let statusType = '';
-      if (statusClass.includes('active')) statusType = 'active';
-      else if (statusClass.includes('inactive')) statusType = 'inactive';
-      
-      if (statusType !== filters.status) return false;
+      const hasClass = statusElement.classList.contains(filters.status);
+      console.log('Status filter:', filters.status, 'has class:', hasClass);
+      if (!hasClass) return false;
     }
   }
   
@@ -414,7 +470,11 @@ document.getElementById('selectAll')?.addEventListener('change', function() {
 
 // 검색 기능
 document.getElementById('clientSearch')?.addEventListener('input', function(e) {
-  clientPagination.applySearchFilter(e.target.value, ['.users-cell-name', '.users-cell-email']);
+  const searchValue = e.target.value;
+  console.log('Search input event fired! Value:', searchValue);
+  console.log('clientPagination exists:', !!clientPagination);
+  console.log('clientPagination.applySearchFilter exists:', !!clientPagination.applySearchFilter);
+  clientPagination.applySearchFilter(searchValue, ['.users-cell-name']);
 });
 
 // 필터 기능
@@ -424,6 +484,8 @@ document.querySelectorAll('[data-filter]').forEach(item => {
     const filterType = this.dataset.filter;
     const filterValue = this.dataset.value;
     
+    console.log('Filter clicked:', filterType, filterValue);
+    
     // 활성 상태 업데이트
     this.closest('.dropdown-menu').querySelectorAll('.dropdown-item').forEach(i => {
       i.classList.remove('active');
@@ -431,6 +493,7 @@ document.querySelectorAll('[data-filter]').forEach(item => {
     this.classList.add('active');
     
     // 필터 적용
+    console.log('Calling setFilter with:', filterType, filterValue);
     clientPagination.setFilter(filterType, filterValue);
   });
 });
@@ -462,6 +525,7 @@ document.querySelectorAll('.edit-client-btn').forEach(button => {
     const cleaningYn = this.dataset.cleaningYn;
     const snackYn = this.dataset.snackYn;
     const officeSuppliesYn = this.dataset.officeSuppliesYn;
+    const status = this.dataset.status;
     
     // Populate form fields
     document.getElementById('editClientId').value = clientId;
@@ -480,6 +544,9 @@ document.querySelectorAll('.edit-client-btn').forEach(button => {
     document.getElementById('editSnackYn').checked = snackYn == 1;
     document.getElementById('editOfficeSuppliesYn').checked = officeSuppliesYn == 1;
     
+    // Set status select
+    document.getElementById('editStatus').value = status;
+    
     // Show modal
     const modal = new bootstrap.Modal(document.getElementById('editClientModal'));
     modal.show();
@@ -497,14 +564,86 @@ function submitEditClient() {
   }
 }
 
-// Delete Client
+// Delete Client - Show confirmation modal
+function showDeleteClientModal(button) {
+  const clientId = button.dataset.clientId;
+  const clientName = button.dataset.clientName;
+  
+  document.getElementById('deleteClientId').value = clientId;
+  document.getElementById('deleteClientName').textContent = clientName;
+  
+  const modal = new bootstrap.Modal(document.getElementById('deleteClientModal'));
+  modal.show();
+}
+
+// Delete Client - Confirm deletion
+function confirmDeleteClient() {
+  const clientId = document.getElementById('deleteClientId').value;
+  
+  // AJAX 요청으로 업체 삭제
+  fetch("{{ url_for('accounts.client_admin_delete_post') }}", {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+      'X-Requested-With': 'XMLHttpRequest'
+    },
+    body: JSON.stringify({ client_id: clientId })
+  })
+  .then(response => response.json())
+  .then(data => {
+    // Close modal
+    const modal = bootstrap.Modal.getInstance(document.getElementById('deleteClientModal'));
+    modal.hide();
+    
+    if (data.success) {
+      showToast('success', data.message || '업체가 삭제되었습니다.');
+      setTimeout(() => location.reload(), 1000);
+    } else {
+      showToast('danger', data.error || '업체 삭제에 실패했습니다.');
+    }
+  })
+  .catch(error => {
+    console.error('Error:', error);
+    showToast('danger', '업체 삭제 중 오류가 발생했습니다.');
+  });
+}
+
+// Toast 알림 함수
+function showToast(type, message) {
+  const toastContainer = document.getElementById('toastContainer') || createToastContainer();
+  const toastId = 'toast-' + Date.now();
+  
+  const toastHtml = `
+    <div id="${toastId}" class="toast align-items-center text-white bg-${type} border-0" role="alert" aria-live="assertive" aria-atomic="true">
+      <div class="d-flex">
+        <div class="toast-body">
+          ${message}
+        </div>
+        <button type="button" class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast" aria-label="Close"></button>
+      </div>
+    </div>
+  `;
+  
+  toastContainer.insertAdjacentHTML('beforeend', toastHtml);
+  const toastElement = document.getElementById(toastId);
+  const toast = new bootstrap.Toast(toastElement, { delay: 3000 });
+  toast.show();
+  
+  toastElement.addEventListener('hidden.bs.toast', () => toastElement.remove());
+}
+
+function createToastContainer() {
+  const container = document.createElement('div');
+  container.id = 'toastContainer';
+  container.className = 'toast-container position-fixed top-0 end-0 p-3';
+  container.style.zIndex = '1050';
+  document.body.appendChild(container);
+  return container;
+}
+
+// Old delete function (deprecated)
 function deleteClient(clientId) {
-  if (confirm('정말로 이 업체를 삭제하시겠습니까?')) {
-    // TODO: Send AJAX request to delete client
-    console.log('Deleting client:', clientId);
-    alert('업체가 삭제되었습니다.');
-    location.reload();
-  }
+  // Deprecated: use showDeleteClientModal instead
 }
 </script>
 {% endblock %}

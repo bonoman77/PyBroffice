@@ -50,46 +50,28 @@ def login_post():
         return render_template('accounts/login.html', user_email=user_email)
 
 
-@bp.route('/admin_user_login', methods=['POST'])
-@admin_required
-def admin_user_login_post():
-
-    user_id = request.form.get('user_id')
-    res = conn.execute_return('get_user_admin_login', [user_id])
-
-    session['login_user'] = {
-        'user_id': int(res['user_id']),
-        'user_name': res['user_name'],
-        'user_email': res['user_email'],
-        'user_mobile': res['user_mobile'] if res['user_mobile'] else None,
-        'user_kind_id': int(res['user_kind_id']),
-        'client_id': int(res['client_id']) if res['client_id'] else None,
-        'client_name': res['client_name'] if res['client_name'] else None,
-    }
-
-    if session.get('next'):
-        # 로그인 전 마지막 경로로 이동
-        next = session.get('next')
-        del session['next']
-        return redirect(next)
-    return redirect(url_for('homes.index', user_kind_id=session['login_user']['user_kind_id']))
 
 
-@bp.route('/user_insert', methods=['GET'])
-def user_insert():
-    return render_template('accounts/user_insert.html')
+# -------------------
+# 회원 가입  
+# -------------------
+
+@bp.route('/user_regist', methods=['GET'])
+def user_regist():
+    return render_template('accounts/user_regist.html')
 
 
-@bp.route('/user_insert', methods=['POST'])
-def user_insert_post():
+@bp.route('/user_regist', methods=['POST'])
+def user_regist_post():
     user_name = request.form.get('userName')
     user_email = request.form.get('userEmail')
     user_passwd = request.form.get('userPasswd')
     user_mobile = request.form.get('userMobile')
     user_kind_id = request.form.get('userKindId')
+    user_status = request.form.get('userStatus', 'active')  # 기본값 활성
 
     res = conn.execute_return('set_user_insert', 
-                              [user_name, user_email, user_mobile, user_kind_id, user_passwd])
+                              [user_name, user_email, user_mobile, user_kind_id, user_passwd, user_status])
 
     if res['return_value'] == 1:
         flash('회원이 성공적으로 등록되었습니다.', category='success')
@@ -98,13 +80,18 @@ def user_insert_post():
     else:
         flash('회원 등록에 실패했습니다.', category='danger')
     
-    return redirect(url_for('accounts.user_list'))
+    return redirect(url_for('accounts.welcome'))
 
 
 @bp.route("/welcome", methods=['GET'])
 def welcome():
     return render_template('accounts/welcome.html')
 
+
+
+# -------------------
+# 회원 프로필 
+# -------------------
 
 @bp.route("/user_profile", methods=['GET'])
 @login_required
@@ -115,14 +102,6 @@ def user_profile():
     user_profile = conn.execute_return('get_user_profile', [user_id])
     
     return render_template('accounts/user_profile.html', user_profile=user_profile)
-
-
-@bp.route("/user_update", methods=['GET'])
-@login_required
-def user_update():
-    user_id = session['login_user']['user_id']
-    res_list = conn.return_list('uspGetChannelUserChannelKindList', [user_id])
-    return render_template('accounts/user_update.html', res_list=res_list)
 
 
 @bp.route('/user_profile_update', methods=['POST'])
@@ -173,122 +152,31 @@ def user_pass_update_post():
     return redirect(url_for('accounts.user_profile'))
 
 
-@bp.route('/auth_mail_resend', methods=['GET'])
-def auth_mail_resend():
-    if session.get('login_user'):
-        return redirect(url_for('homes.index'))
-
-    return render_template('accounts/auth_mail_resend.html')
-
-
-@bp.route('/auth_mail_resend', methods=['POST'])
-def auth_mail_resend_post():
-    alphabet = 'abcdefghijklmnopqrstuvwxyz0123456789'
-    auth_code = "".join(random.choice(alphabet) for _ in range(4))
-
-    user_email = request.form.get('user_email')
-    user_name = request.form.get('user_name')
-    user_passwd = request.form.get('user_passwd')
-
-    res = conn.execute_return('uspSetChannelUserEmailReAuthRequest', 
-                              [user_email, user_passwd, user_name, auth_code])[0]
-
-    if not res:
-        flash("등록된 계정이 아닙니다. 다시 확인해 해주세요.", category="danger")
-        return render_template('accounts/auth_mail_resend.html', user_email=user_email, user_name=user_name)
-
-    send_mail(user_email, user_name, auth_code, 're_auth')
-    flash("인증 메일이 재발송 완료되었습니다. 개인 메일을 확인해주세요.", category="success")
-    return redirect(url_for('homes.index'))
-
-
-@bp.route('/user_pass_reset', methods=['GET'])
-def user_pass_reset():
-    if session.get('login_user'):
-        return redirect(url_for('homes.index'))
-
-    return render_template('accounts/user_pass_reset.html')
-
-
-@bp.route('/user_pass_reset', methods=['POST'])
-def user_pass_reset_post():
-    alphabet = 'abcdefghijklmnopqrstuvwxyz0123456789'
-    auth_code = "".join(random.choice(alphabet) for _ in range(4))
-
-    user_email = request.form.get('user_email')
-    user_name = request.form.get('user_name')
-
-    res = conn.execute_return('uspSetChannelUserPassReset', [user_email, user_name, auth_code])[0]
-
-    if not res:
-        flash("등록된 계정이 아닙니다. 다시 확인해 해주세요.", category="danger")
-        return render_template('accounts/user_pass_reset.html', user_email=user_email, user_name=user_name)
-
-    send_mail(user_email, user_name, auth_code, 'reset_passwd')
-    flash("비밀번호 초기화 신청이 완료되었습니다. 개인 메일을 확인해 해주세요.", category="success")
-    return redirect(url_for('homes.index'))
-
-
-# 발송된 메일에서 확인하는 경로
-@bp.route('/auth', methods=['GET'])
-def auth():
-    user_email = request.args.get('user_email')
-    auth_code = request.args.get('auth_code')
-
-    res = int(conn.execute_return('uspSetChannelUserEmailAuth', [user_email, auth_code])[0])
-
-    if res == 1:
-        flash("이메일 인증이 완료되었습니다. 로그인 해주세요.", category="success")
-        return redirect(url_for('accounts.login'))
-    else:
-        flash("인증에 실패했습니다. 다시 진행해 주세요.", category="danger")
-        return redirect(url_for('accounts.login'))
-
-
-# 발송된 메일에서 확인하는 경로
-@bp.route('/auth_pass_update', methods=['GET'])
-def auth_pass_update():
-    user_email = request.args.get('user_email')
-    auth_code = request.args.get('auth_code')
-
-    res = int(conn.execute_return('uspSetChannelUserPassAuth', [user_email, auth_code])[0])
-
-    if res == 1:
-        flash("이메일 인증이 완료되었습니다. 비밀번호를 변경해 주세요.", category="success")
-        return render_template('accounts/auth_pass_update.html', user_email=user_email)
-    else:
-        flash("인증에 실패했습니다. 다시 진행해 주세요.", category="danger")
-        return redirect(url_for('accounts.login'))
 
 
 
-@bp.route('/auth_pass_update', methods=['POST'])
-def auth_pass_update_post():
-    user_email = request.form.get('user_email')
-    new_passwd = request.form.get('new_passwd')
-    confirm_passwd = request.form.get('confirm_passwd')
 
-    if new_passwd != confirm_passwd:
-        flash("입력한 암호가 서로 일치하지 않습니다.", category="danger")
-        return render_template('accounts/auth_pass_update.html', user_email=user_email)
 
-    res = int(conn.execute_return('uspSetChannelUserPassAuthUpdate', [user_email, new_passwd])[0])
 
-    if not res:
-        flash("이메일 계정이 올바르지 않습니다. 변경 요청 절차를 다시 진행해주세요.", category="danger")
-        return render_template('accounts/auth_pass_update.html', user_email=user_email)
-    flash("암호가 정상적으로 수정되었습니다.", category="info")
+# 로그아웃 
+@bp.route('/logout', methods=['GET'])
+@login_required
+def logout():
+    del session['login_user']
     return redirect(url_for('accounts.login'))
 
+# ================
+# 관리자 전용 페이지
+# ================
 
 @bp.route("/user_list", methods=['GET'])
+@admin_required
 def user_list():
     # 프로시저 1: 사용자 목록 조회
     users = conn.return_list('get_user_list')
 
     # 프로시저 2: 사용자 통계
     stats = conn.execute_return('get_user_stats')
-    print(f"DEBUG: stats = {stats}")
     
     return render_template('accounts/user_list.html',
                          users=users,
@@ -296,15 +184,38 @@ def user_list():
                          active_users=stats.get('active_users', 0) if stats else 0,
                          pending_users=stats.get('pending_users', 0) if stats else 0,
                          inactive_users=stats.get('inactive_users', 0) if stats else 0)
+@bp.route('/user_admin_insert', methods=['POST'])
+@admin_required
+def user_admin_insert_post():
+    user_name = request.form.get('userName')
+    user_email = request.form.get('userEmail')
+    user_passwd = request.form.get('userPasswd')
+    user_mobile = request.form.get('userMobile')
+    user_kind_id = request.form.get('userKindId')
+    user_status = request.form.get('userStatus', 'active')  # 기본값 활성
+
+    res = conn.execute_return('set_user_insert', 
+                              [user_name, user_email, user_mobile, user_kind_id, user_passwd, user_status])
+
+    if res['return_value'] == 1:
+        flash('회원이 성공적으로 등록되었습니다.', category='success')
+    elif res['return_value'] == 2:
+        flash('이미 사용중인 이메일입니다.', category='warning')
+    else:
+        flash('회원 등록에 실패했습니다.', category='danger')
+    
+    return redirect(url_for('accounts.user_list'))
 
 
 @bp.route('/user_admin_update', methods=['POST'])
+@admin_required
 def user_admin_update_post():
     user_id = request.form.get('userId')
     user_name = request.form.get('editUserName')
     user_mobile = request.form.get('editUserMobile')
     user_kind_id = request.form.get('editUserKindId')
     user_passwd = request.form.get('editUserPasswd')  # 비어있으면 None
+    user_status = request.form.get('editUserStatus', 'active')  # 상태 값
     
     # 프로시저 호출
     res = conn.execute_return('set_user_admin_update', [
@@ -312,7 +223,8 @@ def user_admin_update_post():
         user_name,
         user_mobile,
         user_kind_id,
-        user_passwd if user_passwd else None
+        user_passwd if user_passwd else None,
+        user_status
     ])
     
     if res['return_value'] == 1:
@@ -326,10 +238,12 @@ def user_admin_update_post():
 
 
 @bp.route("/client_list", methods=['GET'])
+@admin_required
 def client_list():
     # 프로시저 1: 업체 목록 조회
     clients = conn.return_list('get_client_list')
     print(clients)
+
     # 프로시저 2: 업무 종류별 통계
     stats = conn.execute_return('get_client_stats_by_task_kind')
     
@@ -342,6 +256,7 @@ def client_list():
 
 
 @bp.route('/client_insert', methods=['POST'])
+@admin_required
 def client_insert_post():
     client_name = request.form.get('clientName')
     client_phone = request.form.get('clientPhone')
@@ -357,7 +272,10 @@ def client_insert_post():
     cleaning_yn = 1 if request.form.get('cleaningYn') else 0
     snack_yn = 1 if request.form.get('snackYn') else 0
     office_supplies_yn = 1 if request.form.get('officeSuppliesYn') else 0
-    
+
+    # 상태 값
+    status = request.form.get('status', 'inactive')
+
     # 프로시저 호출
     res = conn.execute_return('set_client_insert', [
         client_name,
@@ -371,7 +289,8 @@ def client_insert_post():
         memo,
         cleaning_yn,
         snack_yn,
-        office_supplies_yn
+        office_supplies_yn,
+        status
     ])
     
     if res['return_value'] == 1:
@@ -383,6 +302,7 @@ def client_insert_post():
 
 
 @bp.route('/client_update', methods=['POST'])
+@admin_required
 def client_update_post():
     client_id = request.form.get('clientId')
     client_name = request.form.get('editClientName')
@@ -400,6 +320,9 @@ def client_update_post():
     snack_yn = 1 if request.form.get('editSnackYn') else 0
     office_supplies_yn = 1 if request.form.get('editOfficeSuppliesYn') else 0
     
+    # 상태 값
+    status = request.form.get('editStatus', 'active')
+    
     # 프로시저 호출
     res = conn.execute_return('set_client_update', [
         client_id,
@@ -414,7 +337,8 @@ def client_update_post():
         memo,
         cleaning_yn,
         snack_yn,
-        office_supplies_yn
+        office_supplies_yn,
+        status
     ])
     
     if res['return_value'] == 1:
@@ -427,8 +351,90 @@ def client_update_post():
     return redirect(url_for('accounts.client_list'))
 
 
-@bp.route('/logout', methods=['GET'])
-@login_required
-def logout():
-    del session['login_user']
-    return redirect(url_for('accounts.login'))
+@bp.route('/user_admin_login', methods=['POST'])
+@admin_required
+def user_admin_login_post():
+
+    user_id = request.form.get('user_id')
+    res = conn.execute_return('get_user_admin_login', [user_id])
+
+    session['login_user'] = {
+        'user_id': int(res['user_id']),
+        'user_name': res['user_name'],
+        'user_email': res['user_email'],
+        'user_mobile': res['user_mobile'] if res['user_mobile'] else None,
+        'user_kind_id': int(res['user_kind_id']),
+        'client_id': int(res['client_id']) if res['client_id'] else None,
+        'client_name': res['client_name'] if res['client_name'] else None,
+    }
+
+    if session.get('next'):
+        # 로그인 전 마지막 경로로 이동
+        next = session.get('next')
+        del session['next']
+        return redirect(next)
+    return redirect(url_for('homes.index', user_kind_id=session['login_user']['user_kind_id']))
+
+
+@bp.route('/user_admin_delete', methods=['POST'])
+@admin_required
+def user_admin_delete_post():
+    """회원 삭제 API"""
+    user_id = request.form.get('user_id') or request.json.get('user_id')
+    
+    if not user_id:
+        if request.is_json:
+            return jsonify({'error': 'user_id is required'}), 400
+        flash('회원 ID가 필요합니다.', category='danger')
+        return redirect(url_for('accounts.user_list'))
+    
+    # MySQL 프로시저 호출하여 회원 삭제
+    try:
+        res = conn.execute_return('set_user_delete', [user_id])
+        
+        if res and res.get('return_value') == 1:
+            if request.is_json:
+                return jsonify({'success': True, 'message': '회원이 삭제되었습니다.'}), 200
+            flash('회원이 삭제되었습니다.', category='success')
+        else:
+            if request.is_json:
+                return jsonify({'error': '회원 삭제에 실패했습니다.'}), 500
+            flash('회원 삭제에 실패했습니다.', category='danger')
+    except Exception as e:
+        if request.is_json:
+            return jsonify({'error': str(e)}), 500
+        flash('회원 삭제 중 오류가 발생했습니다.', category='danger')
+    
+    return redirect(url_for('accounts.user_list'))
+
+
+@bp.route('/client_admin_delete', methods=['POST'])
+@admin_required
+def client_admin_delete_post():
+    """업체 삭제 API"""
+    client_id = request.form.get('client_id') or request.json.get('client_id')
+    
+    if not client_id:
+        if request.is_json:
+            return jsonify({'error': 'client_id is required'}), 400
+        flash('업체 ID가 필요합니다.', category='danger')
+        return redirect(url_for('accounts.client_list'))
+    
+    # MySQL 프로시저 호출하여 업체 삭제
+    try:
+        res = conn.execute_return('set_client_delete', [client_id])
+        
+        if res and res.get('return_value') == 1:
+            if request.is_json:
+                return jsonify({'success': True, 'message': '업체가 삭제되었습니다.'}), 200
+            flash('업체가 삭제되었습니다.', category='success')
+        else:
+            if request.is_json:
+                return jsonify({'error': '업체 삭제에 실패했습니다.'}), 500
+            flash('업체 삭제에 실패했습니다.', category='danger')
+    except Exception as e:
+        if request.is_json:
+            return jsonify({'error': str(e)}), 500
+        flash('업체 삭제 중 오류가 발생했습니다.', category='danger')
+    
+    return redirect(url_for('accounts.client_list'))

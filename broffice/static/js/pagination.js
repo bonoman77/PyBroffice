@@ -8,6 +8,7 @@ class TablePagination {
     this.tableSelector = options.tableSelector || '.users-table tbody';
     this.paginationSelector = options.paginationSelector || '#usersPagination';
     this.itemsPerPage = options.itemsPerPage || 10;
+    this.customFilter = options.customFilter || null;
     this.currentPage = 1;
     this.allRows = [];
     this.filters = {};

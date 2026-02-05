@@ -1,0 +1,344 @@
+{% extends "layout.html" %}
+
+{% block title %}개발 타임라인 - 브로피스{% endblock %}
+
+{% block content %}
+<!-- Page Header -->
+<div class="page-header">
+  <div>
+    <h1 class="page-title">개발 타임라인</h1>
+    <nav>
+      <ol class="breadcrumb">
+        <li class="breadcrumb-item"><a href="{{ url_for('homes.index') }}">홈</a></li>
+        <li class="breadcrumb-item active">개발 타임라인</li>
+      </ol>
+    </nav>
+  </div>
+</div>
+
+<section class="section">
+  <div class="row">
+    <div class="col-lg-8">
+      <!-- Timeline Filter -->
+      <div class="card mb-4">
+        <div class="card-body py-3">
+          <div class="d-flex flex-wrap justify-content-between align-items-center gap-3">
+            <div class="btn-group" role="group">
+              <input type="radio" class="btn-check" name="timelineFilter" id="filterAll" checked>
+              <label class="btn btn-outline-primary btn-sm" for="filterAll">전체</label>
+              <input type="radio" class="btn-check" name="timelineFilter" id="filterFeatures">
+              <label class="btn btn-outline-primary btn-sm" for="filterFeatures">신규 기능</label>
+              <input type="radio" class="btn-check" name="timelineFilter" id="filterImprovements">
+              <label class="btn btn-outline-primary btn-sm" for="filterImprovements">개선사항</label>
+              <input type="radio" class="btn-check" name="timelineFilter" id="filterFixes">
+              <label class="btn btn-outline-primary btn-sm" for="filterFixes">버그 수정</label>
+            </div>
+            <select class="form-select form-select-sm" name="timelineSort" style="width: auto;">
+              <option value="newest">최신순</option>
+              <option value="oldest">과거순</option>
+            </select>
+          </div>
+        </div>
+      </div>
+
+      <!-- Timeline -->
+      <div class="timeline">
+        <!-- 2026년 2월 -->
+        <div class="timeline-date">
+          <span class="badge bg-primary">2026년 2월</span>
+        </div>
+
+        <div class="timeline-item" data-type="feature">
+          <div class="timeline-marker bg-success">
+            <i class="ph ph-check"></i>
+          </div>
+          <div class="timeline-content">
+            <div class="card">
+              <div class="card-body">
+                <div class="d-flex justify-content-between align-items-start mb-2">
+                  <div class="d-flex align-items-center gap-2">
+                    <span class="badge bg-success">v1.1</span>
+                    <span class="fw-semibold">회원/업체 관리 기능</span>
+                  </div>
+                  <small class="text-muted">2026-02-10</small>
+                </div>
+                <p class="mb-2">회원과 업체를 등록 및 관리할 수 있는 기능을 추가했습니다.</p>
+                <div class="d-flex flex-wrap gap-2">
+                  <span class="badge bg-success-light text-success">신규 기능</span>
+                  <span class="badge bg-secondary-light text-secondary">관리자</span>
+                  <span class="badge bg-secondary-light text-secondary">현장직원</span>
+                  <span class="badge bg-secondary-light text-secondary">계약업체</span>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+   <div class="timeline-item" data-type="feature">
+          <div class="timeline-marker bg-success">
+            <i class="ph ph-check"></i>
+          </div>
+          <div class="timeline-content">
+            <div class="card">
+              <div class="card-body">
+                <div class="d-flex justify-content-between align-items-start mb-2">
+                  <div class="d-flex align-items-center gap-2">
+                    <span class="badge bg-success">v1.0</span>
+                    <span class="fw-semibold">로그인/회원가입 기능</span>
+                  </div>
+                  <small class="text-muted">2026-02-05</small>
+                </div>
+                <p class="mb-2">회원과 업체의 상태(활성/대기/비활성)를 관리할 수 있는 기능을 추가했습니다. 관리자는 회원 등록 및 수정 시 상태를 직접 설정할 수 있습니다.</p>
+                <div class="d-flex flex-wrap gap-2">
+                  <span class="badge bg-success-light text-success">신규 기능</span>
+                  <span class="badge bg-secondary-light text-secondary">관리자</span>
+                  <span class="badge bg-secondary-light text-secondary">현장직원</span>
+                  <span class="badge bg-secondary-light text-secondary">계약업체</span>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- 2026년 1월 -->
+        <div class="timeline-date">
+          <span class="badge bg-secondary">2026년 1월</span>
+        </div>
+
+   <div class="timeline-item" data-type="feature">
+          <div class="timeline-marker bg-primary">
+            <i class="ph ph-rocket-launch"></i>
+          </div>
+          <div class="timeline-content">
+            <div class="card">
+              <div class="card-body">
+                <div class="d-flex justify-content-between align-items-start mb-2">
+                  <div class="d-flex align-items-center gap-2">
+                    <span class="badge bg-primary">v0.1.3</span>
+                    <span class="fw-semibold">서버 호스팅 셋팅</span>
+                  </div>
+                  <small class="text-muted">2026-01-31</small>
+                </div>
+                <p class="mb-2">서버 호스팅을 셋팅합니다.</p>
+                <div class="d-flex flex-wrap gap-2">
+                  <span class="badge bg-secondary-light text-secondary">ERD</span>
+                  <span class="badge bg-secondary-light text-secondary">MySQL</span>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+
+        <div class="timeline-item" data-type="feature">
+          <div class="timeline-marker bg-primary">
+            <i class="ph ph-rocket-launch"></i>
+          </div>
+          <div class="timeline-content">
+            <div class="card">
+              <div class="card-body">
+                <div class="d-flex justify-content-between align-items-start mb-2">
+                  <div class="d-flex align-items-center gap-2">
+                    <span class="badge bg-primary">v0.1.2</span>
+                    <span class="fw-semibold">데이터베이스 설계</span>
+                  </div>
+                  <small class="text-muted">2026-01-25</small>
+                </div>
+                <p class="mb-2">데이터베이스를 설계를 완료합니다.</p>
+                <div class="d-flex flex-wrap gap-2">
+                  <span class="badge bg-secondary-light text-secondary">PythonAnywhere</span>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="timeline-item" data-type="feature">
+          <div class="timeline-marker bg-primary">
+            <i class="ph ph-rocket-launch"></i>
+          </div>
+          <div class="timeline-content">
+            <div class="card">
+              <div class="card-body">
+                <div class="d-flex justify-content-between align-items-start mb-2">
+                  <div class="d-flex align-items-center gap-2">
+                    <span class="badge bg-primary">v0.1.1</span>
+                    <span class="fw-semibold">설계 확정 구성</span>
+                  </div>
+                  <small class="text-muted">2026-01-21</small>
+                </div>
+                <p class="mb-2">기본 개발 환경을 아래와 같이 구성합니다.</p>
+                <div class="d-flex flex-wrap gap-2">
+                  <span class="badge bg-secondary-light text-secondary">Python Flask</span>
+                  <span class="badge bg-secondary-light text-secondary">Bootstrap</span>
+                  <span class="badge bg-secondary-light text-secondary">MySQL</span>
+                  <span class="badge bg-secondary-light text-secondary">PythonAnywhere</span>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+        
+        <div class="timeline-item" data-type="feature">
+          <div class="timeline-marker bg-primary">
+            <i class="ph ph-rocket-launch"></i>
+          </div>
+          <div class="timeline-content">
+            <div class="card">
+              <div class="card-body">
+                <div class="d-flex justify-content-between align-items-start mb-2">
+                  <div class="d-flex align-items-center gap-2">
+                    <span class="badge bg-primary">v0.1.0</span>
+                    <span class="fw-semibold">프로젝트 시작</span>
+                  </div>
+                  <small class="text-muted">2026-01-19</small>
+                </div>
+                <p class="mb-2">브로피스 업무관리시스템 개발을 시작합니다.</p>
+                <div class="d-flex flex-wrap gap-2">
+                  <span class="badge bg-primary-light text-primary">시작</span>
+                  <span class="badge bg-secondary-light text-secondary">개발범위 검토</span>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="col-lg-4">
+      <!-- Quick Stats -->
+      <div class="card mb-4">
+        <div class="card-header">
+          <h5 class="card-title mb-0">개발 현황</h5>
+        </div>
+        <div class="card-body">
+          <div class="d-flex justify-content-between align-items-center py-2 border-bottom">
+            <span class="text-muted">총 릴리스</span>
+            <span class="fw-semibold">8</span>
+          </div>
+          <div class="d-flex justify-content-between align-items-center py-2 border-bottom">
+            <span class="text-muted">신규 기능</span>
+            <span class="fw-semibold">5</span>
+          </div>
+          <div class="d-flex justify-content-between align-items-center py-2 border-bottom">
+            <span class="text-muted">개선사항</span>
+            <span class="fw-semibold">2</span>
+          </div>
+          <div class="d-flex justify-content-between align-items-center py-2">
+            <span class="text-muted">최신 버전</span>
+            <span class="badge bg-success">v1.2.0</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Event Types -->
+      <div class="card mb-4">
+        <div class="card-header">
+          <h5 class="card-title mb-0">변경 유형</h5>
+        </div>
+        <div class="card-body">
+          <div class="d-flex align-items-center justify-content-between mb-3">
+            <div class="d-flex align-items-center gap-2">
+              <span class="badge bg-success rounded-circle p-2"><i class="ph ph-check"></i></span>
+              <span>신규 기능</span>
+            </div>
+            <span class="fw-semibold">5</span>
+          </div>
+          <div class="d-flex align-items-center justify-content-between mb-3">
+            <div class="d-flex align-items-center gap-2">
+              <span class="badge bg-primary rounded-circle p-2"><i class="ph ph-arrow-up"></i></span>
+              <span>개선사항</span>
+            </div>
+            <span class="fw-semibold">2</span>
+          </div>
+          <div class="d-flex align-items-center justify-content-between">
+            <div class="d-flex align-items-center gap-2">
+              <span class="badge bg-danger rounded-circle p-2"><i class="ph ph-bug"></i></span>
+              <span>버그 수정</span>
+            </div>
+            <span class="fw-semibold">1</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Team Info -->
+      <div class="card">
+        <div class="card-header">
+          <h5 class="card-title mb-0">개발팀</h5>
+        </div>
+        <div class="card-body">
+          <div class="d-flex align-items-center gap-3 mb-3">
+            <div class="flex-shrink-0">
+              <span class="badge bg-primary rounded-circle p-3"><i class="ph ph-user fs-5"></i></span>
+            </div>
+            <div>
+              <h6 class="mb-0">김승균</h6>
+              <small class="text-muted">Lead Developer</small>
+            </div>
+          </div>
+          <div class="alert alert-info mb-0">
+            <h6 class="alert-heading"><i class="ph ph-info me-2"></i>문의사항</h6>
+            <p class="mb-0 small">개발 관련 문의는 관리자에게 문의해주세요.</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+  // Timeline Filter
+  document.querySelectorAll('input[name="timelineFilter"]').forEach(radio => {
+    radio.addEventListener('change', function() {
+      applyFilter();
+    });
+  });
+
+  // Timeline Sort
+  document.querySelector('select[name="timelineSort"]').addEventListener('change', function() {
+    const timeline = document.querySelector('.timeline');
+    const allChildren = Array.from(timeline.children);
+    
+    // 날짜별로 그룹화
+    const groups = [];
+    let currentGroup = null;
+    
+    allChildren.forEach(child => {
+      if (child.classList.contains('timeline-date')) {
+        if (currentGroup) groups.push(currentGroup);
+        currentGroup = { date: child, items: [] };
+      } else if (child.classList.contains('timeline-item') && currentGroup) {
+        currentGroup.items.push(child);
+      }
+    });
+    if (currentGroup) groups.push(currentGroup);
+    
+    // 그룹 역순으로 재배치
+    groups.reverse().forEach(group => {
+      timeline.appendChild(group.date);
+      group.items.forEach(item => timeline.appendChild(item));
+    });
+  });
+
+  function applyFilter() {
+    const filter = document.querySelector('input[name="timelineFilter"]:checked').id;
+    const items = document.querySelectorAll('.timeline-item');
+    
+    items.forEach(item => {
+      if (filter === 'filterAll') {
+        item.style.display = '';
+      } else if (filter === 'filterFeatures' && item.dataset.type === 'feature') {
+        item.style.display = '';
+      } else if (filter === 'filterImprovements' && item.dataset.type === 'improvement') {
+        item.style.display = '';
+      } else if (filter === 'filterFixes' && item.dataset.type === 'fix') {
+        item.style.display = '';
+      } else {
+        item.style.display = 'none';
+      }
+    });
+  }
+</script>
+{% endblock %}

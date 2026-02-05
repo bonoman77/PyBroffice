@@ -4,7 +4,7 @@
     <!-- Logo -->
     <div class="sidebar-iconbar-logo">
       <a href="/">
-        <img src="/static/img/logo.webp" alt="브로피스">
+        <img src="/static/img/logo/box_h200.png" alt="브로피스">
       </a>
     </div>
 
@@ -64,6 +64,9 @@
         <li><a class="panel-link {{ 'active' if request.endpoint == 'homes.about' else '' }}" href="/about"><i class="bi bi-building me-2"></i>회사소개</a></li>
         <li><a class="panel-link {{ 'active' if request.endpoint == 'homes.terms' else '' }}" href="{{ url_for('homes.terms') }}"><i class="bi bi-file-text me-2"></i>이용약관</a></li>
         <li><a class="panel-link {{ 'active' if request.endpoint == 'homes.privacy' else '' }}" href="{{ url_for('homes.privacy') }}"><i class="bi bi-shield-check me-2"></i>개인정보처리방침</a></li>
+        {% if session.get('login_user', {}).get('user_kind_id') == 1 %}
+        <li><a class="panel-link {{ 'active' if request.endpoint == 'homes.timeline' else '' }}" href="{{ url_for('homes.timeline') }}"><i class="bi bi-clock-history me-2"></i>개발타임라인</a></li>
+        {% endif %}
       </ul>
     </div>
 

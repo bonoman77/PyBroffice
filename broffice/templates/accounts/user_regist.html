@@ -9,22 +9,22 @@
   <p class="auth-subtitle">브로피스에 오신 것을 환영합니다</p>
 </div>
 
-<form class="auth-form" id="registerForm" method="POST" action="{{ url_for('accounts.user_insert_post') }}" novalidate>
+<form class="auth-form" id="registerForm" method="POST" action="{{ url_for('accounts.user_regist_post') }}">
   <div class="row">
     <div class="col-md-6">
       <div class="form-group">
-        <label for="user_name" class="form-label">사용자명 <span class="text-danger">*</span></label>
-        {{ input('text', 'user_name', '', placeholder='이름을 입력하세요', opt='required') }}
+        <label for="userName" class="form-label">사용자명 <span class="text-danger">*</span></label>
+        {{ input('text', 'userName', '', placeholder='이름을 입력하세요', opt='required') }}
         <div class="invalid-feedback">사용자명을 입력해주세요.</div>
       </div>
     </div>
     <div class="col-md-6">
       <div class="form-group">
-        <label for="user_kind_id" class="form-label">사용자 타입 <span class="text-danger">*</span></label>
-        <select class="form-select" id="user_kind_id" name="user_kind_id" required>
+        <label for="userKindId" class="form-label">사용자 타입 <span class="text-danger">*</span></label>
+        <select class="form-select" id="userKindId" name="userKindId" required>
           <option value="">선택하세요</option>
-          <option value="2">본사 직원</option>
-          <option value="3">의뢰 업체</option>
+          <option value="2">현장직원</option>
+          <option value="3">업체담당자</option>
         </select>
         <div class="invalid-feedback">사용자 타입을 선택해주세요.</div>
       </div>
@@ -32,8 +32,8 @@
   </div>
 
   <div class="form-group">
-    <label for="user_email" class="form-label">이메일 계정 <span class="text-danger">*</span></label>
-    {{ input('email', 'user_email', '', placeholder='이메일 계정을 입력하세요', opt='required') }}
+    <label for="userEmail" class="form-label">이메일 계정 <span class="text-danger">*</span></label>
+    {{ input('email', 'userEmail', '', placeholder='이메일 계정을 입력하세요', opt='required') }}
     <div class="form-text">로그인 시 사용할 이메일 계정입니다.</div>
     <div class="invalid-feedback">이메일 계정을 입력해주세요.</div>
   </div>
@@ -41,8 +41,8 @@
   <div class="row">
     <div class="col-md-6">
       <div class="form-group">
-        <label for="user_mobile" class="form-label">연락처 <span class="text-danger">*</span></label>
-        {{ input('tel', 'user_mobile', '', placeholder='010-0000-0000', opt='required') }}
+        <label for="userMobile" class="form-label">연락처 <span class="text-danger">*</span></label>
+        {{ input('tel', 'userMobile', '', placeholder='010-0000-0000', opt='required') }}
         <div class="invalid-feedback">연락처를 입력해주세요.</div>
       </div>
     </div>
@@ -51,9 +51,9 @@
   <div class="row">
     <div class="col-md-6">
       <div class="form-group">
-        <label for="user_passwd" class="form-label">비밀번호 <span class="text-danger">*</span></label>
+        <label for="userPasswd" class="form-label">비밀번호 <span class="text-danger">*</span></label>
         <div class="input-group">
-          <input type="password" class="form-control" id="user_passwd" name="user_passwd" placeholder="비밀번호를 입력하세요" required minlength="8">
+          <input type="password" class="form-control" id="userPasswd" name="userPasswd" placeholder="비밀번호를 입력하세요" required minlength="8">
           <button class="btn btn-outline-secondary" type="button" data-toggle-password>
             <i class="ph ph-eye"></i>
           </button>

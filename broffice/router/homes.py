@@ -41,10 +41,10 @@ def about():
     return render_template('homes/about.html')
 
 
-@bp.route("/version_history")
+@bp.route("/timeline")
 @login_required
-def version_history():
-    return render_template('homes/version_history.html')
+def timeline():
+    return render_template('homes/timeline.html')
 
 
 @bp.route("/notice_list", methods=['GET'])

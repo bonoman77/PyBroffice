@@ -19,7 +19,6 @@
   <div class="form-group">
     <div class="d-flex justify-content-between align-items-center">
       <label for="user_passwd" class="form-label">비밀번호</label>
-      <a href="{{ url_for('accounts.user_pass_reset') }}" class="auth-link small">비밀번호를 잊으셨나요?</a>
     </div>
     <div class="input-group">
       {{ input('password', 'user_passwd', user_passwd, opt='required', placeholder='비밀번호를 입력하세요') }}
@@ -39,6 +38,6 @@
 </form>
 
 <p class="auth-footer-text">
-  계정이 없으신가요? <a href="{{ url_for('accounts.user_insert') }}" class="auth-link">회원가입</a>
+  계정이 없으신가요? <a href="{{ url_for('accounts.user_regist') }}" class="auth-link">회원가입</a>
 </p>
 {% endblock %}
