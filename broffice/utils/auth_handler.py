@@ -28,7 +28,7 @@ def admin_required(func):
             if request.is_json or request.headers.get('X-Requested-With') == 'XMLHttpRequest':
                 return jsonify({'error': '로그인이 필요합니다.'}), 401
 
-            flash('로그인이 필요합니다.', 'warning')
+            # flash('로그인이 필요합니다.', 'warning')
             session['next'] = request.url
             return redirect(url_for('accounts.login'))
 
