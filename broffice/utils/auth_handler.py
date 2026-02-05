@@ -9,7 +9,9 @@ def login_required(func):
             if request.is_json or request.headers.get('X-Requested-With') == 'XMLHttpRequest':
                 return jsonify({'error': '로그인이 필요합니다.'}), 401
             
-            flash('로그인이 필요합니다.', 'warning')
+            # 홈(/)에서 로그인 페이지로 이동 시에는 flash 메시지 표시 안 함
+            if request.endpoint != 'homes.index':
+                flash('로그인이 필요합니다.', 'warning')
             session['next'] = request.url
             return redirect(url_for('accounts.login'))
 
