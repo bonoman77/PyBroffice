@@ -82,28 +82,27 @@
         <i class="ph ph-sun theme-icon-light"></i>
       </button>
 
-      <!-- User Dropdown -->
+      <!-- User Dropdown / Login Button -->
+      {% if session.login_user %}
       <div class="header-action dropdown user-dropdown">
-
         <button class="dropdown-toggle" data-bs-toggle="dropdown" aria-expanded="false">
-          {% if session.login_user and session.login_user.user_email %}
+          {% if session.login_user.user_email %}
             <div class="avatar avatar-initial">{{ session.login_user.user_email[0]|upper }}</div>
           {% else %}
             <div class="avatar avatar-initial">U</div>
           {% endif %}
           <span class="avatar-status"></span>
         </button>
-
         <div class="dropdown-menu dropdown-menu-end">
           <div class="user-dropdown-header">
-            {% if session.login_user and session.login_user.user_email %}
+            {% if session.login_user.user_email %}
               <div class="user-dropdown-avatar avatar-initial-lg">{{ session.login_user.user_email[0]|upper }}</div>
             {% else %}
               <div class="user-dropdown-avatar avatar-initial-lg">U</div>
             {% endif %}
             <div class="user-dropdown-info">
-              <h6>{% if session.login_user %}{{ session.login_user.user_name }}{% else %}사용자{% endif %}</h6>
-              <span>{% if session.login_user %}{{ session.login_user.user_email }}{% else %}user@example.com{% endif %}</span>
+              <h6>{{ session.login_user.user_name }}</h6>
+              <span>{{ session.login_user.user_email }}</span>
             </div>
           </div>
           <div class="user-dropdown-body">
@@ -113,17 +112,14 @@
             <a class="dropdown-item dropdown-item-danger" href="{{ url_for('accounts.logout') }}">
               <i class="bi bi-box-arrow-right"></i> 로그아웃
             </a>
-            <!-- <a class="dropdown-item" href="/samples/settings">
-              <i class="bi bi-gear"></i> 설정
-            </a> -->
           </div>
-          <!-- <div class="user-dropdown-footer">
-            <a class="dropdown-item dropdown-item-danger" href="{{ url_for('accounts.logout') }}">
-              <i class="bi bi-box-arrow-right"></i> 로그아웃
-            </a>
-          </div> -->
         </div>
       </div>
+      {% else %}
+      <a href="{{ url_for('accounts.login') }}" class="header-action" title="로그인">
+        <i class="bi bi-box-arrow-in-right"></i>
+      </a>
+      {% endif %}
     </div>
 
     <!-- Mobile Actions -->
