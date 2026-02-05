@@ -65,6 +65,13 @@ def init_extensions(app):
 
 def register_context_processors(app):
     """컨텍스트 프로세서 등록"""
+    from datetime import datetime
+    
+    @app.context_processor
+    def inject_now():
+        """현재 시간을 템플릿에서 사용할 수 있도록 제공"""
+        return dict(now=datetime.now)
+    
     @app.context_processor
     def override_url_for():
         """정적 파일 캐시 버스팅을 위한 url_for 오버라이드"""
