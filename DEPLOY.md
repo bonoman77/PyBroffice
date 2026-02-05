@@ -88,7 +88,23 @@ Web 탭의 **Virtualenv** 섹션에서:
 /home/Broffice/manage_site/venv
 ```
 
-### 4.4 정적 파일 설정
+### 4.4 패키지 설치
+
+**Consoles** 탭에서 Bash 콘솔 열고:
+
+```bash
+cd ~/manage_site
+source venv/bin/activate
+pip install -r requirements.txt
+```
+
+또는 가상환경 없이 시스템 Python에 설치:
+```bash
+cd ~/manage_site
+pip3.10 install -r requirements.txt
+```
+
+### 4.5 정적 파일 설정
 
 Web 탭의 **Static files** 섹션에서:
 
@@ -112,11 +128,24 @@ Web 탭에서:
 1. **Reload** 버튼 클릭
 2. 웹사이트 URL 클릭하여 접속 확인: `https://broffice.pythonanywhere.com`
 
-## 7. 로그 확인
+## 7. 로그 확인 및 문제 해결
 
 문제가 발생하면 Web 탭의 **Log files** 섹션에서:
 - **Error log**: 에러 확인
 - **Server log**: 서버 로그 확인
+
+### ImportError 발생 시
+
+`ModuleNotFoundError`가 발생하면 패키지가 설치되지 않은 것입니다:
+
+```bash
+# Consoles 탭에서 Bash 콘솔 열기
+cd ~/manage_site
+source venv/bin/activate
+pip install -r requirements.txt
+```
+
+설치 후 **Reload** 버튼 클릭
 
 ## 8. 업데이트 방법
 

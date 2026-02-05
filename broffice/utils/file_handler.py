@@ -4,7 +4,13 @@ from datetime import datetime
 from flask import current_app, send_file, request, abort
 from werkzeug.utils import secure_filename
 from io import BytesIO
-from xlsxwriter import Workbook
+
+# xlsxwriter는 필요시에만 로드
+try:
+    from xlsxwriter import Workbook
+    XLSXWRITER_AVAILABLE = True
+except ImportError:
+    XLSXWRITER_AVAILABLE = False
 
 
 def file_download():
@@ -41,6 +47,9 @@ def file_format_check(file_name):
 
 def excel_export_handle(excel_data):
     """엑셀 파일 생성"""
+    if not XLSXWRITER_AVAILABLE:
+        raise ImportError("xlsxwriter 패키지가 설치되지 않았습니다. 'pip install xlsxwriter'로 설치하세요.")
+    
     output = BytesIO()
     workbook = Workbook(output)
     worksheet = workbook.add_worksheet()
