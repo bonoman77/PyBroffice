@@ -8,9 +8,9 @@ load_dotenv()
 class Config:
     """기본 설정 클래스"""
     # 필수 환경 변수 검증
-    SECRET_KEY = os.environ.get('session_secret_key')
+    SECRET_KEY = os.environ.get('SECRET_KEY')
     if not SECRET_KEY:
-        raise ValueError("환경 변수 'session_secret_key'가 설정되지 않았습니다.")
+        raise ValueError("환경 변수 'SECRET_KEY'가 설정되지 않았습니다.")
     
     # 애플리케이션 정보
     APP_NAME = 'broffice'
