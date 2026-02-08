@@ -116,6 +116,7 @@ ALTER TABLE users
 CREATE TABLE notices (
     notice_id       INT NOT NULL AUTO_INCREMENT COMMENT '공지사항ID',
     user_id   INT NOT NULL COMMENT '사용자ID',
+    target_user_kind_id INT NOT NULL DEFAULT 0 COMMENT '대상사용자종류ID (0:전체, 1:관리자, 2:현장직원, 3:업체담당자)',
     content         NVARCHAR(3000) NOT NULL COMMENT '공지사항내용',
     display_yn      TINYINT(1) NOT NULL DEFAULT 0 COMMENT '공지사항노출여부',
     top_expose_yn   TINYINT(1) NOT NULL DEFAULT 0 COMMENT '상단노출여부',
@@ -123,7 +124,8 @@ CREATE TABLE notices (
     updated_at      DATETIME NULL COMMENT '수정일',
     deleted_at      DATETIME NULL COMMENT '삭제일',
     PRIMARY KEY (notice_id),
-    KEY idx_notices_user_id (user_id)
+    KEY idx_notices_user_id (user_id),
+    KEY idx_notices_target_user_kind_id (target_user_kind_id)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='notices 공지사항';
 
 ALTER TABLE notices

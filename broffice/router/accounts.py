@@ -20,6 +20,7 @@ def login_post():
 
     user_email = request.form.get('user_email')
     user_passwd = request.form.get('user_passwd')
+    remember = request.form.get('remember')  # 로그인 상태 유지 체크박스
 
     res = conn.execute_return('get_user_login', [user_email, user_passwd])
 
@@ -35,6 +36,9 @@ def login_post():
                 'client_id': int(res['client_id']) if res['client_id'] else None,
                 'client_name': res['client_name'] if res['client_name'] else None,
             }
+
+            # 로그인 상태 유지 설정
+            session.permanent = bool(remember)
 
             if session.get('next'):
                 # 로그인 전 마지막 경로로 이동

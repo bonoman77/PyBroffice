@@ -47,11 +47,43 @@ def timeline():
     return render_template('homes/timeline.html')
 
 
-@bp.route("/notice_list", methods=['GET'])
+@bp.route("/notice_list", methods=['GET', 'POST'])
+@login_required
 def notice_list():
-    # res_list = conn.return_list('uspGetChannelNoticeSubList')
-
-    return render_template('homes/notice_list.html')
+    if request.method == 'POST':
+        user_id = session.get('login_user', {}).get('user_id')
+        target_user_kind_id = request.form.get('target_user_kind_id', '0')
+        title = request.form.get('title', '')
+        content = request.form.get('content', '')
+        top_expose_yn = 1 if request.form.get('top_expose') else 0
+        
+        # 필수값 검증
+        if not title or not content:
+            flash('제목과 내용을 입력해주세요.', category='danger')
+            return redirect(url_for('homes.notice_list'))
+        
+        # 공지사항 등록 프로시저 호출
+        try:
+            result = conn.execute_return('set_notice_insert', [
+                user_id,
+                int(target_user_kind_id),
+                title + '\n\n' + content,  # 제목과 내용 합쳐서 저장
+                top_expose_yn,
+                1  # display_yn
+            ])
+            
+            if result:
+                flash('공지사항이 등록되었습니다.', category='success')
+            else:
+                flash('공지사항 등록에 실패했습니다.', category='danger')
+        except Exception as e:
+            flash(f'공지사항 등록 중 오류가 발생했습니다: {str(e)}', category='danger')
+        
+        return redirect(url_for('homes.notice_list'))
+    
+    # GET 요청 처리
+    res_list = conn.return_list('get_notice_list', [session.get('login_user', {}).get('user_kind_id', 0)])
+    return render_template('homes/notice_list.html', res_list=res_list)
 
 
 @bp.route("/get_notice_content", methods=['GET'])

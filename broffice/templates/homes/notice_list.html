@@ -19,14 +19,9 @@
   <!-- 공지사항 목록 -->
   <div class="col-lg-8">
     <div class="card">
-      <div class="card-header d-flex justify-content-between align-items-center">
-        <div>
-          <h5 class="mb-1">공지사항 목록</h5>
-          <p class="text-muted small mb-0">전체 공지사항을 확인할 수 있습니다</p>
-        </div>
-        <button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#addNoticeModal">
-          <i class="ph ph-plus me-1"></i> 공지 작성
-        </button>
+      <div class="card-header">
+        <h5 class="mb-1">공지사항 목록</h5>
+        <p class="text-muted small mb-0">전체 공지사항을 확인할 수 있습니다</p>
       </div>
       <div class="card-body p-0">
         <div class="table-responsive">
@@ -35,6 +30,7 @@
               <tr>
                 <th style="width: 80px;">No.</th>
                 <th>제목</th>
+                <th style="width: 100px;">대상</th>
                 <th style="width: 120px;">작성자</th>
                 <th style="width: 120px;">등록일</th>
               </tr>
@@ -42,8 +38,8 @@
             <tbody>
               {% if res_list %}
                 {% for res in res_list %}
-                <tr style="cursor: pointer;" onclick="noticeOpen({{res.ChannelNoticeID}})">
-                  <td class="text-muted">{{res.ChannelNoticeID}}</td>
+                <tr style="cursor: pointer;" onclick="noticeOpen({{res.notice_id}})">
+                  <td class="text-muted">{{res.notice_id}}</td>
                   <td>
                     <div class="d-flex align-items-center">
                       {% if res.TopExposeYn %}
@@ -51,6 +47,9 @@
                       {% endif %}
                       <span>{{res.Title}}</span>
                     </div>
+                  </td>
+                  <td>
+                    <span class="badge bg-info">{{res.TargetUserKindName}}</span>
                   </td>
                   <td>{{res.UserName}}</td>
                   <td class="text-muted">{{res.CreateDate}}</td>
@@ -80,18 +79,33 @@
         <h5 class="mb-0">빠른 공지 작성</h5>
       </div>
       <div class="card-body">
-        <form id="quickNoticeForm">
+        <form id="quickNoticeForm" method="POST" action="{{ url_for('homes.notice_list') }}">
           <div class="mb-3">
             <label for="quickTitle" class="form-label">제목</label>
-            <input type="text" class="form-control" id="quickTitle" placeholder="공지사항 제목" required>
+            <input type="text" class="form-control" id="quickTitle" name="title" placeholder="공지사항 제목" required>
           </div>
+          {% if session.get('login_user', {}).get('user_kind_id') == 1 %}
+          <div class="mb-3">
+            <label class="form-label">대상</label>
+            <div class="btn-group w-100" role="group" aria-label="대상 사용자 선택">
+              <input type="radio" class="btn-check" name="target_user_kind_id" id="quickTargetAll" value="0" autocomplete="off" checked>
+              <label class="btn btn-outline-primary" for="quickTargetAll">전체</label>
+              <input type="radio" class="btn-check" name="target_user_kind_id" id="quickTargetStaff" value="2" autocomplete="off">
+              <label class="btn btn-outline-primary" for="quickTargetStaff">직원</label>
+              <input type="radio" class="btn-check" name="target_user_kind_id" id="quickTargetClient" value="3" autocomplete="off">
+              <label class="btn btn-outline-primary" for="quickTargetClient">업체</label>
+            </div>
+          </div>
+          {% else %}
+          <input type="hidden" name="target_user_kind_id" value="1">
+          {% endif %}
           <div class="mb-3">
             <label for="quickContent" class="form-label">내용</label>
-            <textarea class="form-control" id="quickContent" rows="8" placeholder="공지사항 내용을 입력하세요" required></textarea>
+            <textarea class="form-control" id="quickContent" name="content" rows="8" placeholder="공지사항 내용을 입력하세요" required></textarea>
           </div>
           <div class="mb-3">
             <div class="form-check">
-              <input class="form-check-input" type="checkbox" id="quickTopExpose">
+              <input class="form-check-input" type="checkbox" id="quickTopExpose" name="top_expose" value="1">
               <label class="form-check-label" for="quickTopExpose">
                 <i class="ph ph-push-pin me-1"></i> 상단 고정
               </label>
@@ -119,44 +133,6 @@
       </div>
       <div class="modal-footer">
         <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">닫기</button>
-      </div>
-    </div>
-  </div>
-</div>
-
-<!-- 공지사항 작성 모달 (상세) -->
-<div class="modal fade" id="addNoticeModal" tabindex="-1" aria-labelledby="addNoticeModalLabel" aria-hidden="true">
-  <div class="modal-dialog modal-lg">
-    <div class="modal-content">
-      <div class="modal-header">
-        <h5 class="modal-title" id="addNoticeModalLabel">공지사항 작성</h5>
-        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-      </div>
-      <div class="modal-body">
-        <form id="addNoticeForm">
-          <div class="mb-3">
-            <label for="noticeTitle" class="form-label">제목</label>
-            <input type="text" class="form-control" id="noticeTitle" placeholder="공지사항 제목을 입력하세요" required>
-          </div>
-          <div class="mb-3">
-            <label for="noticeContent" class="form-label">내용</label>
-            <textarea class="form-control" id="noticeContentInput" rows="10" placeholder="공지사항 내용을 입력하세요" required></textarea>
-          </div>
-          <div class="row">
-            <div class="col-md-6">
-              <div class="form-check">
-                <input class="form-check-input" type="checkbox" id="topExpose">
-                <label class="form-check-label" for="topExpose">
-                  <i class="ph ph-push-pin me-1"></i> 상단 고정
-                </label>
-              </div>
-            </div>
-          </div>
-        </form>
-      </div>
-      <div class="modal-footer">
-        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">취소</button>
-        <button type="button" class="btn btn-primary" onclick="submitNotice()">등록</button>
       </div>
     </div>
   </div>
@@ -191,45 +167,5 @@ function noticeOpen(noticeId) {
         });
 }
 
-// 빠른 공지 작성
-document.getElementById('quickNoticeForm')?.addEventListener('submit', function(e) {
-    e.preventDefault();
-    
-    const title = document.getElementById('quickTitle').value;
-    const content = document.getElementById('quickContent').value;
-    const topExpose = document.getElementById('quickTopExpose').checked;
-    
-    // TODO: 서버로 데이터 전송
-    console.log('Quick Notice:', { title, content, topExpose });
-    
-    // 폼 초기화
-    this.reset();
-    alert('공지사항이 등록되었습니다.');
-    location.reload();
-});
-
-// 상세 공지 작성
-function submitNotice() {
-    const title = document.getElementById('noticeTitle').value;
-    const content = document.getElementById('noticeContentInput').value;
-    const topExpose = document.getElementById('topExpose').checked;
-    
-    if (!title || !content) {
-        alert('제목과 내용을 입력해주세요.');
-        return;
-    }
-    
-    // TODO: 서버로 데이터 전송
-    console.log('Notice:', { title, content, topExpose });
-    
-    // 모달 닫기
-    const modal = bootstrap.Modal.getInstance(document.getElementById('addNoticeModal'));
-    modal.hide();
-    
-    // 폼 초기화
-    document.getElementById('addNoticeForm').reset();
-    alert('공지사항이 등록되었습니다.');
-    location.reload();
-}
 </script>
 {% endblock %}
