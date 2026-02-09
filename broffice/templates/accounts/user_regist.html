@@ -33,10 +33,12 @@
   </div>
 
   <div class="row">
-    <label for="userEmail" class="form-label">이메일 계정 <span class="text-danger">*</span></label>
-    {{ input('email', 'userEmail', '', placeholder='이메일 계정을 입력하세요', opt='required') }}
-    <div class="form-text">로그인 시 사용할 이메일 계정입니다.</div>
-    <div class="invalid-feedback">이메일 계정을 입력해주세요.</div>
+    <div class="col-md-12">
+      <label for="userEmail" class="form-label">이메일 계정 <span class="text-danger">*</span></label>
+      {{ input('email', 'userEmail', '', placeholder='이메일 계정을 입력하세요', opt='required') }}
+      <div class="form-text">로그인 시 사용할 이메일 계정입니다.</div>
+      <div class="invalid-feedback">이메일 계정을 입력해주세요.</div>
+    </div>
   </div>
 
   <div class="row">
@@ -58,21 +60,21 @@
           <button class="btn btn-outline-secondary" type="button" data-toggle-password>
             <i class="ph ph-eye"></i>
           </button>
+          <div class="invalid-feedback">비밀번호는 최소 8자 이상이어야 합니다.</div>
         </div>
         <div class="form-text">최소 8자 이상 입력해주세요.</div>
-        <div class="invalid-feedback">비밀번호는 최소 8자 이상이어야 합니다.</div>
       </div>
     </div>
     <div class="col-md-6">
       <div class="form-group">
-        <label for="user_passwd_confirm" class="form-label">비밀번호 확인 <span class="text-danger">*</span></label>
+        <label for="userPasswdConfirm" class="form-label">비밀번호 확인 <span class="text-danger">*</span></label>
         <div class="input-group">
-          <input type="password" class="form-control" id="user_passwd_confirm" name="user_passwd_confirm" placeholder="비밀번호를 다시 입력하세요" required minlength="8">
+          <input type="password" class="form-control" id="userPasswdConfirm" name="userPasswdConfirm" placeholder="비밀번호를 다시 입력하세요" required minlength="8">
           <button class="btn btn-outline-secondary" type="button" data-toggle-password>
             <i class="ph ph-eye"></i>
           </button>
+          <div class="invalid-feedback">비밀번호가 일치하지 않습니다.</div>
         </div>
-        <div class="invalid-feedback">비밀번호가 일치하지 않습니다.</div>
       </div>
     </div>
   </div>
@@ -117,8 +119,8 @@
   // Form Validation
   const form = document.getElementById('registerForm');
   form.addEventListener('submit', function(event) {
-    const password = document.getElementById('user_passwd').value;
-    const passwordConfirm = document.getElementById('user_passwd_confirm').value;
+    const password = document.getElementById('userPasswd').value;
+    const passwordConfirm = document.getElementById('userPasswdConfirm').value;
     const termsChecked = document.getElementById('terms').checked;
     
     // Check terms agreement
@@ -134,9 +136,9 @@
     if (password !== passwordConfirm) {
       event.preventDefault();
       event.stopPropagation();
-      document.getElementById('user_passwd_confirm').setCustomValidity('비밀번호가 일치하지 않습니다.');
+      document.getElementById('userPasswdConfirm').setCustomValidity('비밀번호가 일치하지 않습니다.');
     } else {
-      document.getElementById('user_passwd_confirm').setCustomValidity('');
+      document.getElementById('userPasswdConfirm').setCustomValidity('');
     }
     
     if (!form.checkValidity()) {
@@ -148,7 +150,7 @@
   }, false);
 
   // Reset custom validity on input
-  document.getElementById('user_passwd_confirm').addEventListener('input', function() {
+  document.getElementById('userPasswdConfirm').addEventListener('input', function() {
     this.setCustomValidity('');
   });
   
