@@ -10,9 +10,14 @@ bp = Blueprint('tasks', __name__)
 def client_list():
     """등록 업체 목록 (task_kind_id로 구분)"""
     task_kind_id = request.args.get('task_kind_id', type=int)
-    # TODO: DB에서 task_kind_id별 업체 목록 조회
-    # res_list = conn.return_list('uspGetClientTaskList', task_kind_id=task_kind_id)
-    return render_template('tasks/client_list.html', task_kind_id=task_kind_id)
+    
+    # 업무 종류별 업체 목록 조회 (프로시저에서 필터링)
+    if task_kind_id in [4, 5, 6]:  # 청소, 간식, 비품
+        clients = conn.return_list('get_client_list_by_task_kind', [task_kind_id])
+    else:
+        clients = []
+    
+    return render_template('tasks/client_list.html', clients=clients, task_kind_id=task_kind_id)
 
 
 @bp.route("/client_task_list", methods=['GET'])

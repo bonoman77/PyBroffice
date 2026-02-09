@@ -151,21 +151,19 @@
               <span class="users-status inactive"><span class="users-status-dot"></span> 비활성</span>
               {% endif %}
             </td>
-            <td class="users-cell-meta">{{ user.create_date|default('알 수 없음') }}</td>
+            <td class="users-cell-meta">{{ user.created_at|datetime_str('date')|default('알 수 없음') }}</td>
             <td>
-              <div class="users-actions">
-                <!-- <a href="{{ url_for('accounts.user_profile') }}" class="users-action-btn" title="보기"><i class="ph ph-eye"></i></a> -->
-                <button class="users-action-btn edit-user-btn" title="수정" 
+              <div class="table-actions justify-content-end">
+                <!-- <button class="btn btn-icon btn-sm btn-light" title="보기"><i class="bi bi-eye"></i></button> -->
+                <button class="btn btn-icon btn-sm btn-light edit-user-btn" title="수정" 
                         data-user-id="{{ user.user_id }}"
                         data-user-name="{{ user.user_name }}"
                         data-user-email="{{ user.user_email }}"
                         data-user-mobile="{{ user.user_mobile }}"
                         data-user-kind-id="{{ user.user_kind_id }}"
                         data-client-id="{{ user.client_id|default('') }}"
-                        data-status="{{ user.status }}">
-                  <i class="ph ph-pencil-simple"></i>
-                </button>
-                <button class="users-action-btn danger" title="삭제" data-user-id="{{ user.user_id }}" data-user-name="{{ user.user_name }}" onclick="showDeleteModal(this)"><i class="ph ph-trash"></i></button>
+                        data-status="{{ user.status }}"><i class="bi bi-pencil"></i></button>
+                <button class="btn btn-icon btn-sm btn-light" title="삭제" data-user-id="{{ user.user_id }}" data-user-name="{{ user.user_name }}" onclick="showDeleteModal(this)"><i class="bi bi-trash"></i></button>
               </div>
             </td>
           </tr>

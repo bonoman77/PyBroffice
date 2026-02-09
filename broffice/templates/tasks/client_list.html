@@ -96,7 +96,7 @@
       </div>
     </div>
     <button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#addClientModal">
-      <i class="ph ph-plus me-1"></i> 업체 등록
+      <i class="ph ph-plus me-1"></i> 업무 등록
     </button>
   </div>
 
@@ -127,22 +127,10 @@
             </td>
             <td>
               <div class="users-cell-user">
-                <div class="users-cell-avatar" style="background: linear-gradient(135deg, 
-                  {% if task_kind_id == 4 %}#0ea5e9 0%, #0369a1 100%
-                  {% elif task_kind_id == 5 %}#f59e0b 0%, #92400e 100%
-                  {% elif task_kind_id == 6 %}#6366f1 0%, #3730a3 100%
-                  {% else %}#667eea 0%, #764ba2 100%
-                  {% endif %});">
-                  <i class="ph 
-                    {% if task_kind_id == 4 %}ph-broom
-                    {% elif task_kind_id == 5 %}ph-hamburger
-                    {% elif task_kind_id == 6 %}ph-package
-                    {% else %}ph-buildings
-                    {% endif %}"></i>
-                </div>
-                <div>
-                  <a href="/clients/view/{{ client.id }}" class="users-cell-name">{{ client.name }}</a>
-                  <div class="users-cell-email">{{ client.business_number|default('사업자번호 미등록') }}</div>
+           
+               <div>
+                  <a href="/clients/view/{{ client.client_id }}" class="users-cell-name">{{ client.client_name }}</a>
+                  <div class="users-cell-email">{{ client.client_business_number|default('사업자번호 미등록') }}</div>
                 </div>
               </div>
             </td>
@@ -153,12 +141,12 @@
               {% endif %}
             </td>
             <td class="users-cell-meta">
-              <div>{{ client.phone|default('-') }}</div>
-              {% if client.manager_phone %}
-              <div class="users-cell-email">{{ client.manager_phone }}</div>
+              <div>{{ client.client_phone|default('-') }}</div>
+              {% if client.manager_mobile %}
+              <div class="users-cell-email">{{ client.manager_mobile }}</div>
               {% endif %}
             </td>
-            <td class="users-cell-meta">{{ client.contract_date|default('-') }}</td>
+            <td class="users-cell-meta">{{ client.contracted_at|datetime_str('date')|default('미정') }}</td>
             <td>
               {% if client.status == 'active' %}
               <span class="users-status active"><span class="users-status-dot"></span> 활성</span>
@@ -168,12 +156,11 @@
               <span class="users-status inactive"><span class="users-status-dot"></span> 비활성</span>
               {% endif %}
             </td>
-            <td class="users-cell-meta">{{ client.registered_date|default('알 수 없음') }}</td>
+            <td class="users-cell-meta">{{ client.created_at|datetime_str('date')|default('알 수 없음') }}</td>
             <td>
-              <div class="users-actions">
-                <a href="/clients/view/{{ client.id }}" class="users-action-btn" title="보기"><i class="ph ph-eye"></i></a>
-                <button class="users-action-btn" title="수정" onclick="editClient({{ client.id }}, {{ client|tojson }})"><i class="ph ph-pencil-simple"></i></button>
-                <button class="users-action-btn danger" title="삭제" onclick="deleteClient({{ client.id }})"><i class="ph ph-trash"></i></button>
+              <div class="table-actions justify-content-end">
+                <button class="btn btn-icon btn-sm btn-light" title="업무 등록" onclick="addTask({{ client.client_id }}, {{ client|tojson }})"><i class="ph ph-plus"></i></button>
+                <button class="btn btn-icon btn-sm btn-light" title="업무 현황" onclick="viewTaskStatus({{ client.client_id }}, {{ client|tojson }})"><i class="ph ph-chart-bar"></i></button>
               </div>
             </td>
           </tr>

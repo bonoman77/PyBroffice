@@ -152,11 +152,10 @@
               <span class="users-status inactive"><span class="users-status-dot"></span> 비활성</span>
               {% endif %}
             </td>
-            <td class="users-cell-meta">{{ client.contract_date|default('미정') }}</td>
+            <td class="users-cell-meta">{{ client.contracted_at|datetime_str('date')|default('미정') }}</td>
             <td>
-              <div class="users-actions">
-                <!-- <a href="/clients/view/{{ client.client_id }}" class="users-action-btn" title="보기"><i class="ph ph-eye"></i></a> -->
-                <button class="users-action-btn edit-client-btn" title="수정"
+              <div class="table-actions justify-content-end">
+                <button class="btn btn-icon btn-sm btn-light edit-client-btn" title="수정"
                         data-client-id="{{ client.client_id }}"
                         data-client-name="{{ client.client_name }}"
                         data-client-phone="{{ client.client_phone }}"
@@ -170,10 +169,8 @@
                         data-cleaning-yn="{{ client.cleaning_yn }}"
                         data-snack-yn="{{ client.snack_yn }}"
                         data-office-supplies-yn="{{ client.office_supplies_yn }}"
-                        data-status="{{ client.status }}">
-                  <i class="ph ph-pencil-simple"></i>
-                </button>
-                <button class="users-action-btn danger" title="삭제" data-client-id="{{ client.client_id }}" data-client-name="{{ client.client_name }}" onclick="showDeleteClientModal(this)"><i class="ph ph-trash"></i></button>
+                        data-status="{{ client.status }}"><i class="bi bi-pencil"></i></button>
+                <button class="btn btn-icon btn-sm btn-light" title="삭제" data-client-id="{{ client.client_id }}" data-client-name="{{ client.client_name }}" onclick="showDeleteClientModal(this)"><i class="bi bi-trash"></i></button>
               </div>
             </td>
           </tr>

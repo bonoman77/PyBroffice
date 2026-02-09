@@ -273,7 +273,7 @@ BEGIN
             ELSE 'inactive'
         END AS status,
         u.use_yn,
-        DATE_FORMAT(u.created_at, '%Y-%m-%d') AS create_date
+        u.created_at, 
     FROM users u
     LEFT JOIN clients c ON u.client_id = c.client_id
     WHERE u.deleted_at IS NULL
@@ -584,4 +584,45 @@ BEGIN
     WHERE c.deleted_at IS NULL
       AND c.use_yn = 1
     ORDER BY c.client_name ASC;
+END$$
+
+
+-- =============================================
+-- Author:      김승균
+-- Create date: 2026-02-09
+-- Email:       bonoman77@gmail.com 
+-- Description: 업무 종류별 업체 목록 조회
+-- =============================================
+
+DROP PROCEDURE IF EXISTS get_client_list_by_task_kind$$
+
+CREATE PROCEDURE get_client_list_by_task_kind(IN p_task_kind_id INT)
+BEGIN
+    SELECT 
+        c.client_id,
+        c.client_name,
+        c.client_phone,
+        c.client_address,
+        c.client_business_number,
+        c.manager_name,
+        c.manager_mobile,
+        c.manager_position,
+        c.contracted_at,
+        c.memo,
+        c.cleaning_yn,
+        c.snack_yn,
+        c.office_supplies_yn,
+        c.created_at,
+        CASE WHEN c.use_yn = 1 THEN 'active' ELSE 'inactive' END AS status,
+        DATE_FORMAT(c.contracted_at, '%Y-%m-%d') AS contract_date,
+        DATE_FORMAT(c.created_at, '%Y-%m-%d') AS create_date
+    FROM clients c
+    WHERE c.deleted_at IS NULL
+      AND c.use_yn = 1
+      AND (
+        (p_task_kind_id = 4 AND c.cleaning_yn = 1) OR  -- 청소
+        (p_task_kind_id = 5 AND c.snack_yn = 1) OR     -- 간식
+        (p_task_kind_id = 6 AND c.office_supplies_yn = 1) -- 비품
+      )
+    ORDER BY c.created_at DESC;
 END$$

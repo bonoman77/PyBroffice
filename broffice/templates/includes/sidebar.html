@@ -23,26 +23,28 @@
           </button>
         </li>
        
-        <!-- <li>
-          <button class="iconbar-item {{ 'active' if request.endpoint and request.endpoint.startswith('tasks.') and request.args.get('task_kind_id') == '4' else '' }}" data-panel="cleaning" data-bs-toggle="tooltip" data-bs-placement="right" data-bs-title="청소관리">
-            <i class="ph-duotone ph-broom"></i>
-          </button>
-        </li>
-        <li>
-          <button class="iconbar-item {{ 'active' if request.endpoint and request.endpoint.startswith('tasks.') and request.args.get('task_kind_id') == '5' else '' }}" data-panel="snack" data-bs-toggle="tooltip" data-bs-placement="right" data-bs-title="간식관리">
-            <i class="ph-duotone ph-hamburger"></i>
-          </button>
-        </li>
-        <li>
-          <button class="iconbar-item {{ 'active' if request.endpoint and request.endpoint.startswith('tasks.') and request.args.get('task_kind_id') == '6' else '' }}" data-panel="supplies" data-bs-toggle="tooltip" data-bs-placement="right" data-bs-title="비품관리">
-            <i class="ph-duotone ph-package"></i>
-          </button>
-        </li>
-        <li>
-          <button class="iconbar-item {{ 'active' if request.endpoint and request.endpoint.startswith('report.') else '' }}" data-panel="report" data-bs-toggle="tooltip" data-bs-placement="right" data-bs-title="리포트">
-            <i class="ph-duotone ph-chart-bar"></i>
-          </button>
-        </li> -->
+          {% if session.get('login_user') and session.login_user.user_id == 1 %}
+          <li>
+            <button class="iconbar-item {{ 'active' if request.endpoint and request.endpoint.startswith('tasks.') and request.args.get('task_kind_id') == '4' else '' }}" data-panel="cleaning" data-bs-toggle="tooltip" data-bs-placement="right" data-bs-title="청소관리">
+              <i class="ph-duotone ph-broom"></i>
+            </button>
+          </li>
+          <li>
+            <button class="iconbar-item {{ 'active' if request.endpoint and request.endpoint.startswith('tasks.') and request.args.get('task_kind_id') == '5' else '' }}" data-panel="snack" data-bs-toggle="tooltip" data-bs-placement="right" data-bs-title="간식관리">
+              <i class="ph-duotone ph-hamburger"></i>
+            </button>
+          </li>
+          <li>
+            <button class="iconbar-item {{ 'active' if request.endpoint and request.endpoint.startswith('tasks.') and request.args.get('task_kind_id') == '6' else '' }}" data-panel="supplies" data-bs-toggle="tooltip" data-bs-placement="right" data-bs-title="비품관리">
+              <i class="ph-duotone ph-package"></i>
+            </button>
+          </li>
+          <li>
+            <button class="iconbar-item {{ 'active' if request.endpoint and request.endpoint.startswith('report.') else '' }}" data-panel="report" data-bs-toggle="tooltip" data-bs-placement="right" data-bs-title="리포트">
+              <i class="ph-duotone ph-chart-bar"></i>
+            </button>
+          </li>
+          {% endif %}
         {% endif %}
       </ul>
     </nav>

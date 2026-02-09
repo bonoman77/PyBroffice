@@ -177,6 +177,7 @@ def user_list():
     # 프로시저 1: 사용자 목록 조회
     users = conn.return_list('get_user_list')
 
+    print(users)
     # 프로시저 2: 사용자 통계
     stats = conn.execute_return('get_user_stats')
     

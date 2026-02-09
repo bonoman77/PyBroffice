@@ -94,6 +94,11 @@ def datetime_str(dt, fmt='date'):
             return "%s" % dt.strftime('%H:%M')
         elif fmt=='month':
             return dt.strftime('%Y-%m')
+        elif fmt=='short_date':  
+            if dt.date() == date.today():
+                return "%s" % dt.strftime('%H:%M')
+            else:
+                return "%s" % dt.strftime('%y%m%d')
         else:  
             if dt.date() == date.today():
                 return "%s" % dt.strftime('%H:%M')
