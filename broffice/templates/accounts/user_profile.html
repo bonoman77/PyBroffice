@@ -96,7 +96,7 @@
             </div>
             <div class="uview-detail-row">
               <div class="uview-detail-label">가입일</div>
-              <div class="uview-detail-value">{{ user_profile.joined_at if user_profile else '-' }}</div>
+              <div class="uview-detail-value">{{ user_profile.created_at if user_profile else '-' }}</div>
             </div>
           </div>
         </div>
@@ -177,11 +177,11 @@
           </div>
           <div class="uview-status-item">
             <span class="uview-status-label">관리자 승인</span>
-            <span class="uview-status-value">{{ user_profile.admin_auth_at if user_profile and user_profile.admin_auth_at else '정보 없음' }}</span>
+            <span class="uview-status-value">{{ user_profile.admin_authed_at if user_profile and user_profile.admin_authed_at else '정보 없음' }}</span>
           </div>
           <div class="uview-status-item">
             <span class="uview-status-label">마지막 로그인</span>
-            <span class="uview-status-value">{{ user_profile.last_login_at if user_profile and user_profile.last_login_at else '정보 없음' }}</span>
+            <span class="uview-status-value">{{ user_profile.last_logined_at if user_profile and user_profile.last_logined_at else '정보 없음' }}</span>
           </div>
         </div>
       </div>

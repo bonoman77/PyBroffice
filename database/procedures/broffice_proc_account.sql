@@ -162,8 +162,8 @@ BEGIN
         END AS user_kind_name,
         c.client_name,
         c.client_id,
-        DATE_FORMAT(u.admin_authed_at, '%Y-%m-%d %H:%i') AS admin_auth_at,
-        DATE_FORMAT(u.created_at, '%Y-%m-%d %H:%i') AS joined_at,
+        DATE_FORMAT(u.admin_authed_at, '%Y-%m-%d %H:%i') AS admin_authed_at,
+        DATE_FORMAT(u.created_at, '%Y-%m-%d %H:%i') AS created_at,
         DATE_FORMAT(
             (SELECT login_at 
              FROM user_login_logs 
