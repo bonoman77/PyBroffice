@@ -90,13 +90,13 @@ def user_regist_post():
                               [user_name, user_email, user_mobile, user_kind_id, user_passwd, user_status, client_id])
 
     if res['return_value'] == 1:
-        flash('회원이 성공적으로 등록되었습니다.', category='success')
+        return redirect(url_for('accounts.welcome'))
     elif res['return_value'] == 2:
         flash('이미 사용중인 이메일입니다.', category='warning')
+        return redirect(url_for('accounts.user_regist'))
     else:
         flash('회원 등록에 실패했습니다.', category='danger')
-    
-    return redirect(url_for('accounts.welcome'))
+        return redirect(url_for('accounts.user_regist'))
 
 
 @bp.route("/welcome", methods=['GET'])

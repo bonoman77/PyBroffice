@@ -64,6 +64,7 @@ BEGIN
         c.cleaning_yn,
         c.snack_yn,
         c.office_supplies_yn,
+        c.contracted_at,
         c.created_at,
         CASE WHEN c.use_yn = 1 THEN 'active' ELSE 'inactive' END AS status,
         DATE_FORMAT(c.contracted_at, '%Y-%m-%d') AS contract_date,

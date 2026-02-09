@@ -10,8 +10,7 @@
   <p class="auth-subtitle">브로피스에 오신 것을 환영합니다</p>
 </div>
 
-<form class="auth-form" id="registerForm" method="POST" action="{{ url_for('accounts.user_regist_post') }}" novalidate>
-
+<form class="auth-form" id="registerForm" method="POST" action="{{ url_for('accounts.user_regist_post') }}">
   <div class="row">
     <div class="col-md-6">
       <div class="form-group">
@@ -95,8 +94,6 @@
 
 {% endblock %}
 
-
-
 {% block extra_js %}
 <script>
   // Password Toggle
@@ -122,6 +119,16 @@
   form.addEventListener('submit', function(event) {
     const password = document.getElementById('user_passwd').value;
     const passwordConfirm = document.getElementById('user_passwd_confirm').value;
+    const termsChecked = document.getElementById('terms').checked;
+    
+    // Check terms agreement
+    if (!termsChecked) {
+      event.preventDefault();
+      event.stopPropagation();
+      document.getElementById('terms').setCustomValidity('이용약관 및 개인정보처리방침에 동의해야 합니다.');
+    } else {
+      document.getElementById('terms').setCustomValidity('');
+    }
     
     // Check password match
     if (password !== passwordConfirm) {
@@ -142,6 +149,11 @@
 
   // Reset custom validity on input
   document.getElementById('user_passwd_confirm').addEventListener('input', function() {
+    this.setCustomValidity('');
+  });
+  
+  // Reset terms validity on change
+  document.getElementById('terms').addEventListener('change', function() {
     this.setCustomValidity('');
   });
 </script>

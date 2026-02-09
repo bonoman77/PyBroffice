@@ -151,7 +151,7 @@
               <span class="users-status inactive"><span class="users-status-dot"></span> 비활성</span>
               {% endif %}
             </td>
-            <td class="users-cell-meta">{{ user.created_at|datetime_str('date')|default('알 수 없음') }}</td>
+            <td class="users-cell-meta">{{ user.created_at|datetime_str('simple')|default('알 수 없음') }}</td>
             <td>
               <div class="table-actions justify-content-end">
                 <!-- <button class="btn btn-icon btn-sm btn-light" title="보기"><i class="bi bi-eye"></i></button> -->
