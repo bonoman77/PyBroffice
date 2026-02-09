@@ -1,4 +1,6 @@
+USE Broffice$brobiz;
 
+DELIMITER $$
 
 -- =============================================
 -- Author:      김승균
@@ -6,8 +8,6 @@
 -- Email:       bonoman77@gmail.com 
 -- Description: 공지사항 목록 조회
 -- =============================================
-
-DELIMITER $$
 
 DROP PROCEDURE IF EXISTS get_notice_list$$
 
@@ -38,7 +38,6 @@ BEGIN
     ORDER BY n.top_expose_yn DESC, n.created_at DESC;
     
 END$$
-
 
 -- =============================================
 -- Author:      김승균
@@ -71,7 +70,6 @@ BEGIN
       AND n.deleted_at IS NULL;
     
 END$$
-
 
 -- =============================================
 -- Author:      김승균
@@ -121,5 +119,6 @@ BEGIN
     SELECT v_notice_id AS notice_id;
     
 END$$
+
 
 DELIMITER ;

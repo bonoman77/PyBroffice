@@ -130,11 +130,11 @@
               {% if task_types %}
                 {% for task in task_types %}
                   {% if task == '청소' %}
-                    <span class="users-role" style="background: #e0f2fe; color: #0369a1;"><i class="ph-fill ph-broom"></i> 청소</span>
+                    <span class="badge bg-success">청소</span>
                   {% elif task == '간식' %}
-                    <span class="users-role" style="background: #fef3c7; color: #92400e;"><i class="ph-fill ph-hamburger"></i> 간식</span>
+                    <span class="badge bg-warning">간식</span>
                   {% elif task == '비품' %}
-                    <span class="users-role" style="background: #e0e7ff; color: #3730a3;"><i class="ph-fill ph-package"></i> 비품</span>
+                    <span class="badge bg-danger">비품</span>
                   {% endif %}
                 {% endfor %}
               {% else %}
@@ -422,7 +422,7 @@ clientPagination.customFilter = function(row, filters) {
   
   // 업종 필터 - 복수 선택 지원
   if (filters.type && filters.type !== 'all') {
-    const typeElements = row.querySelectorAll('.users-role');
+    const typeElements = row.querySelectorAll('.badge');
     console.log('Type elements found:', typeElements.length);
     if (typeElements.length > 0) {
       const typeTexts = Array.from(typeElements).map(el => el.textContent);

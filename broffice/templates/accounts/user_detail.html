@@ -1,0 +1,139 @@
+{% extends "layout.html" %}
+{% block title %}회원상세정보{% endblock %}
+
+{% block content %}
+<div class="page-header">
+  <div>
+    <h1 class="page-title">회원상세정보</h1>
+    <nav>
+      <ol class="breadcrumb">
+        <li class="breadcrumb-item"><a href="/">홈</a></li>
+        <li class="breadcrumb-item">회원관리</li>
+        <li class="breadcrumb-item active">회원상세정보</li>
+      </ol>
+    </nav>
+  </div>
+</div>
+
+<!-- Profile Header -->
+<div class="uview-header">
+  {% if user_profile and user_profile.user_email %}
+    <div class="uview-avatar avatar-initial-lg" style="width: 120px; height: 120px; font-size: 3rem;">
+      {{ user_profile.user_email[0]|upper }}
+    </div>
+  {% else %}
+    <div class="uview-avatar avatar-initial-lg" style="width: 120px; height: 120px; font-size: 3rem;">U</div>
+  {% endif %}
+  <div class="uview-info">
+    <h2 class="uview-name">{{ user_profile.user_name if user_profile else '사용자' }}</h2>
+    <p class="uview-email">{{ user_profile.user_email if user_profile else 'user@example.com' }}</p>
+    <div class="uview-badges">
+      {% if user_profile %}
+        {% if user_profile.user_kind_id == 1 %}
+          <span class="users-role admin"><i class="ph-fill ph-shield-chevron"></i> 관리자</span>
+        {% elif user_profile.user_kind_id == 2 %}
+          <span class="users-role" style="background: var(--success-color-light); color: var(--success-color);"><i class="ph-fill ph-user"></i> 직원</span>
+        {% elif user_profile.user_kind_id == 3 %}
+          <span class="users-role" style="background: var(--info-color-light); color: var(--info-color);"><i class="ph-fill ph-briefcase"></i> 업체담당자</span>
+        {% endif %}
+      {% endif %}
+      <span class="users-status active"><span class="users-status-dot"></span> 활성</span>
+    </div>
+  </div>
+</div>
+
+<!-- Content Grid -->
+<div class="uview-grid">
+  <!-- Main Content -->
+  <div>
+    <div class="card">
+      <div class="card-body">
+        <div class="uview-detail-group">
+          <div class="uview-detail-title">개인 정보</div>
+          <div class="uview-detail-row">
+            <div class="uview-detail-label">이름</div>
+            <div class="uview-detail-value">{{ user_profile.user_name if user_profile else '-' }}</div>
+          </div>
+          <div class="uview-detail-row">
+            <div class="uview-detail-label">이메일</div>
+            <div class="uview-detail-value">{{ user_profile.user_email if user_profile else '-' }}</div>
+          </div>
+          <div class="uview-detail-row">
+            <div class="uview-detail-label">전화번호</div>
+            <div class="uview-detail-value">{{ user_profile.user_mobile if user_profile and user_profile.user_mobile else '-' }}</div>
+          </div>
+        </div>
+
+        <div class="uview-detail-group">
+          <div class="uview-detail-title">소속 정보</div>
+          <div class="uview-detail-row">
+            <div class="uview-detail-label">사용자 유형</div>
+            <div class="uview-detail-value">{{ user_profile.user_kind_name if user_profile else '-' }}</div>
+          </div>
+          {% if user_profile and user_profile.user_kind_id == 3 and user_profile.client_name %}
+          <div class="uview-detail-row">
+            <div class="uview-detail-label">소속 업체</div>
+            <div class="uview-detail-value">{{ user_profile.client_name }}</div>
+          </div>
+          {% endif %}
+          <div class="uview-detail-row">
+            <div class="uview-detail-label">계정 상태</div>
+            <div class="uview-detail-value">
+              {% if user_profile and user_profile.use_yn == 1 and user_profile.admin_authed_at %}
+                <span class="badge bg-success">활성</span>
+              {% elif user_profile and user_profile.use_yn == 1 and not user_profile.admin_authed_at %}
+                <span class="badge bg-warning">대기</span>
+              {% else %}
+                <span class="badge bg-secondary">비활성</span>
+              {% endif %}
+            </div>
+          </div>
+          <div class="uview-detail-row">
+            <div class="uview-detail-label">가입일</div>
+            <div class="uview-detail-value">{{ user_profile.joined_at if user_profile else '-' }}</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Sidebar -->
+  <div>
+    <!-- Account Info -->
+    <div class="card">
+      <div class="card-header">
+        <h5 class="card-title mb-0">계정 정보</h5>
+      </div>
+      <div class="card-body">
+        <div class="uview-status-list">
+          <div class="uview-status-item">
+            <span class="uview-status-label">계정 상태</span>
+            {% if user_profile and user_profile.use_yn == 1 %}
+              <span class="uview-status-value text-success"><i class="ph-fill ph-check-circle"></i> 활성</span>
+            {% else %}
+              <span class="uview-status-value text-secondary"><i class="ph-fill ph-x-circle"></i> 비활성</span>
+            {% endif %}
+          </div>
+          <div class="uview-status-item">
+            <span class="uview-status-label">관리자 승인</span>
+            <span class="uview-status-value">{{ user_profile.admin_authed_at if user_profile and user_profile.admin_authed_at else '정보 없음' }}</span>
+          </div>
+          <div class="uview-status-item">
+            <span class="uview-status-label">마지막 로그인</span>
+            <span class="uview-status-value">{{ user_profile.last_logined_at if user_profile and user_profile.last_logined_at else '정보 없음' }}</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  
+  <!-- Navigation -->
+  <div class="mt-3">
+    <nav class="d-flex justify-content-between">
+      <a href="javascript:history.back()" class="btn btn-outline-secondary">
+        <i class="bi bi-arrow-left me-1"></i> 뒤로가기
+      </a>
+    </nav>
+  </div>
+</div>
+{% endblock %}

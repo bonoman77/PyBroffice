@@ -7,6 +7,10 @@ import random
 
 bp = Blueprint('accounts', __name__)
 
+# -------------------
+# 로그인/로그아웃    
+# -------------------
+
 @bp.route('/login', methods=['GET'])
 def login():
     if session.get('login_user'):
@@ -54,7 +58,11 @@ def login_post():
         return render_template('accounts/login.html', user_email=user_email)
 
 
-
+@bp.route('/logout', methods=['GET'])
+@login_required
+def logout():
+    del session['login_user']
+    return redirect(url_for('accounts.login'))
 
 # -------------------
 # 회원 가입  
@@ -72,10 +80,14 @@ def user_regist_post():
     user_passwd = request.form.get('userPasswd')
     user_mobile = request.form.get('userMobile')
     user_kind_id = request.form.get('userKindId')
+    client_id = request.form.get('clientId')
+    # client_id가 빈값이거나 없으면 NULL로 처리
+    if not client_id or client_id.strip() == '':
+        client_id = None
     user_status = request.form.get('userStatus', 'active')  # 기본값 활성
 
     res = conn.execute_return('set_user_insert', 
-                              [user_name, user_email, user_mobile, user_kind_id, user_passwd, user_status])
+                              [user_name, user_email, user_mobile, user_kind_id, user_passwd, user_status, client_id])
 
     if res['return_value'] == 1:
         flash('회원이 성공적으로 등록되었습니다.', category='success')
@@ -90,7 +102,6 @@ def user_regist_post():
 @bp.route("/welcome", methods=['GET'])
 def welcome():
     return render_template('accounts/welcome.html')
-
 
 
 # -------------------
@@ -156,19 +167,6 @@ def user_pass_update_post():
     return redirect(url_for('accounts.user_profile'))
 
 
-
-
-
-
-
-
-# 로그아웃 
-@bp.route('/logout', methods=['GET'])
-@login_required
-def logout():
-    del session['login_user']
-    return redirect(url_for('accounts.login'))
-
 # ================
 # 관리자 전용 페이지
 # ================
@@ -188,6 +186,33 @@ def user_list():
                          active_users=stats.get('active_users', 0) if stats else 0,
                          pending_users=stats.get('pending_users', 0) if stats else 0,
                          inactive_users=stats.get('inactive_users', 0) if stats else 0)
+
+
+@bp.route('/user_admin_login', methods=['POST'])
+@admin_required
+def user_admin_login_post():
+
+    user_id = request.form.get('user_id')
+    res = conn.execute_return('get_user_admin_login', [user_id])
+
+    session['login_user'] = {
+        'user_id': int(res['user_id']),
+        'user_name': res['user_name'],
+        'user_email': res['user_email'],
+        'user_mobile': res['user_mobile'] if res['user_mobile'] else None,
+        'user_kind_id': int(res['user_kind_id']),
+        'client_id': int(res['client_id']) if res['client_id'] else None,
+        'client_name': res['client_name'] if res['client_name'] else None,
+    }
+
+    if session.get('next'):
+        # 로그인 전 마지막 경로로 이동
+        next = session.get('next')
+        del session['next']
+        return redirect(next)
+    return redirect(url_for('homes.index', user_kind_id=session['login_user']['user_kind_id']))
+    
+
 @bp.route('/user_admin_insert', methods=['POST'])
 @admin_required
 def user_admin_insert_post():
@@ -196,10 +221,14 @@ def user_admin_insert_post():
     user_passwd = request.form.get('userPasswd')
     user_mobile = request.form.get('userMobile')
     user_kind_id = request.form.get('userKindId')
+    client_id = request.form.get('clientId')
+    # client_id가 빈값이거나 없으면 NULL로 처리
+    if not client_id or client_id.strip() == '':
+        client_id = None
     user_status = request.form.get('userStatus', 'active')  # 기본값 활성
 
     res = conn.execute_return('set_user_insert', 
-                              [user_name, user_email, user_mobile, user_kind_id, user_passwd, user_status])
+                              [user_name, user_email, user_mobile, user_kind_id, user_passwd, user_status, client_id])
 
     if res['return_value'] == 1:
         flash('회원이 성공적으로 등록되었습니다.', category='success')
@@ -220,15 +249,21 @@ def user_admin_update_post():
     user_kind_id = request.form.get('editUserKindId')
     user_passwd = request.form.get('editUserPasswd')  # 비어있으면 None
     user_status = request.form.get('editUserStatus', 'active')  # 상태 값
+    client_id = request.form.get('editClientId')
+    
+    # client_id가 빈값이거나 없으면 NULL로 처리
+    if not client_id or client_id.strip() == '':
+        client_id = None
     
     # 프로시저 호출
-    res = conn.execute_return('set_user_admin_update', [
+    res = conn.execute_return('set_user_update', [
         user_id,
         user_name,
         user_mobile,
         user_kind_id,
         user_passwd if user_passwd else None,
-        user_status
+        user_status,
+        client_id
     ])
     
     if res['return_value'] == 1:
@@ -240,6 +275,56 @@ def user_admin_update_post():
     
     return redirect(url_for('accounts.user_list'))
 
+
+@bp.route('/user_admin_delete', methods=['POST'])
+@admin_required
+def user_admin_delete_post():
+    """회원 삭제 API"""
+    user_id = request.form.get('user_id') or request.json.get('user_id')
+    
+    if not user_id:
+        if request.is_json:
+            return jsonify({'error': 'user_id is required'}), 400
+        flash('회원 ID가 필요합니다.', category='danger')
+        return redirect(url_for('accounts.user_list'))
+    
+    # MySQL 프로시저 호출하여 회원 삭제
+    try:
+        res = conn.execute_return('set_user_delete', [user_id])
+        
+        if res and res.get('return_value') == 1:
+            if request.is_json:
+                return jsonify({'success': True, 'message': '회원이 삭제되었습니다.'}), 200
+            flash('회원이 삭제되었습니다.', category='success')
+        else:
+            if request.is_json:
+                return jsonify({'error': '회원 삭제에 실패했습니다.'}), 500
+            flash('회원 삭제에 실패했습니다.', category='danger')
+    except Exception as e:
+        if request.is_json:
+            return jsonify({'error': str(e)}), 500
+        flash('회원 삭제 중 오류가 발생했습니다.', category='danger')
+    
+    return redirect(url_for('accounts.user_list'))
+
+
+@bp.route('/user_detail/<int:user_id>', methods=['GET'])
+@admin_required
+def user_detail(user_id):
+    """회원 상세정보 조회"""
+    # 개별 사용자 정보 조회
+    user_profile = conn.execute_return('get_user_profile', [user_id])
+    
+    if not user_profile:
+        flash('회원을 찾을 수 없습니다.', category='danger')
+        return redirect(url_for('accounts.user_list'))
+    
+    return render_template('accounts/user_detail.html', user_profile=user_profile)
+
+
+# ================
+# 업체 관리
+# ================
 
 @bp.route("/client_list", methods=['GET'])
 @admin_required
@@ -355,61 +440,19 @@ def client_update_post():
     return redirect(url_for('accounts.client_list'))
 
 
-@bp.route('/user_admin_login', methods=['POST'])
+@bp.route('/api/clients', methods=['GET'])
 @admin_required
-def user_admin_login_post():
-
-    user_id = request.form.get('user_id')
-    res = conn.execute_return('get_user_admin_login', [user_id])
-
-    session['login_user'] = {
-        'user_id': int(res['user_id']),
-        'user_name': res['user_name'],
-        'user_email': res['user_email'],
-        'user_mobile': res['user_mobile'] if res['user_mobile'] else None,
-        'user_kind_id': int(res['user_kind_id']),
-        'client_id': int(res['client_id']) if res['client_id'] else None,
-        'client_name': res['client_name'] if res['client_name'] else None,
-    }
-
-    if session.get('next'):
-        # 로그인 전 마지막 경로로 이동
-        next = session.get('next')
-        del session['next']
-        return redirect(next)
-    return redirect(url_for('homes.index', user_kind_id=session['login_user']['user_kind_id']))
-
-
-@bp.route('/user_admin_delete', methods=['POST'])
-@admin_required
-def user_admin_delete_post():
-    """회원 삭제 API"""
-    user_id = request.form.get('user_id') or request.json.get('user_id')
-    
-    if not user_id:
-        if request.is_json:
-            return jsonify({'error': 'user_id is required'}), 400
-        flash('회원 ID가 필요합니다.', category='danger')
-        return redirect(url_for('accounts.user_list'))
-    
-    # MySQL 프로시저 호출하여 회원 삭제
+def api_clients():
+    """업체 목록 API (회원 등록/수정용 - 활성 업체만)"""
     try:
-        res = conn.execute_return('set_user_delete', [user_id])
+        res = conn.return_list('get_active_client_list')
         
-        if res and res.get('return_value') == 1:
-            if request.is_json:
-                return jsonify({'success': True, 'message': '회원이 삭제되었습니다.'}), 200
-            flash('회원이 삭제되었습니다.', category='success')
+        if res:
+            return jsonify(res)
         else:
-            if request.is_json:
-                return jsonify({'error': '회원 삭제에 실패했습니다.'}), 500
-            flash('회원 삭제에 실패했습니다.', category='danger')
+            return jsonify([])
     except Exception as e:
-        if request.is_json:
-            return jsonify({'error': str(e)}), 500
-        flash('회원 삭제 중 오류가 발생했습니다.', category='danger')
-    
-    return redirect(url_for('accounts.user_list'))
+        return jsonify({'error': str(e)}), 500
 
 
 @bp.route('/client_admin_delete', methods=['POST'])

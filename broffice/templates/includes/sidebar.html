@@ -78,7 +78,7 @@
       </div>
       <ul class="panel-nav">
         <li><a class="panel-link {{ 'active' if request.endpoint == 'accounts.client_list' else '' }}" href="{{ url_for('accounts.client_list') }}"><i class="bi bi-building-check me-2"></i>업체목록</a></li>
-        <li><a class="panel-link {{ 'active' if request.endpoint == 'accounts.user_list' else '' }}" href="{{ url_for('accounts.user_list') }}"><i class="bi bi-person-lines-fill me-2"></i>회원목록</a></li>
+        <li><a class="panel-link {{ 'active' if request.endpoint == 'accounts.user_list' or request.endpoint == 'accounts.user_detail' else '' }}" href="{{ url_for('accounts.user_list') }}"><i class="bi bi-person-lines-fill me-2"></i>회원목록</a></li>
       </ul>
     </div>
 

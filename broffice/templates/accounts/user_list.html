@@ -102,7 +102,7 @@
           <th>역할</th>
           <th>연락처</th>
           <th>상태</th>
-          <th>가입일</th>
+          <th>등록일</th>
           <th class="users-th-actions">작업</th>
         </tr>
       </thead>
@@ -116,7 +116,7 @@
             <td>
               <div class="users-cell-user">
                 <div>
-                  <a href="/members/view/{{ user.user_id }}" class="users-cell-name">{{ user.user_name }}</a>
+                  <a href="{{ url_for('accounts.user_detail', user_id=user.user_id) }}" class="users-cell-name">{{ user.user_name }}</a>
                   <div class="users-cell-email">{{ user.user_email }}</div>
                 </div>
               </div>
@@ -124,13 +124,19 @@
 
             <td>
               {% if user.role == 'admin' %}
-              <span class="users-role admin"><i class="ph-fill ph-shield-chevron"></i> 관리자</span>
+              <span class="badge bg-danger">관리자</span>
               {% elif user.role == 'staff' %}
-              <span class="users-role manager"><i class="ph-fill ph-identification-badge"></i> 현장직원</span>
+              <span class="badge bg-success">현장직원</span>
               {% elif user.role == 'client' %}
-              <span class="users-role user"><i class="ph-fill ph-briefcase"></i> 업체담당자</span>
+              <div>
+                {% if user.client_name %}
+                  <span class="badge bg-primary">{{ user.client_name }}</span>
+                {% else %}
+                  <span class="badge bg-primary">업체담당자</span>
+                {% endif %}
+              </div>
               {% else %}
-              <span class="users-role user"><i class="ph-fill ph-user"></i> 일반</span>
+              <span class="badge bg-secondary">일반</span>
               {% endif %}
             </td>
             <td>
@@ -145,7 +151,7 @@
               <span class="users-status inactive"><span class="users-status-dot"></span> 비활성</span>
               {% endif %}
             </td>
-            <td class="users-cell-meta">{{ user.joined_date|default('알 수 없음') }}</td>
+            <td class="users-cell-meta">{{ user.create_date|default('알 수 없음') }}</td>
             <td>
               <div class="users-actions">
                 <!-- <a href="{{ url_for('accounts.user_profile') }}" class="users-action-btn" title="보기"><i class="ph ph-eye"></i></a> -->
@@ -155,6 +161,7 @@
                         data-user-email="{{ user.user_email }}"
                         data-user-mobile="{{ user.user_mobile }}"
                         data-user-kind-id="{{ user.user_kind_id }}"
+                        data-client-id="{{ user.client_id|default('') }}"
                         data-status="{{ user.status }}">
                   <i class="ph ph-pencil-simple"></i>
                 </button>
@@ -220,6 +227,16 @@
               {{ input('tel', 'userMobile', '', placeholder='010-0000-0000', opt='required') }}
             </div>
             <div class="col-md-6 mb-3">
+              <label for="userStatus" class="form-label">상태</label>
+              <select class="form-select" id="userStatus" name="userStatus">
+                <option value="active" selected>활성</option>
+                <option value="pending">대기</option>
+                <option value="inactive">비활성</option>
+              </select>
+            </div>
+          </div>
+          <div class="row">
+            <div class="col-md-6 mb-3">
               <label for="userKindId" class="form-label">역할 <span class="text-danger">*</span></label>
               <select class="form-select" id="userKindId" name="userKindId" required>
                 <option value="">선택하세요</option>
@@ -228,15 +245,14 @@
                 <option value="3">업체담당자</option>
               </select>
             </div>
-          </div>
-          <div class="row">
             <div class="col-md-6 mb-3">
-              <label for="userStatus" class="form-label">상태</label>
-              <select class="form-select" id="userStatus" name="userStatus">
-                <option value="active" selected>활성</option>
-                <option value="pending">대기</option>
-                <option value="inactive">비활성</option>
-              </select>
+              <div class="form-group" id="addClientSelectGroup" style="display: none;">
+                <label for="clientId" class="form-label">소속 업체</label>
+                <select class="form-select" id="clientId" name="clientId">
+                  <option value="">선택하세요</option>
+                </select>
+                <div class="form-text">업체담당자인 경우 소속 업체를 선택하세요.</div>
+              </div>
             </div>
           </div>
           <div class="mb-3">
@@ -305,6 +321,16 @@
               {{ input('tel', 'editUserMobile', '', placeholder='010-0000-0000', opt='required') }}
             </div>
             <div class="col-md-6 mb-3">
+              <label for="editUserStatus" class="form-label">상태</label>
+              <select class="form-select" id="editUserStatus" name="editUserStatus">
+                <option value="active">활성</option>
+                <option value="pending">대기</option>
+                <option value="inactive">비활성</option>
+              </select>
+            </div>
+          </div>
+          <div class="row">
+            <div class="col-md-6 mb-3">
               <label for="editUserKindId" class="form-label">역할 <span class="text-danger">*</span></label>
               <select class="form-select" id="editUserKindId" name="editUserKindId" required>
                 <option value="">선택하세요</option>
@@ -313,15 +339,14 @@
                 <option value="3">업체담당자</option>
               </select>
             </div>
-          </div>
-          <div class="row">
             <div class="col-md-6 mb-3">
-              <label for="editUserStatus" class="form-label">상태</label>
-              <select class="form-select" id="editUserStatus" name="editUserStatus">
-                <option value="active">활성</option>
-                <option value="pending">대기</option>
-                <option value="inactive">비활성</option>
-              </select>
+              <div class="form-group" id="editClientSelectGroup" style="display: none;">
+                <label for="editClientId" class="form-label">소속 업체</label>
+                <select class="form-select" id="editClientId" name="editClientId">
+                  <option value="">선택하세요</option>
+                </select>
+                <div class="form-text">업체담당자인 경우 소속 업체를 선택하세요.</div>
+              </div>
             </div>
           </div>
           <div class="mb-3">
@@ -354,15 +379,36 @@ const userPagination = new TablePagination({
 userPagination.customFilter = function(row, filters) {
   // 역할 필터
   if (filters.role && filters.role !== 'all') {
-    const roleElement = row.querySelector('.users-role');
-    if (roleElement) {
-      const roleClass = roleElement.className;
+    const roleElements = row.querySelectorAll('.badge');
+    if (roleElements.length > 0) {
       let roleType = '';
-      if (roleClass.includes('admin')) roleType = 'admin';
-      else if (roleClass.includes('manager')) roleType = 'staff';
-      else if (roleClass.includes('user')) roleType = 'client';
+      let found = false;
       
-      if (roleType !== filters.role) return false;
+      roleElements.forEach(element => {
+        const roleText = element.textContent;
+        
+        if (roleText.includes('관리자')) {
+          roleType = 'admin';
+          found = true;
+        } else if (roleText.includes('현장직원')) {
+          roleType = 'staff';
+          found = true;
+        } else if (roleText.includes('업체담당자')) {
+          roleType = 'client';
+          found = true;
+        }
+      });
+      
+      // 업체담당자인데 업체명만 표시된 경우
+      if (!found && roleElements.length === 1) {
+        const roleText = roleElements[0].textContent;
+        if (!roleText.includes('관리자') && !roleText.includes('현장직원') && !roleText.includes('일반')) {
+          roleType = 'client';
+          found = true;
+        }
+      }
+      
+      if (!found || roleType !== filters.role) return false;
     }
   }
   
@@ -422,6 +468,47 @@ function submitAddUser() {
   }
 }
 
+// 추가 모달에서 역할 변경 시 처리
+document.getElementById('userKindId')?.addEventListener('change', function() {
+  handleAddClientSelect(this.value);
+  if (this.value === '3') {
+    loadAddClients();
+  }
+});
+
+// 추가 모달 업체 선택 처리
+function handleAddClientSelect(userKindId) {
+  const clientSelectGroup = document.getElementById('addClientSelectGroup');
+  
+  if (userKindId === '3') { // 업체담당자
+    clientSelectGroup.style.display = 'block';
+  } else {
+    clientSelectGroup.style.display = 'none';
+    document.getElementById('clientId').value = '';
+  }
+}
+
+// 추가 모달 업체 목록 로드
+async function loadAddClients() {
+  try {
+    const response = await fetch('/accounts/api/clients');
+    
+    const clients = await response.json();
+    
+    const clientId = document.getElementById('clientId');
+    clientId.innerHTML = '<option value="">선택하세요</option>';
+    
+    clients.forEach(client => {
+      const option = document.createElement('option');
+      option.value = client.client_id;
+      option.textContent = client.client_name;
+      clientId.appendChild(option);
+    });
+  } catch (error) {
+    console.error('추가 모달 업체 목록 로드 실패:', error);
+  }
+}
+
 // Edit User - Load data into modal
 document.querySelectorAll('.edit-user-btn').forEach(button => {
   button.addEventListener('click', function() {
@@ -431,6 +518,7 @@ document.querySelectorAll('.edit-user-btn').forEach(button => {
     const userMobile = this.dataset.userMobile;
     const userKindId = this.dataset.userKindId;
     const status = this.dataset.status;
+    const clientId = this.dataset.clientId || '';
     
     // Populate form fields
     document.getElementById('editUserId').value = userId;
@@ -438,15 +526,64 @@ document.querySelectorAll('.edit-user-btn').forEach(button => {
     document.getElementById('editUserEmail').value = userEmail;
     document.getElementById('editUserMobile').value = userMobile;
     document.getElementById('editUserKindId').value = userKindId;
-    document.getElementById('editUserPasswd').value = '';
-    
-    // Set status select
     document.getElementById('editUserStatus').value = status;
+    document.getElementById('editClientId').value = clientId;
+    
+    // 업체 선택 필드 표시/숨김 처리
+    handleEditClientSelect(userKindId);
+    
+    // 업체 목록 로드 (필요한 경우)
+    if (userKindId === '3') {
+      loadEditClients(clientId);
+    }
     
     // Show modal
     const modal = new bootstrap.Modal(document.getElementById('editUserModal'));
     modal.show();
   });
+});
+
+// 수정 모달 업체 선택 처리
+function handleEditClientSelect(userKindId) {
+  const clientSelectGroup = document.getElementById('editClientSelectGroup');
+  
+  if (userKindId === '3') { // 업체담당자
+    clientSelectGroup.style.display = 'block';
+  } else {
+    clientSelectGroup.style.display = 'none';
+    document.getElementById('editClientId').value = '';
+  }
+}
+
+// 수정 모달 업체 목록 로드
+async function loadEditClients(selectedClientId = '') {
+  try {
+    const response = await fetch('/accounts/api/clients');
+    const clients = await response.json();
+    
+    const editClientId = document.getElementById('editClientId');
+    editClientId.innerHTML = '<option value="">선택하세요</option>';
+    
+    clients.forEach(client => {
+      const option = document.createElement('option');
+      option.value = client.client_id;
+      option.textContent = client.client_name;
+      if (selectedClientId && client.client_id == selectedClientId) {
+        option.selected = true;
+      }
+      editClientId.appendChild(option);
+    });
+  } catch (error) {
+    console.error('업체 목록 로드 실패:', error);
+  }
+}
+
+// 수정 모달에서 역할 변경 시 처리
+document.getElementById('editUserKindId')?.addEventListener('change', function() {
+  handleEditClientSelect(this.value);
+  if (this.value === '3') {
+    loadEditClients();
+  }
 });
 
 // Edit User Form Submit
