@@ -588,7 +588,25 @@ document.getElementById('editUserKindId')?.addEventListener('change', function()
 function submitEditUser() {
   const form = document.getElementById('editUserForm');
   if (form.checkValidity()) {
-    form.submit();
+    const formData = new FormData(form);
+    
+    fetch(form.action, {
+      method: 'POST',
+      body: formData
+    })
+    .then(response => {
+      if (response.redirected) {
+        // 서버에서 리다이렉트 응답이 오면 페이지 새로고침
+        window.location.href = response.url;
+      } else {
+        // 리다이렉트가 없으면 현재 페이지 새로고침
+        window.location.reload();
+      }
+    })
+    .catch(error => {
+      console.error('수정 실패:', error);
+      showToast('danger', '회원 정보 수정에 실패했습니다.');
+    });
   } else {
     form.reportValidity();
   }
