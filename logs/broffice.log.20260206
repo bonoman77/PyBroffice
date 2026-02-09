@@ -1,0 +1,261 @@
+[2026-02-06 06:56:35] INFO in log_handler: 로거 초기화 완료 - 레벨: DEBUG, 파일: /Users/seungkyun/PyProjects/PyBroffice/logs/broffice.log
+[2026-02-06 06:56:35] INFO in __init__: Flask-Mail 초기화 완료
+[2026-02-06 06:56:35] INFO in __init__: 필터 등록 완료
+[2026-02-06 06:56:35] INFO in __init__: 애플리케이션 초기화 완료
+[2026-02-06 06:56:35] INFO in log_handler: 로거 초기화 완료 - 레벨: DEBUG, 파일: /Users/seungkyun/PyProjects/PyBroffice/logs/broffice.log
+[2026-02-06 06:56:35] INFO in __init__: Flask-Mail 초기화 완료
+[2026-02-06 06:56:35] INFO in __init__: 필터 등록 완료
+[2026-02-06 06:56:35] INFO in __init__: 애플리케이션 초기화 완료
+[2026-02-06 06:56:46] WARNING in __init__: 404 에러: 404 Not Found: The requested URL was not found on the server. If you entered the URL manually please check your spelling and try again.
+[2026-02-06 06:56:46] WARNING in __init__: 404 에러: 404 Not Found: The requested URL was not found on the server. If you entered the URL manually please check your spelling and try again.
+[2026-02-06 06:56:46] WARNING in __init__: 404 에러: 404 Not Found: The requested URL was not found on the server. If you entered the URL manually please check your spelling and try again.
+[2026-02-06 06:57:49] ERROR in dbconns: 데이터베이스 연결 생성 중 오류: (2003, "Can't connect to MySQL server on '127.0.0.1' ([Errno 61] Connection refused)")
+[2026-02-06 06:57:49] ERROR in dbconns: 새 연결 생성 중 오류: (2003, "Can't connect to MySQL server on '127.0.0.1' ([Errno 61] Connection refused)")
+[2026-02-06 06:57:49] ERROR in dbconns: 데이터베이스 연결 사용 중 오류: (2003, "Can't connect to MySQL server on '127.0.0.1' ([Errno 61] Connection refused)")
+[2026-02-06 06:57:49] ERROR in dbconns: 프로시저 실행 중 오류 (단일 결과): get_user_login, (2003, "Can't connect to MySQL server on '127.0.0.1' ([Errno 61] Connection refused)")
+[2026-02-06 06:57:49] ERROR in __init__: 처리되지 않은 예외: OperationalError - (2003, "Can't connect to MySQL server on '127.0.0.1' ([Errno 61] Connection refused)")
+Traceback (most recent call last):
+  File "/Users/seungkyun/PyProjects/PyBroffice/venv/lib/python3.14/site-packages/pymysql/connections.py", line 661, in connect
+    sock = socket.create_connection(
+        (self.host, self.port), self.connect_timeout, **kwargs
+    )
+  File "/opt/homebrew/Cellar/python@3.14/3.14.2_1/Frameworks/Python.framework/Versions/3.14/lib/python3.14/socket.py", line 870, in create_connection
+    raise exceptions[0]
+  File "/opt/homebrew/Cellar/python@3.14/3.14.2_1/Frameworks/Python.framework/Versions/3.14/lib/python3.14/socket.py", line 855, in create_connection
+    sock.connect(sa)
+    ~~~~~~~~~~~~^^^^
+ConnectionRefusedError: [Errno 61] Connection refused
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "/Users/seungkyun/PyProjects/PyBroffice/venv/lib/python3.14/site-packages/flask/app.py", line 1484, in full_dispatch_request
+    rv = self.dispatch_request()
+  File "/Users/seungkyun/PyProjects/PyBroffice/venv/lib/python3.14/site-packages/flask/app.py", line 1469, in dispatch_request
+    return self.ensure_sync(self.view_functions[rule.endpoint])(**view_args)
+           ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^
+  File "/Users/seungkyun/PyProjects/PyBroffice/broffice/router/accounts.py", line 24, in login_post
+    res = conn.execute_return('get_user_login', [user_email, user_passwd])
+  File "/Users/seungkyun/PyProjects/PyBroffice/broffice/dbconns.py", line 259, in execute_return
+    with get_db_connection() as conn:
+         ~~~~~~~~~~~~~~~~~^^
+  File "/opt/homebrew/Cellar/python@3.14/3.14.2_1/Frameworks/Python.framework/Versions/3.14/lib/python3.14/contextlib.py", line 141, in __enter__
+    return next(self.gen)
+  File "/Users/seungkyun/PyProjects/PyBroffice/broffice/dbconns.py", line 194, in get_db_connection
+    conn = connection_pool.get_connection()
+  File "/Users/seungkyun/PyProjects/PyBroffice/broffice/dbconns.py", line 123, in get_connection
+    conn = self._create_connection()
+  File "/Users/seungkyun/PyProjects/PyBroffice/broffice/dbconns.py", line 88, in _create_connection
+    conn = pymysql.connect(**self.db_config)
+  File "/Users/seungkyun/PyProjects/PyBroffice/venv/lib/python3.14/site-packages/pymysql/connections.py", line 365, in __init__
+    self.connect()
+    ~~~~~~~~~~~~^^
+  File "/Users/seungkyun/PyProjects/PyBroffice/venv/lib/python3.14/site-packages/pymysql/connections.py", line 723, in connect
+    raise exc
+pymysql.err.OperationalError: (2003, "Can't connect to MySQL server on '127.0.0.1' ([Errno 61] Connection refused)")
+[2026-02-06 06:58:09] ERROR in dbconns: 데이터베이스 연결 생성 중 오류: (2003, "Can't connect to MySQL server on '127.0.0.1' ([Errno 61] Connection refused)")
+[2026-02-06 06:58:09] ERROR in dbconns: 새 연결 생성 중 오류: (2003, "Can't connect to MySQL server on '127.0.0.1' ([Errno 61] Connection refused)")
+[2026-02-06 06:58:09] ERROR in dbconns: 데이터베이스 연결 사용 중 오류: (2003, "Can't connect to MySQL server on '127.0.0.1' ([Errno 61] Connection refused)")
+[2026-02-06 06:58:09] ERROR in dbconns: 프로시저 실행 중 오류 (단일 결과): get_user_login, (2003, "Can't connect to MySQL server on '127.0.0.1' ([Errno 61] Connection refused)")
+[2026-02-06 06:58:09] ERROR in __init__: 처리되지 않은 예외: OperationalError - (2003, "Can't connect to MySQL server on '127.0.0.1' ([Errno 61] Connection refused)")
+Traceback (most recent call last):
+  File "/Users/seungkyun/PyProjects/PyBroffice/venv/lib/python3.14/site-packages/pymysql/connections.py", line 661, in connect
+    sock = socket.create_connection(
+        (self.host, self.port), self.connect_timeout, **kwargs
+    )
+  File "/opt/homebrew/Cellar/python@3.14/3.14.2_1/Frameworks/Python.framework/Versions/3.14/lib/python3.14/socket.py", line 870, in create_connection
+    raise exceptions[0]
+  File "/opt/homebrew/Cellar/python@3.14/3.14.2_1/Frameworks/Python.framework/Versions/3.14/lib/python3.14/socket.py", line 855, in create_connection
+    sock.connect(sa)
+    ~~~~~~~~~~~~^^^^
+ConnectionRefusedError: [Errno 61] Connection refused
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "/Users/seungkyun/PyProjects/PyBroffice/venv/lib/python3.14/site-packages/flask/app.py", line 1484, in full_dispatch_request
+    rv = self.dispatch_request()
+  File "/Users/seungkyun/PyProjects/PyBroffice/venv/lib/python3.14/site-packages/flask/app.py", line 1469, in dispatch_request
+    return self.ensure_sync(self.view_functions[rule.endpoint])(**view_args)
+           ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^
+  File "/Users/seungkyun/PyProjects/PyBroffice/broffice/router/accounts.py", line 24, in login_post
+    res = conn.execute_return('get_user_login', [user_email, user_passwd])
+  File "/Users/seungkyun/PyProjects/PyBroffice/broffice/dbconns.py", line 259, in execute_return
+    with get_db_connection() as conn:
+         ~~~~~~~~~~~~~~~~~^^
+  File "/opt/homebrew/Cellar/python@3.14/3.14.2_1/Frameworks/Python.framework/Versions/3.14/lib/python3.14/contextlib.py", line 141, in __enter__
+    return next(self.gen)
+  File "/Users/seungkyun/PyProjects/PyBroffice/broffice/dbconns.py", line 194, in get_db_connection
+    conn = connection_pool.get_connection()
+  File "/Users/seungkyun/PyProjects/PyBroffice/broffice/dbconns.py", line 123, in get_connection
+    conn = self._create_connection()
+  File "/Users/seungkyun/PyProjects/PyBroffice/broffice/dbconns.py", line 88, in _create_connection
+    conn = pymysql.connect(**self.db_config)
+  File "/Users/seungkyun/PyProjects/PyBroffice/venv/lib/python3.14/site-packages/pymysql/connections.py", line 365, in __init__
+    self.connect()
+    ~~~~~~~~~~~~^^
+  File "/Users/seungkyun/PyProjects/PyBroffice/venv/lib/python3.14/site-packages/pymysql/connections.py", line 723, in connect
+    raise exc
+pymysql.err.OperationalError: (2003, "Can't connect to MySQL server on '127.0.0.1' ([Errno 61] Connection refused)")
+[2026-02-06 06:58:12] ERROR in dbconns: 데이터베이스 연결 생성 중 오류: (2003, "Can't connect to MySQL server on '127.0.0.1' ([Errno 61] Connection refused)")
+[2026-02-06 06:58:12] ERROR in dbconns: 새 연결 생성 중 오류: (2003, "Can't connect to MySQL server on '127.0.0.1' ([Errno 61] Connection refused)")
+[2026-02-06 06:58:12] ERROR in dbconns: 데이터베이스 연결 사용 중 오류: (2003, "Can't connect to MySQL server on '127.0.0.1' ([Errno 61] Connection refused)")
+[2026-02-06 06:58:12] ERROR in dbconns: 프로시저 실행 중 오류 (단일 결과): get_user_login, (2003, "Can't connect to MySQL server on '127.0.0.1' ([Errno 61] Connection refused)")
+[2026-02-06 06:58:12] ERROR in __init__: 처리되지 않은 예외: OperationalError - (2003, "Can't connect to MySQL server on '127.0.0.1' ([Errno 61] Connection refused)")
+Traceback (most recent call last):
+  File "/Users/seungkyun/PyProjects/PyBroffice/venv/lib/python3.14/site-packages/pymysql/connections.py", line 661, in connect
+    sock = socket.create_connection(
+        (self.host, self.port), self.connect_timeout, **kwargs
+    )
+  File "/opt/homebrew/Cellar/python@3.14/3.14.2_1/Frameworks/Python.framework/Versions/3.14/lib/python3.14/socket.py", line 870, in create_connection
+    raise exceptions[0]
+  File "/opt/homebrew/Cellar/python@3.14/3.14.2_1/Frameworks/Python.framework/Versions/3.14/lib/python3.14/socket.py", line 855, in create_connection
+    sock.connect(sa)
+    ~~~~~~~~~~~~^^^^
+ConnectionRefusedError: [Errno 61] Connection refused
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "/Users/seungkyun/PyProjects/PyBroffice/venv/lib/python3.14/site-packages/flask/app.py", line 1484, in full_dispatch_request
+    rv = self.dispatch_request()
+  File "/Users/seungkyun/PyProjects/PyBroffice/venv/lib/python3.14/site-packages/flask/app.py", line 1469, in dispatch_request
+    return self.ensure_sync(self.view_functions[rule.endpoint])(**view_args)
+           ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^
+  File "/Users/seungkyun/PyProjects/PyBroffice/broffice/router/accounts.py", line 24, in login_post
+    res = conn.execute_return('get_user_login', [user_email, user_passwd])
+  File "/Users/seungkyun/PyProjects/PyBroffice/broffice/dbconns.py", line 259, in execute_return
+    with get_db_connection() as conn:
+         ~~~~~~~~~~~~~~~~~^^
+  File "/opt/homebrew/Cellar/python@3.14/3.14.2_1/Frameworks/Python.framework/Versions/3.14/lib/python3.14/contextlib.py", line 141, in __enter__
+    return next(self.gen)
+  File "/Users/seungkyun/PyProjects/PyBroffice/broffice/dbconns.py", line 194, in get_db_connection
+    conn = connection_pool.get_connection()
+  File "/Users/seungkyun/PyProjects/PyBroffice/broffice/dbconns.py", line 123, in get_connection
+    conn = self._create_connection()
+  File "/Users/seungkyun/PyProjects/PyBroffice/broffice/dbconns.py", line 88, in _create_connection
+    conn = pymysql.connect(**self.db_config)
+  File "/Users/seungkyun/PyProjects/PyBroffice/venv/lib/python3.14/site-packages/pymysql/connections.py", line 365, in __init__
+    self.connect()
+    ~~~~~~~~~~~~^^
+  File "/Users/seungkyun/PyProjects/PyBroffice/venv/lib/python3.14/site-packages/pymysql/connections.py", line 723, in connect
+    raise exc
+pymysql.err.OperationalError: (2003, "Can't connect to MySQL server on '127.0.0.1' ([Errno 61] Connection refused)")
+[2026-02-06 07:55:42] ERROR in __init__: 처리되지 않은 예외: UndefinedError - 'now' is undefined
+Traceback (most recent call last):
+  File "/Users/seungkyun/PyProjects/PyBroffice/venv/lib/python3.14/site-packages/flask/app.py", line 1484, in full_dispatch_request
+    rv = self.dispatch_request()
+  File "/Users/seungkyun/PyProjects/PyBroffice/venv/lib/python3.14/site-packages/flask/app.py", line 1469, in dispatch_request
+    return self.ensure_sync(self.view_functions[rule.endpoint])(**view_args)
+           ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^
+  File "/Users/seungkyun/PyProjects/PyBroffice/broffice/router/accounts.py", line 15, in login
+    return render_template('accounts/login.html')
+  File "/Users/seungkyun/PyProjects/PyBroffice/venv/lib/python3.14/site-packages/flask/templating.py", line 151, in render_template
+    return _render(app, template, context)
+  File "/Users/seungkyun/PyProjects/PyBroffice/venv/lib/python3.14/site-packages/flask/templating.py", line 132, in _render
+    rv = template.render(context)
+  File "/Users/seungkyun/PyProjects/PyBroffice/venv/lib/python3.14/site-packages/jinja2/environment.py", line 1295, in render
+    self.environment.handle_exception()
+    ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^^
+  File "/Users/seungkyun/PyProjects/PyBroffice/venv/lib/python3.14/site-packages/jinja2/environment.py", line 942, in handle_exception
+    raise rewrite_traceback_stack(source=source)
+  File "/Users/seungkyun/PyProjects/PyBroffice/broffice/templates/accounts/login.html", line 2, in top-level template code
+    {% from "macros/form.html" import input %}
+    ^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/seungkyun/PyProjects/PyBroffice/broffice/templates/layout_login.html", line 105, in top-level template code
+    &copy; {{ now().year }} <a href="/">브로피스</a>. All Rights Reserved.
+    ^^^^^^^^^^^^^
+  File "/Users/seungkyun/PyProjects/PyBroffice/venv/lib/python3.14/site-packages/jinja2/utils.py", line 92, in from_obj
+    if hasattr(obj, "jinja_pass_arg"):
+       ~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^
+jinja2.exceptions.UndefinedError: 'now' is undefined
+[2026-02-06 07:55:44] ERROR in __init__: 처리되지 않은 예외: UndefinedError - 'now' is undefined
+Traceback (most recent call last):
+  File "/Users/seungkyun/PyProjects/PyBroffice/venv/lib/python3.14/site-packages/flask/app.py", line 1484, in full_dispatch_request
+    rv = self.dispatch_request()
+  File "/Users/seungkyun/PyProjects/PyBroffice/venv/lib/python3.14/site-packages/flask/app.py", line 1469, in dispatch_request
+    return self.ensure_sync(self.view_functions[rule.endpoint])(**view_args)
+           ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^
+  File "/Users/seungkyun/PyProjects/PyBroffice/broffice/router/accounts.py", line 15, in login
+    return render_template('accounts/login.html')
+  File "/Users/seungkyun/PyProjects/PyBroffice/venv/lib/python3.14/site-packages/flask/templating.py", line 151, in render_template
+    return _render(app, template, context)
+  File "/Users/seungkyun/PyProjects/PyBroffice/venv/lib/python3.14/site-packages/flask/templating.py", line 132, in _render
+    rv = template.render(context)
+  File "/Users/seungkyun/PyProjects/PyBroffice/venv/lib/python3.14/site-packages/jinja2/environment.py", line 1295, in render
+    self.environment.handle_exception()
+    ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^^
+  File "/Users/seungkyun/PyProjects/PyBroffice/venv/lib/python3.14/site-packages/jinja2/environment.py", line 942, in handle_exception
+    raise rewrite_traceback_stack(source=source)
+  File "/Users/seungkyun/PyProjects/PyBroffice/broffice/templates/accounts/login.html", line 2, in top-level template code
+    {% from "macros/form.html" import input %}
+    ^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/seungkyun/PyProjects/PyBroffice/broffice/templates/layout_login.html", line 105, in top-level template code
+    &copy; {{ now().year }} <a href="/">브로피스</a>. All Rights Reserved.
+    ^^^^^^^^^^^^^
+  File "/Users/seungkyun/PyProjects/PyBroffice/venv/lib/python3.14/site-packages/jinja2/utils.py", line 92, in from_obj
+    if hasattr(obj, "jinja_pass_arg"):
+       ~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^
+jinja2.exceptions.UndefinedError: 'now' is undefined
+[2026-02-06 07:56:04] ERROR in __init__: 처리되지 않은 예외: UndefinedError - 'now' is undefined
+Traceback (most recent call last):
+  File "/Users/seungkyun/PyProjects/PyBroffice/venv/lib/python3.14/site-packages/flask/app.py", line 1484, in full_dispatch_request
+    rv = self.dispatch_request()
+  File "/Users/seungkyun/PyProjects/PyBroffice/venv/lib/python3.14/site-packages/flask/app.py", line 1469, in dispatch_request
+    return self.ensure_sync(self.view_functions[rule.endpoint])(**view_args)
+           ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^
+  File "/Users/seungkyun/PyProjects/PyBroffice/broffice/router/accounts.py", line 15, in login
+    return render_template('accounts/login.html')
+  File "/Users/seungkyun/PyProjects/PyBroffice/venv/lib/python3.14/site-packages/flask/templating.py", line 151, in render_template
+    return _render(app, template, context)
+  File "/Users/seungkyun/PyProjects/PyBroffice/venv/lib/python3.14/site-packages/flask/templating.py", line 132, in _render
+    rv = template.render(context)
+  File "/Users/seungkyun/PyProjects/PyBroffice/venv/lib/python3.14/site-packages/jinja2/environment.py", line 1295, in render
+    self.environment.handle_exception()
+    ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^^
+  File "/Users/seungkyun/PyProjects/PyBroffice/venv/lib/python3.14/site-packages/jinja2/environment.py", line 942, in handle_exception
+    raise rewrite_traceback_stack(source=source)
+  File "/Users/seungkyun/PyProjects/PyBroffice/broffice/templates/accounts/login.html", line 2, in top-level template code
+    {% from "macros/form.html" import input %}
+    ^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/seungkyun/PyProjects/PyBroffice/broffice/templates/layout_login.html", line 105, in top-level template code
+    &copy; {{ now().year }} <a href="/">브로피스</a>. All Rights Reserved.
+    ^^^^^^^^^^^^^
+  File "/Users/seungkyun/PyProjects/PyBroffice/venv/lib/python3.14/site-packages/jinja2/utils.py", line 92, in from_obj
+    if hasattr(obj, "jinja_pass_arg"):
+       ~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^
+jinja2.exceptions.UndefinedError: 'now' is undefined
+[2026-02-06 07:56:23] INFO in log_handler: 로거 초기화 완료 - 레벨: DEBUG, 파일: /Users/seungkyun/PyProjects/PyBroffice/logs/broffice.log
+[2026-02-06 07:56:23] INFO in __init__: Flask-Mail 초기화 완료
+[2026-02-06 07:56:23] INFO in __init__: 필터 등록 완료
+[2026-02-06 07:56:23] INFO in __init__: 애플리케이션 초기화 완료
+[2026-02-06 08:10:09] INFO in log_handler: 로거 초기화 완료 - 레벨: DEBUG, 파일: /Users/seungkyun/PyProjects/PyBroffice/logs/broffice.log
+[2026-02-06 08:10:09] INFO in __init__: Flask-Mail 초기화 완료
+[2026-02-06 08:10:09] INFO in __init__: 필터 등록 완료
+[2026-02-06 08:10:09] INFO in __init__: 애플리케이션 초기화 완료
+[2026-02-06 08:13:07] INFO in log_handler: 로거 초기화 완료 - 레벨: DEBUG, 파일: /Users/seungkyun/PyProjects/PyBroffice/logs/broffice.log
+[2026-02-06 08:13:07] INFO in __init__: Flask-Mail 초기화 완료
+[2026-02-06 08:13:07] INFO in __init__: 필터 등록 완료
+[2026-02-06 08:13:07] INFO in __init__: 애플리케이션 초기화 완료
+[2026-02-06 08:55:55] WARNING in __init__: 404 에러: 404 Not Found: The requested URL was not found on the server. If you entered the URL manually please check your spelling and try again.
+[2026-02-06 08:56:09] WARNING in __init__: 404 에러: 404 Not Found: The requested URL was not found on the server. If you entered the URL manually please check your spelling and try again.
+[2026-02-06 08:56:10] WARNING in __init__: 404 에러: 404 Not Found: The requested URL was not found on the server. If you entered the URL manually please check your spelling and try again.
+[2026-02-06 08:56:12] WARNING in __init__: 404 에러: 404 Not Found: The requested URL was not found on the server. If you entered the URL manually please check your spelling and try again.
+[2026-02-06 08:56:28] WARNING in __init__: 404 에러: 404 Not Found: The requested URL was not found on the server. If you entered the URL manually please check your spelling and try again.
+[2026-02-06 08:56:29] WARNING in __init__: 404 에러: 404 Not Found: The requested URL was not found on the server. If you entered the URL manually please check your spelling and try again.
+[2026-02-06 08:56:32] WARNING in __init__: 404 에러: 404 Not Found: The requested URL was not found on the server. If you entered the URL manually please check your spelling and try again.
+[2026-02-06 08:56:33] WARNING in __init__: 404 에러: 404 Not Found: The requested URL was not found on the server. If you entered the URL manually please check your spelling and try again.
+[2026-02-06 08:56:34] WARNING in __init__: 404 에러: 404 Not Found: The requested URL was not found on the server. If you entered the URL manually please check your spelling and try again.
+[2026-02-06 08:56:36] WARNING in __init__: 404 에러: 404 Not Found: The requested URL was not found on the server. If you entered the URL manually please check your spelling and try again.
+[2026-02-06 08:56:38] WARNING in __init__: 404 에러: 404 Not Found: The requested URL was not found on the server. If you entered the URL manually please check your spelling and try again.
+[2026-02-06 08:56:38] WARNING in __init__: 404 에러: 404 Not Found: The requested URL was not found on the server. If you entered the URL manually please check your spelling and try again.
+[2026-02-06 08:56:39] WARNING in __init__: 404 에러: 404 Not Found: The requested URL was not found on the server. If you entered the URL manually please check your spelling and try again.
+[2026-02-06 08:56:41] WARNING in __init__: 404 에러: 404 Not Found: The requested URL was not found on the server. If you entered the URL manually please check your spelling and try again.
+[2026-02-06 08:56:42] WARNING in __init__: 404 에러: 404 Not Found: The requested URL was not found on the server. If you entered the URL manually please check your spelling and try again.
+[2026-02-06 08:56:44] WARNING in __init__: 404 에러: 404 Not Found: The requested URL was not found on the server. If you entered the URL manually please check your spelling and try again.
+[2026-02-06 08:56:44] WARNING in __init__: 404 에러: 404 Not Found: The requested URL was not found on the server. If you entered the URL manually please check your spelling and try again.
+[2026-02-06 08:56:51] WARNING in __init__: 404 에러: 404 Not Found: The requested URL was not found on the server. If you entered the URL manually please check your spelling and try again.
+[2026-02-06 09:22:42] INFO in log_handler: 로거 초기화 완료 - 레벨: DEBUG, 파일: /Users/seungkyun/PyProjects/PyBroffice/logs/broffice.log
+[2026-02-06 09:22:42] INFO in __init__: Flask-Mail 초기화 완료
+[2026-02-06 09:22:42] INFO in __init__: 필터 등록 완료
+[2026-02-06 09:22:42] INFO in __init__: 애플리케이션 초기화 완료
