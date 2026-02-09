@@ -3,7 +3,7 @@
 
 {% block title %}
   {% if task_kind_id == 4 %}청소업무 계약업체 
-  {% elif task_kind_id == 5 %}스낵업무 계약업체
+  {% elif task_kind_id == 5 %}간식업무 계약업체
   {% elif task_kind_id == 6 %}비품업무 계약업체
   {% else %}업체 목록
   {% endif %}
@@ -29,7 +29,7 @@
         <li class="breadcrumb-item"><a href="/">홈</a></li>
         <li class="breadcrumb-item">
           {% if task_kind_id == 4 %}청소관리
-          {% elif task_kind_id == 5 %}스낵관리
+          {% elif task_kind_id == 5 %}간식관리
           {% elif task_kind_id == 6 %}비품관리
           {% else %}업무관리
           {% endif %}
@@ -46,28 +46,21 @@
     <div class="users-stat-icon primary"><i class="ph-duotone ph-buildings"></i></div>
     <div class="users-stat-body">
       <div class="users-stat-value">{{ total_clients|default(0) }}</div>
-      <div class="users-stat-label">전체 업체</div>
+      <div class="users-stat-label">전체업체</div>
     </div>
   </div>
   <div class="users-stat-card">
-    <div class="users-stat-icon success"><i class="ph-duotone ph-check-circle"></i></div>
+    <div class="users-stat-icon success"><i class="ph-duotone ph-user"></i></div>
     <div class="users-stat-body">
-      <div class="users-stat-value">{{ active_clients|default(0) }}</div>
-      <div class="users-stat-label">활성</div>
+      <div class="users-stat-value">{{ staff_registered|default(0) }}</div>
+      <div class="users-stat-label">직원등록</div>
     </div>
   </div>
   <div class="users-stat-card">
-    <div class="users-stat-icon warning"><i class="ph-duotone ph-clock-countdown"></i></div>
+    <div class="users-stat-icon warning"><i class="ph-duotone ph-clipboard-text"></i></div>
     <div class="users-stat-body">
-      <div class="users-stat-value">{{ pending_clients|default(0) }}</div>
-      <div class="users-stat-label">검토중</div>
-    </div>
-  </div>
-  <div class="users-stat-card">
-    <div class="users-stat-icon danger"><i class="ph-duotone ph-x-circle"></i></div>
-    <div class="users-stat-body">
-      <div class="users-stat-value">{{ inactive_clients|default(0) }}</div>
-      <div class="users-stat-label">비활성</div>
+      <div class="users-stat-value">{{ area_registered|default(0) }}</div>
+      <div class="users-stat-label">업무등록</div>
     </div>
   </div>
 </div>
@@ -95,9 +88,6 @@
         </div>
       </div>
     </div>
-    <button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#addClientModal">
-      <i class="ph ph-plus me-1"></i> 업무 등록
-    </button>
   </div>
 
   <div class="users-table-wrap">
@@ -111,9 +101,7 @@
           </th>
           <th>업체명</th>
           <th>담당자</th>
-          <th>연락처</th>
-          <th>계약일</th>
-          <th>상태</th>
+          <th>작업자</th>
           <th>등록일</th>
           <th class="users-th-actions">작업</th>
         </tr>
@@ -136,31 +124,18 @@
             </td>
             <td>
               <div>{{ client.manager_name|default('-') }}</div>
-              {% if client.manager_position %}
-              <div class="users-cell-email">{{ client.manager_position }}</div>
-              {% endif %}
-            </td>
-            <td class="users-cell-meta">
-              <div>{{ client.client_phone|default('-') }}</div>
               {% if client.manager_mobile %}
               <div class="users-cell-email">{{ client.manager_mobile }}</div>
               {% endif %}
             </td>
-            <td class="users-cell-meta">{{ client.contracted_at|datetime_str('date')|default('미정') }}</td>
-            <td>
-              {% if client.status == 'active' %}
-              <span class="users-status active"><span class="users-status-dot"></span> 활성</span>
-              {% elif client.status == 'pending' %}
-              <span class="users-status pending"><span class="users-status-dot"></span> 검토중</span>
-              {% else %}
-              <span class="users-status inactive"><span class="users-status-dot"></span> 비활성</span>
-              {% endif %}
+            <td class="users-cell-meta">
+              <div>{{ client.staff_name|default('-') }}</div>
             </td>
             <td class="users-cell-meta">{{ client.created_at|datetime_str('date')|default('알 수 없음') }}</td>
             <td>
               <div class="table-actions justify-content-end">
-                <button class="btn btn-icon btn-sm btn-light" title="업무 등록" onclick="addTask({{ client.client_id }}, {{ client|tojson }})"><i class="ph ph-plus"></i></button>
-                <button class="btn btn-icon btn-sm btn-light" title="업무 현황" onclick="viewTaskStatus({{ client.client_id }}, {{ client|tojson }})"><i class="ph ph-chart-bar"></i></button>
+                <button class="btn btn-icon btn-sm btn-light" title="직원등록" onclick="addTask({{ client.client_id }}, {{ client|tojson }})"><i class="ph ph-user"></i></button>
+                <button class="btn btn-icon btn-sm btn-light" title="업무등록" onclick="viewTaskStatus({{ client.client_id }}, {{ client|tojson }})"><i class="ph ph-clipboard-text"></i></button>
               </div>
             </td>
           </tr>
