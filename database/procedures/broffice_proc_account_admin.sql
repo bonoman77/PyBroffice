@@ -355,11 +355,21 @@ BEGIN
             p_user_name,
             p_user_kind_id,
             p_user_mobile,
-            CASE WHEN p_user_kind_id = 3 THEN p_client_id ELSE NULL END, -- 업체담당자가 아니면 NULL
-            IF(p_status = 'active', 1, 0),
-            IF(p_status = 'active', NOW(), NULL),
+            CASE 
+                WHEN p_user_kind_id = 3 THEN p_client_id 
+                ELSE NULL 
+            END,
+            CASE 
+                WHEN p_status IN ('active', 'pending') THEN 1 
+                ELSE 0 
+            END,
+            CASE 
+                WHEN p_status = 'active' THEN NOW() 
+                ELSE NULL 
+            END,
             NOW()
         );
+
         SET v_user_id = LAST_INSERT_ID();
         SET v_return_value = 1; -- 성공
     END IF;

@@ -84,7 +84,7 @@ def user_regist_post():
     # client_id가 빈값이거나 없으면 NULL로 처리
     if not client_id or client_id.strip() == '':
         client_id = None
-    user_status = request.form.get('userStatus', 'inactive')  # 기본값 비활성
+    user_status = request.form.get('userStatus', 'pending')  # 기본값 대기 (승인을 받아야 함)
 
     res = conn.execute_return('set_user_insert', 
                               [user_name, user_email, user_mobile, user_kind_id, user_passwd, user_status, client_id])
