@@ -84,7 +84,7 @@
         </div>
       </div>
     </div>
-    <button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#addUserModal">
+    <button class="btn btn-primary" onclick="openUserModal()">
       <i class="ph ph-plus me-1"></i> 회원 추가
     </button>
   </div>
@@ -184,8 +184,8 @@
 
   <!-- Pagination -->
   <div class="users-pagination" id="usersPagination" style="display: none;">
-    <div class="users-pagination-info" id="paginationInfo">
-      Showing <strong id="showingRange">1-10</strong> of <strong id="totalCount">0</strong> users
+    <div class="users-pagination-info">
+      <strong id="showingRange">1-10</strong> / <strong id="totalCount">0</strong> 건
     </div>
     <nav>
       <ul class="pagination mb-0" id="paginationList">
@@ -195,20 +195,20 @@
   </div>
 </div>
 
-<!-- Add User Modal -->
-<div class="modal fade" id="addUserModal" tabindex="-1" aria-labelledby="addUserModalLabel" aria-hidden="true">
+<!-- User Modal (등록/수정 겸용) -->
+<div class="modal fade" id="userModal" tabindex="-1" aria-labelledby="userModalLabel" aria-hidden="true">
   <div class="modal-dialog">
     <div class="modal-content">
       <div class="modal-header">
-        <h5 class="modal-title" id="addUserModalLabel">회원 추가</h5>
+        <h5 class="modal-title" id="userModalLabel">회원 추가</h5>
         <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
       </div>
       <div class="modal-body">
-        <div class="alert alert-warning" role="alert">
-          
+        <div class="alert alert-warning" role="alert" id="userModalAlert">
           <strong>주의:</strong> 관리자가 직접 등록하는 회원은 이용약관 및 개인정보처리방침 동의 절차 없이 가입됩니다.
         </div>
-        <form id="addUserForm" action="{{ url_for('accounts.user_admin_insert_post') }}" method="post">
+        <form id="userForm" method="post">
+          <input type="hidden" id="userId" name="userId">
           <div class="row">
             <div class="col-md-6 mb-3">
               <label for="userName" class="form-label">이름 <span class="text-danger">*</span></label>
@@ -244,7 +244,7 @@
               </select>
             </div>
             <div class="col-md-6 mb-3">
-              <div class="form-group" id="addClientSelectGroup" style="display: none;">
+              <div class="form-group" id="clientSelectGroup" style="display: none;">
                 <label for="clientId" class="form-label">소속 업체</label>
                 <select class="form-select" id="clientId" name="clientId">
                   <option value="">선택하세요</option>
@@ -254,15 +254,15 @@
             </div>
           </div>
           <div class="mb-3">
-            <label for="userPasswd" class="form-label">비밀번호 <span class="text-danger">*</span></label>
+            <label for="userPasswd" class="form-label" id="userPasswdLabel">비밀번호 <span class="text-danger">*</span></label>
             {{ password_toggle('userPasswd', '', placeholder='비밀번호를 입력하세요', min='8', opt='required') }}
-            <div class="form-text">최소 8자 이상 입력해주세요.</div>
+            <div class="form-text" id="userPasswdHelp">최소 8자 이상 입력해주세요.</div>
           </div>
         </form>
       </div>
       <div class="modal-footer">
         <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">취소</button>
-        <button type="button" class="btn btn-primary" onclick="submitAddUser()">추가</button>
+        <button type="button" class="btn btn-primary" id="userSubmitBtn" onclick="submitUser()">추가</button>
       </div>
     </div>
   </div>
@@ -291,76 +291,6 @@
   </div>
 </div>
 
-<!-- Edit User Modal -->
-<div class="modal fade" id="editUserModal" tabindex="-1" aria-labelledby="editUserModalLabel" aria-hidden="true">
-  <div class="modal-dialog">
-    <div class="modal-content">
-      <div class="modal-header">
-        <h5 class="modal-title" id="editUserModalLabel">회원 정보 수정</h5>
-        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-      </div>
-      <div class="modal-body">
-        <form id="editUserForm" action="{{ url_for('accounts.user_admin_update_post') }}" method="post">
-          <input type="hidden" id="editUserId" name="userId">
-          <div class="row">
-            <div class="col-md-6 mb-3">
-              <label for="editUserName" class="form-label">이름 <span class="text-danger">*</span></label>
-              {{ input('text', 'editUserName', '', opt='required') }}
-            </div>
-            <div class="col-md-6 mb-3">
-              <label for="editUserEmail" class="form-label">이메일 (계정) <span class="text-danger">*</span></label>
-              {{ input('email', 'editUserEmail', '', opt='required disabled') }}
-              <div class="form-text">이메일은 변경할 수 없습니다.</div>
-            </div>
-          </div>
-          <div class="row">
-            <div class="col-md-6 mb-3">
-              <label for="editUserMobile" class="form-label">연락처 <span class="text-danger">*</span></label>
-              {{ input('tel', 'editUserMobile', '', placeholder='010-0000-0000', opt='required') }}
-            </div>
-            <div class="col-md-6 mb-3">
-              <label for="editUserStatus" class="form-label">상태</label>
-              <select class="form-select" id="editUserStatus" name="editUserStatus">
-                <option value="active">활성</option>
-                <option value="pending">대기</option>
-                <option value="inactive">비활성</option>
-              </select>
-            </div>
-          </div>
-          <div class="row">
-            <div class="col-md-6 mb-3">
-              <label for="editUserKindId" class="form-label">역할 <span class="text-danger">*</span></label>
-              <select class="form-select" id="editUserKindId" name="editUserKindId" required>
-                <option value="">선택하세요</option>
-                <option value="1">관리자</option>
-                <option value="2">현장직원</option>
-                <option value="3">업체담당자</option>
-              </select>
-            </div>
-            <div class="col-md-6 mb-3">
-              <div class="form-group" id="editClientSelectGroup" style="display: none;">
-                <label for="editClientId" class="form-label">소속 업체</label>
-                <select class="form-select" id="editClientId" name="editClientId">
-                  <option value="">선택하세요</option>
-                </select>
-                <div class="form-text">업체담당자인 경우 소속 업체를 선택하세요.</div>
-              </div>
-            </div>
-          </div>
-          <div class="mb-3">
-            <label for="editUserPasswd" class="form-label">비밀번호</label>
-            {{ password_toggle('editUserPasswd', '', placeholder='변경하지 않으려면 비워두세요', min='8', opt='') }}
-            <div class="form-text">비밀번호를 변경하려면 입력하세요 (최소 8자). 비워두면 기존 비밀번호 유지됩니다.</div>
-          </div>
-        </form>
-      </div>
-      <div class="modal-footer">
-        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">취소</button>
-        <button type="button" class="btn btn-primary" onclick="submitEditUser()">수정</button>
-      </div>
-    </div>
-  </div>
-</div>
 
 {% endblock %}
 
@@ -456,9 +386,77 @@ document.querySelectorAll('[data-filter]').forEach(item => {
   });
 });
 
-// Add User Form Submit
-function submitAddUser() {
-  const form = document.getElementById('addUserForm');
+// 회원 모달 열기 (등록/수정 겸용)
+function openUserModal(data) {
+  const form = document.getElementById('userForm');
+  const title = document.getElementById('userModalLabel');
+  const submitBtn = document.getElementById('userSubmitBtn');
+  const alertEl = document.getElementById('userModalAlert');
+  const passwdLabel = document.getElementById('userPasswdLabel');
+  const passwdHelp = document.getElementById('userPasswdHelp');
+  const passwdInput = document.getElementById('userPasswd');
+  const emailInput = document.getElementById('userEmail');
+  
+  // 폼 초기화
+  form.reset();
+  document.getElementById('userId').value = '';
+  document.getElementById('clientSelectGroup').style.display = 'none';
+  
+  if (data) {
+    // 수정 모드
+    title.textContent = '회원 정보 수정';
+    submitBtn.textContent = '수정';
+    submitBtn.className = 'btn btn-success';
+    form.action = "{{ url_for('accounts.user_admin_update_post') }}";
+    alertEl.style.display = 'none';
+    
+    // 비밀번호 필드: 수정 시 선택사항
+    passwdLabel.innerHTML = '비밀번호';
+    passwdHelp.textContent = '비밀번호를 변경하려면 입력하세요 (최소 8자). 비워두면 기존 비밀번호 유지됩니다.';
+    passwdInput.removeAttribute('required');
+    passwdInput.placeholder = '변경하지 않으려면 비워두세요';
+    
+    // 이메일 수정 불가
+    emailInput.setAttribute('disabled', 'disabled');
+    
+    // 데이터 채우기
+    document.getElementById('userId').value = data.userId;
+    document.getElementById('userName').value = data.userName || '';
+    emailInput.value = data.userEmail || '';
+    document.getElementById('userMobile').value = data.userMobile || '';
+    document.getElementById('userKindId').value = data.userKindId || '';
+    document.getElementById('userStatus').value = data.status || 'active';
+    
+    // 업체 선택 필드 처리
+    handleClientSelect(data.userKindId);
+    if (data.userKindId === '3') {
+      loadClients(data.clientId);
+    }
+  } else {
+    // 등록 모드
+    title.textContent = '회원 추가';
+    submitBtn.textContent = '추가';
+    submitBtn.className = 'btn btn-primary';
+    form.action = "{{ url_for('accounts.user_admin_insert_post') }}";
+    alertEl.style.display = '';
+    
+    // 비밀번호 필드: 등록 시 필수
+    passwdLabel.innerHTML = '비밀번호 <span class="text-danger">*</span>';
+    passwdHelp.textContent = '최소 8자 이상 입력해주세요.';
+    passwdInput.setAttribute('required', 'required');
+    passwdInput.placeholder = '비밀번호를 입력하세요';
+    
+    // 이메일 입력 가능
+    emailInput.removeAttribute('disabled');
+  }
+  
+  const modal = new bootstrap.Modal(document.getElementById('userModal'));
+  modal.show();
+}
+
+// 회원 폼 제출
+function submitUser() {
+  const form = document.getElementById('userForm');
   if (form.checkValidity()) {
     form.submit();
   } else {
@@ -466,19 +464,17 @@ function submitAddUser() {
   }
 }
 
-// 추가 모달에서 역할 변경 시 처리
+// 역할 변경 시 업체 선택 필드 표시/숨김
 document.getElementById('userKindId')?.addEventListener('change', function() {
-  handleAddClientSelect(this.value);
+  handleClientSelect(this.value);
   if (this.value === '3') {
-    loadAddClients();
+    loadClients();
   }
 });
 
-// 추가 모달 업체 선택 처리
-function handleAddClientSelect(userKindId) {
-  const clientSelectGroup = document.getElementById('addClientSelectGroup');
-  
-  if (userKindId === '3') { // 업체담당자
+function handleClientSelect(userKindId) {
+  const clientSelectGroup = document.getElementById('clientSelectGroup');
+  if (userKindId === '3') {
     clientSelectGroup.style.display = 'block';
   } else {
     clientSelectGroup.style.display = 'none';
@@ -486,81 +482,14 @@ function handleAddClientSelect(userKindId) {
   }
 }
 
-// 추가 모달 업체 목록 로드
-async function loadAddClients() {
-  try {
-    const response = await fetch('/accounts/api/clients');
-    
-    const clients = await response.json();
-    
-    const clientId = document.getElementById('clientId');
-    clientId.innerHTML = '<option value="">선택하세요</option>';
-    
-    clients.forEach(client => {
-      const option = document.createElement('option');
-      option.value = client.client_id;
-      option.textContent = client.client_name;
-      clientId.appendChild(option);
-    });
-  } catch (error) {
-    console.error('추가 모달 업체 목록 로드 실패:', error);
-  }
-}
-
-// Edit User - Load data into modal
-document.querySelectorAll('.edit-user-btn').forEach(button => {
-  button.addEventListener('click', function() {
-    const userId = this.dataset.userId;
-    const userName = this.dataset.userName;
-    const userEmail = this.dataset.userEmail;
-    const userMobile = this.dataset.userMobile;
-    const userKindId = this.dataset.userKindId;
-    const status = this.dataset.status;
-    const clientId = this.dataset.clientId || '';
-    
-    // Populate form fields
-    document.getElementById('editUserId').value = userId;
-    document.getElementById('editUserName').value = userName;
-    document.getElementById('editUserEmail').value = userEmail;
-    document.getElementById('editUserMobile').value = userMobile;
-    document.getElementById('editUserKindId').value = userKindId;
-    document.getElementById('editUserStatus').value = status;
-    document.getElementById('editClientId').value = clientId;
-    
-    // 업체 선택 필드 표시/숨김 처리
-    handleEditClientSelect(userKindId);
-    
-    // 업체 목록 로드 (필요한 경우)
-    if (userKindId === '3') {
-      loadEditClients(clientId);
-    }
-    
-    // Show modal
-    const modal = new bootstrap.Modal(document.getElementById('editUserModal'));
-    modal.show();
-  });
-});
-
-// 수정 모달 업체 선택 처리
-function handleEditClientSelect(userKindId) {
-  const clientSelectGroup = document.getElementById('editClientSelectGroup');
-  
-  if (userKindId === '3') { // 업체담당자
-    clientSelectGroup.style.display = 'block';
-  } else {
-    clientSelectGroup.style.display = 'none';
-    document.getElementById('editClientId').value = '';
-  }
-}
-
-// 수정 모달 업체 목록 로드
-async function loadEditClients(selectedClientId = '') {
+// 업체 목록 로드
+async function loadClients(selectedClientId = '') {
   try {
     const response = await fetch('/accounts/api/clients');
     const clients = await response.json();
     
-    const editClientId = document.getElementById('editClientId');
-    editClientId.innerHTML = '<option value="">선택하세요</option>';
+    const clientIdSelect = document.getElementById('clientId');
+    clientIdSelect.innerHTML = '<option value="">선택하세요</option>';
     
     clients.forEach(client => {
       const option = document.createElement('option');
@@ -569,48 +498,27 @@ async function loadEditClients(selectedClientId = '') {
       if (selectedClientId && client.client_id == selectedClientId) {
         option.selected = true;
       }
-      editClientId.appendChild(option);
+      clientIdSelect.appendChild(option);
     });
   } catch (error) {
     console.error('업체 목록 로드 실패:', error);
   }
 }
 
-// 수정 모달에서 역할 변경 시 처리
-document.getElementById('editUserKindId')?.addEventListener('change', function() {
-  handleEditClientSelect(this.value);
-  if (this.value === '3') {
-    loadEditClients();
-  }
-});
-
-// Edit User Form Submit
-function submitEditUser() {
-  const form = document.getElementById('editUserForm');
-  if (form.checkValidity()) {
-    const formData = new FormData(form);
-    
-    fetch(form.action, {
-      method: 'POST',
-      body: formData
-    })
-    .then(response => {
-      if (response.redirected) {
-        // 서버에서 리다이렉트 응답이 오면 페이지 새로고침
-        window.location.href = response.url;
-      } else {
-        // 리다이렉트가 없으면 현재 페이지 새로고침
-        window.location.reload();
-      }
-    })
-    .catch(error => {
-      console.error('수정 실패:', error);
-      showToast('danger', '회원 정보 수정에 실패했습니다.');
+// 수정 버튼 클릭 이벤트
+document.querySelectorAll('.edit-user-btn').forEach(button => {
+  button.addEventListener('click', function() {
+    openUserModal({
+      userId: this.dataset.userId,
+      userName: this.dataset.userName,
+      userEmail: this.dataset.userEmail,
+      userMobile: this.dataset.userMobile,
+      userKindId: this.dataset.userKindId,
+      clientId: this.dataset.clientId || '',
+      status: this.dataset.status
     });
-  } else {
-    form.reportValidity();
-  }
-}
+  });
+});
 
 // Delete User - Show confirmation modal
 function showDeleteModal(button) {

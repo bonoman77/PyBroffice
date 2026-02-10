@@ -245,12 +245,12 @@ def user_admin_insert_post():
 @admin_required
 def user_admin_update_post():
     user_id = request.form.get('userId')
-    user_name = request.form.get('editUserName')
-    user_mobile = request.form.get('editUserMobile')
-    user_kind_id = request.form.get('editUserKindId')
-    user_passwd = request.form.get('editUserPasswd')  # 비어있으면 None
-    user_status = request.form.get('editUserStatus', 'active')  # 상태 값
-    client_id = request.form.get('editClientId')
+    user_name = request.form.get('userName')
+    user_mobile = request.form.get('userMobile')
+    user_kind_id = request.form.get('userKindId')
+    user_passwd = request.form.get('userPasswd')  # 비어있으면 None
+    user_status = request.form.get('userStatus', 'active')  # 상태 값
+    client_id = request.form.get('clientId')
     
     # client_id가 빈값이거나 없으면 NULL로 처리
     if not client_id or client_id.strip() == '':
@@ -395,23 +395,23 @@ def client_insert_post():
 @admin_required
 def client_update_post():
     client_id = request.form.get('clientId')
-    client_name = request.form.get('editClientName')
-    client_phone = request.form.get('editClientPhone')
-    client_address = request.form.get('editClientAddress')
-    client_business_number = request.form.get('editClientBusinessNumber')
-    manager_name = request.form.get('editManagerName')
-    manager_mobile = request.form.get('editManagerMobile')
-    manager_position = request.form.get('editManagerPosition')
-    contracted_at = request.form.get('editContractDate')
-    memo = request.form.get('editMemo') 
+    client_name = request.form.get('clientName')
+    client_phone = request.form.get('clientPhone')
+    client_address = request.form.get('clientAddress')
+    client_business_number = request.form.get('clientBusinessNumber')
+    manager_name = request.form.get('managerName')
+    manager_mobile = request.form.get('managerMobile')
+    manager_position = request.form.get('managerPosition')
+    contracted_at = request.form.get('contractDate')
+    memo = request.form.get('memo') 
     
     # 업무 종류 - 각 체크박스를 직접 확인하여 1/0 숫자로 변환
-    cleaning_yn = 1 if request.form.get('editCleaningYn') else 0
-    snack_yn = 1 if request.form.get('editSnackYn') else 0
-    office_supplies_yn = 1 if request.form.get('editOfficeSuppliesYn') else 0
+    cleaning_yn = 1 if request.form.get('cleaningYn') else 0
+    snack_yn = 1 if request.form.get('snackYn') else 0
+    office_supplies_yn = 1 if request.form.get('officeSuppliesYn') else 0
     
     # 상태 값
-    status = request.form.get('editStatus', 'active')
+    status = request.form.get('status', 'active')
     
     # 프로시저 호출
     res = conn.execute_return('set_client_update', [

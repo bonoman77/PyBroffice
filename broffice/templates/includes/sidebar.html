@@ -91,8 +91,8 @@
         <button class="sidebar-panel-close btn-close" aria-label="Close"></button>
       </div>
       <ul class="panel-nav">
-        <li><a class="panel-link {{ 'active' if request.endpoint == 'tasks.task_list' and request.args.get('task_kind_id') == '4' else '' }}" href="{{ url_for('tasks.task_list', task_kind_id=4) }}"><i class="bi bi-plus-circle me-2"></i>스케줄등록</a></li>
-        <li><a class="panel-link {{ 'active' if request.endpoint == 'tasks.task_schedule_list' and request.args.get('task_kind_id') == '4' else '' }}" href="{{ url_for('tasks.task_schedule_list', task_kind_id=4) }}"><i class="bi bi-calendar-week me-2"></i>업무일정</a></li>
+        <li><a class="panel-link {{ 'active' if request.endpoint == 'tasks.task_list' and request.args.get('task_kind_id') == '4' else '' }}" href="{{ url_for('tasks.task_list', task_kind_id=4) }}"><i class="bi bi-plus-circle me-2"></i>작업관리</a></li>
+        <li><a class="panel-link {{ 'active' if request.endpoint == 'tasks.task_schedule_list' and request.args.get('task_kind_id') == '4' else '' }}" href="{{ url_for('tasks.task_schedule_list', task_kind_id=4) }}"><i class="bi bi-calendar-week me-2"></i>업무스케줄</a></li>
         <li><a class="panel-link {{ 'active' if request.endpoint == 'tasks.result' and request.args.get('task_kind_id') == '4' else '' }}" href="{{ url_for('tasks.result', task_kind_id=4) }}"><i class="bi bi-list-check me-2"></i>오늘할일</a></li>
         <li><a class="panel-link {{ 'active' if request.endpoint == 'tasks.notify' and request.args.get('task_kind_id') == '4' else '' }}" href="{{ url_for('tasks.notify', task_kind_id=4) }}"><i class="bi bi-clipboard-check me-2"></i>업무결과</a></li>
       </ul>
@@ -105,8 +105,8 @@
         <button class="sidebar-panel-close btn-close" aria-label="Close"></button>
       </div>
       <ul class="panel-nav">
-        <li><a class="panel-link {{ 'active' if request.endpoint == 'tasks.task_list' and request.args.get('task_kind_id') == '5' else '' }}" href="{{ url_for('tasks.task_list', task_kind_id=5) }}"><i class="bi bi-plus-circle me-2"></i>스케줄등록</a></li>
-        <li><a class="panel-link {{ 'active' if request.endpoint == 'tasks.task_schedule_list' and request.args.get('task_kind_id') == '5' else '' }}" href="{{ url_for('tasks.task_schedule_list', task_kind_id=5) }}"><i class="bi bi-calendar-week me-2"></i>업무일정</a></li>
+        <li><a class="panel-link {{ 'active' if request.endpoint == 'tasks.task_list' and request.args.get('task_kind_id') == '5' else '' }}" href="{{ url_for('tasks.task_list', task_kind_id=5) }}"><i class="bi bi-plus-circle me-2"></i>작업관리</a></li>
+        <li><a class="panel-link {{ 'active' if request.endpoint == 'tasks.task_schedule_list' and request.args.get('task_kind_id') == '5' else '' }}" href="{{ url_for('tasks.task_schedule_list', task_kind_id=5) }}"><i class="bi bi-calendar-week me-2"></i>업무스케줄</a></li>
         <li><a class="panel-link {{ 'active' if request.endpoint == 'tasks.result' and request.args.get('task_kind_id') == '5' else '' }}" href="{{ url_for('tasks.result', task_kind_id=5) }}"><i class="bi bi-list-check me-2"></i>오늘할일</a></li>
         <li><a class="panel-link {{ 'active' if request.endpoint == 'tasks.notify' and request.args.get('task_kind_id') == '5' else '' }}" href="{{ url_for('tasks.notify', task_kind_id=5) }}"><i class="bi bi-clipboard-check me-2"></i>업무결과</a></li>
       </ul>
@@ -119,8 +119,8 @@
         <button class="sidebar-panel-close btn-close" aria-label="Close"></button>
       </div>
       <ul class="panel-nav">
-        <li><a class="panel-link {{ 'active' if request.endpoint == 'tasks.task_list' and request.args.get('task_kind_id') == '6' else '' }}" href="{{ url_for('tasks.task_list', task_kind_id=6) }}"><i class="bi bi-plus-circle me-2"></i>스케줄등록</a></li>
-        <li><a class="panel-link {{ 'active' if request.endpoint == 'tasks.task_schedule_list' and request.args.get('task_kind_id') == '6' else '' }}" href="{{ url_for('tasks.task_schedule_list', task_kind_id=6) }}"><i class="bi bi-calendar-week me-2"></i>업무일정</a></li>
+        <li><a class="panel-link {{ 'active' if request.endpoint == 'tasks.task_list' and request.args.get('task_kind_id') == '6' else '' }}" href="{{ url_for('tasks.task_list', task_kind_id=6) }}"><i class="bi bi-plus-circle me-2"></i>작업관리</a></li>
+        <li><a class="panel-link {{ 'active' if request.endpoint == 'tasks.task_schedule_list' and request.args.get('task_kind_id') == '6' else '' }}" href="{{ url_for('tasks.task_schedule_list', task_kind_id=6) }}"><i class="bi bi-calendar-week me-2"></i>업무스케줄</a></li>
         <li><a class="panel-link {{ 'active' if request.endpoint == 'tasks.result' and request.args.get('task_kind_id') == '6' else '' }}" href="{{ url_for('tasks.result', task_kind_id=6) }}"><i class="bi bi-list-check me-2"></i>오늘할일</a></li>
         <li><a class="panel-link {{ 'active' if request.endpoint == 'tasks.notify' and request.args.get('task_kind_id') == '6' else '' }}" href="{{ url_for('tasks.notify', task_kind_id=6) }}"><i class="bi bi-clipboard-check me-2"></i>업무결과</a></li>
       </ul>

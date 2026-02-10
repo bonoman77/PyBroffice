@@ -11,6 +11,7 @@ class TablePagination {
     this.customFilter = options.customFilter || null;
     this.currentPage = 1;
     this.allRows = [];
+    this.filteredRows = [];
     this.filters = {};
     
     this.init();
@@ -23,7 +24,10 @@ class TablePagination {
     // 초기 검색 매칭 속성 설정
     this.allRows.forEach(row => {
       row.setAttribute('data-search-match', 'true');
+      row.setAttribute('data-filtered', 'true');
     });
+    
+    this.filteredRows = [...this.allRows];
     
     if (this.allRows.length > 0) {
       this.updatePagination();
@@ -34,8 +38,10 @@ class TablePagination {
    * 페이징 업데이트
    */
   updatePagination() {
-    const visibleRows = this.allRows.filter(row => row.style.display !== 'none');
-    const totalPages = Math.ceil(visibleRows.length / this.itemsPerPage);
+    // 필터된 행만 추출 (data-filtered 속성 기반)
+    this.filteredRows = this.allRows.filter(row => row.getAttribute('data-filtered') === 'true');
+    const totalItems = this.filteredRows.length;
+    const totalPages = Math.ceil(totalItems / this.itemsPerPage);
     
     // 현재 페이지 조정
     if (this.currentPage > totalPages && totalPages > 0) {
@@ -45,35 +51,40 @@ class TablePagination {
       this.currentPage = 1;
     }
     
-    // 페이지에 맞는 행만 표시
-    visibleRows.forEach((row, index) => {
-      const page = Math.floor(index / this.itemsPerPage) + 1;
-      if (page === this.currentPage) {
-        row.style.display = '';
-      } else {
-        row.style.display = 'none';
-      }
+    // 모든 행 숨기기
+    this.allRows.forEach(row => {
+      row.style.display = 'none';
     });
     
+    // 현재 페이지에 해당하는 필터된 행만 표시
+    const startIndex = (this.currentPage - 1) * this.itemsPerPage;
+    const endIndex = Math.min(startIndex + this.itemsPerPage, totalItems);
+    
+    for (let i = startIndex; i < endIndex; i++) {
+      this.filteredRows[i].style.display = '';
+    }
+    
     // 페이징 정보 업데이트
-    const start = (this.currentPage - 1) * this.itemsPerPage + 1;
-    const end = Math.min(this.currentPage * this.itemsPerPage, visibleRows.length);
+    const start = totalItems > 0 ? startIndex + 1 : 0;
+    const end = endIndex;
     
-    const showingRangeEl = document.getElementById('showingRange');
-    const totalCountEl = document.getElementById('totalCount');
-    
-    if (showingRangeEl) showingRangeEl.textContent = `${start}-${end}`;
-    if (totalCountEl) totalCountEl.textContent = visibleRows.length;
+    const paginationEl = document.querySelector(this.paginationSelector);
+    if (paginationEl) {
+      const showingRangeEl = paginationEl.querySelector('#showingRange');
+      const totalCountEl = paginationEl.querySelector('#totalCount');
+      
+      if (showingRangeEl) showingRangeEl.textContent = `${start}-${end}`;
+      if (totalCountEl) totalCountEl.textContent = totalItems;
+    }
     
     // 페이징 버튼 생성
     this.renderPaginationButtons(totalPages);
     
     // 페이징 표시/숨김
-    const paginationEl = document.querySelector(this.paginationSelector);
     if (paginationEl) {
-      if (visibleRows.length > this.itemsPerPage) {
+      if (totalItems > this.itemsPerPage) {
         paginationEl.style.display = 'flex';
-      } else if (visibleRows.length > 0) {
+      } else if (totalItems > 0) {
         paginationEl.style.display = 'flex';
         const paginationList = paginationEl.querySelector('.pagination');
         if (paginationList) paginationList.innerHTML = '';
@@ -193,7 +204,7 @@ class TablePagination {
         showRow = this.customFilter(row, this.filters);
       }
       
-      row.style.display = showRow ? '' : 'none';
+      row.setAttribute('data-filtered', showRow ? 'true' : 'false');
     });
     
     this.updatePagination();
@@ -207,7 +218,7 @@ class TablePagination {
     this.filters = {};
     this.allRows.forEach(row => {
       row.setAttribute('data-search-match', 'true');
-      row.style.display = '';
+      row.setAttribute('data-filtered', 'true');
     });
     this.updatePagination();
   }

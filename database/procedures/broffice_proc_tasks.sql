@@ -197,8 +197,8 @@ BEGIN
         t.task_kind_id,
         t.days_of_week,
         t.fix_dates,
-        t.service_started_at,
-        t.service_ended_at,
+        DATE_FORMAT(t.service_started_at, '%Y-%m-%d') AS service_started_date,
+        DATE_FORMAT(t.service_ended_at, '%Y-%m-%d') AS service_ended_date,
         t.use_yn,
         t.created_at,
         t.updated_at,
@@ -229,7 +229,15 @@ BEGIN
                 CASE WHEN FIND_IN_SET('7', t.days_of_week) > 0 THEN '일' ELSE '' END
             )
         END AS day_of_week,
-        t.fix_dates
+        t.fix_dates,
+		CASE
+			WHEN t.use_yn = 0 THEN 'inactive'
+			WHEN t.use_yn = 1
+				AND NOW() >= t.service_started_at
+				AND (t.service_ended_at IS NULL OR NOW() <= t.service_ended_at)
+			THEN 'active'
+		ELSE 'pending'
+		END AS task_status
     FROM tasks t
     INNER JOIN clients c ON t.client_id = c.client_id
     INNER JOIN users u ON t.user_id = u.user_id
@@ -239,5 +247,253 @@ BEGIN
 END$$
 
 
-DELIMITER ;
+-- =============================================
+-- Author:      김승균
+-- Create date: 2026-02-10
+-- Email:       bonoman77@gmail.com 
+-- Description: 작업 소프트 삭제 (deleted_at 설정)
+-- =============================================
 
+DROP PROCEDURE IF EXISTS set_task_delete$$
+
+CREATE PROCEDURE set_task_delete(
+    IN p_task_id INT
+)
+BEGIN
+    DECLARE v_return_value INT DEFAULT 0;
+    
+    START TRANSACTION;
+    
+    UPDATE tasks
+    SET deleted_at = NOW()
+    WHERE task_id = p_task_id
+      AND deleted_at IS NULL;
+    
+    SET v_return_value = ROW_COUNT();
+    
+    COMMIT;
+    
+    SELECT v_return_value AS return_value;
+END$$
+
+
+-- =============================================
+-- Author:      김승균
+-- Create date: 2026-02-10
+-- Email:       bonoman77@gmail.com 
+-- Description: 구역 목록 조회 (task_id 기준)
+-- =============================================
+
+DROP PROCEDURE IF EXISTS get_task_area_list$$
+
+CREATE PROCEDURE get_task_area_list(
+    IN p_task_id INT
+)
+BEGIN
+    SELECT 
+        task_area_id,
+        task_id,
+        floor,
+        area,
+        check_points,
+        min_photo_cnt,
+        use_yn,
+        created_at,
+        updated_at
+    FROM task_areas
+    WHERE task_id = p_task_id
+      AND deleted_at IS NULL
+    ORDER BY floor, area;
+END$$
+
+
+-- =============================================
+-- Author:      김승균
+-- Create date: 2026-02-10
+-- Email:       bonoman77@gmail.com 
+-- Description: 구역 등록
+-- =============================================
+
+DROP PROCEDURE IF EXISTS set_task_area_insert$$
+
+CREATE PROCEDURE set_task_area_insert(
+    IN p_task_id INT,
+    IN p_floor VARCHAR(10),
+    IN p_area VARCHAR(30),
+    IN p_check_points VARCHAR(300),
+    IN p_min_photo_cnt INT,
+    IN p_use_yn TINYINT(1)
+)
+BEGIN
+    DECLARE v_return_value INT DEFAULT 0;
+    
+    START TRANSACTION;
+    
+    INSERT INTO task_areas (
+        task_id,
+        floor,
+        area,
+        check_points,
+        min_photo_cnt,
+        use_yn,
+        created_at
+    ) VALUES (
+        p_task_id,
+        p_floor,
+        p_area,
+        p_check_points,
+        p_min_photo_cnt,
+        p_use_yn,
+        NOW()
+    );
+    
+    SET v_return_value = LAST_INSERT_ID();
+    
+    COMMIT;
+    
+    SELECT v_return_value AS return_value;
+END$$
+
+
+-- =============================================
+-- Author:      김승균
+-- Create date: 2026-02-10
+-- Email:       bonoman77@gmail.com 
+-- Description: 구역 수정
+-- =============================================
+
+DROP PROCEDURE IF EXISTS set_task_area_update$$
+
+CREATE PROCEDURE set_task_area_update(
+    IN p_task_area_id INT,
+    IN p_floor VARCHAR(10),
+    IN p_area VARCHAR(30),
+    IN p_check_points VARCHAR(300),
+    IN p_min_photo_cnt INT,
+    IN p_use_yn TINYINT(1)
+)
+BEGIN
+    DECLARE v_return_value INT DEFAULT 0;
+    
+    START TRANSACTION;
+    
+    UPDATE task_areas
+    SET floor = p_floor,
+        area = p_area,
+        check_points = p_check_points,
+        min_photo_cnt = p_min_photo_cnt,
+        use_yn = p_use_yn,
+        updated_at = NOW()
+    WHERE task_area_id = p_task_area_id
+      AND deleted_at IS NULL;
+    
+    SET v_return_value = ROW_COUNT();
+    
+    COMMIT;
+    
+    SELECT v_return_value AS return_value;
+END$$
+
+
+-- =============================================
+-- Author:      김승균
+-- Create date: 2026-02-10
+-- Email:       bonoman77@gmail.com 
+-- Description: 스케줄 일괄 생성 (task_id, year_month 기준)
+--              days_of_week 또는 fix_dates 기반으로 해당 월 날짜 생성
+-- =============================================
+
+DROP PROCEDURE IF EXISTS set_task_schedule_generate$$
+
+CREATE PROCEDURE set_task_schedule_generate(
+    IN p_task_id INT,
+    IN p_year_month VARCHAR(7)
+)
+BEGIN
+    DECLARE v_task_user_id INT;
+    DECLARE v_days_of_week VARCHAR(50);
+    DECLARE v_fix_dates VARCHAR(200);
+    DECLARE v_start_date DATE;
+    DECLARE v_end_date DATE;
+    DECLARE v_current_date DATE;
+    DECLARE v_day_of_week INT;
+    DECLARE v_day_of_month INT;
+    DECLARE v_insert_count INT DEFAULT 0;
+    DECLARE v_service_started_at DATE;
+    DECLARE v_service_ended_at DATE;
+    
+    -- task 정보 조회
+    SELECT user_id, days_of_week, fix_dates, 
+           DATE(service_started_at), DATE(service_ended_at)
+    INTO v_task_user_id, v_days_of_week, v_fix_dates,
+         v_service_started_at, v_service_ended_at
+    FROM tasks
+    WHERE task_id = p_task_id
+      AND deleted_at IS NULL;
+    
+    -- task가 없으면 종료
+    IF v_task_user_id IS NULL THEN
+        SELECT 0 AS return_value, '작업을 찾을 수 없습니다.' AS message;
+    ELSE
+        -- 해당 월의 시작일/종료일 계산
+        SET v_start_date = STR_TO_DATE(CONCAT(p_year_month, '-01'), '%Y-%m-%d');
+        SET v_end_date = LAST_DAY(v_start_date);
+        
+        -- 서비스 기간으로 범위 제한
+        IF v_service_started_at IS NOT NULL AND v_service_started_at > v_start_date THEN
+            SET v_start_date = v_service_started_at;
+        END IF;
+        IF v_service_ended_at IS NOT NULL AND v_service_ended_at < v_end_date THEN
+            SET v_end_date = v_service_ended_at;
+        END IF;
+        
+        -- 기존 해당 월 스케줄 삭제 (completed_at이 NULL인 것만)
+        DELETE FROM task_schedules
+        WHERE task_id = p_task_id
+          AND scheduled_at >= STR_TO_DATE(CONCAT(p_year_month, '-01'), '%Y-%m-%d')
+          AND scheduled_at <= LAST_DAY(STR_TO_DATE(CONCAT(p_year_month, '-01'), '%Y-%m-%d'))
+          AND completed_at IS NULL;
+        
+        SET v_current_date = v_start_date;
+        
+        WHILE v_current_date <= v_end_date DO
+            -- MySQL DAYOFWEEK: 1=일, 2=월, 3=화, 4=수, 5=목, 6=금, 7=토
+            -- 우리 시스템: 1=월, 2=화, 3=수, 4=목, 5=금, 6=토, 7=일
+            SET v_day_of_week = CASE DAYOFWEEK(v_current_date)
+                WHEN 1 THEN 7  -- 일
+                WHEN 2 THEN 1  -- 월
+                WHEN 3 THEN 2  -- 화
+                WHEN 4 THEN 3  -- 수
+                WHEN 5 THEN 4  -- 목
+                WHEN 6 THEN 5  -- 금
+                WHEN 7 THEN 6  -- 토
+            END;
+            
+            SET v_day_of_month = DAY(v_current_date);
+            
+            -- days_of_week가 '0'이면 fix_dates 기반 (월별)
+            IF v_days_of_week = '0' THEN
+                IF v_fix_dates IS NOT NULL AND FIND_IN_SET(v_day_of_month, REPLACE(v_fix_dates, ' ', '')) > 0 THEN
+                    INSERT INTO task_schedules (task_id, user_id, scheduled_at)
+                    VALUES (p_task_id, v_task_user_id, v_current_date);
+                    SET v_insert_count = v_insert_count + 1;
+                END IF;
+            ELSE
+                -- days_of_week 기반 (요일)
+                IF FIND_IN_SET(v_day_of_week, v_days_of_week) > 0 THEN
+                    INSERT INTO task_schedules (task_id, user_id, scheduled_at)
+                    VALUES (p_task_id, v_task_user_id, v_current_date);
+                    SET v_insert_count = v_insert_count + 1;
+                END IF;
+            END IF;
+            
+            SET v_current_date = DATE_ADD(v_current_date, INTERVAL 1 DAY);
+        END WHILE;
+        
+        SELECT v_insert_count AS return_value, 
+               CONCAT(v_insert_count, '건의 스케줄이 생성되었습니다.') AS message;
+    END IF;
+END$$
+
+
+DELIMITER ;

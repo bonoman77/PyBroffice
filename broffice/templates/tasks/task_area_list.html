@@ -1,0 +1,222 @@
+{% extends "layout.html" %}
+{% from "macros/form.html" import input, textarea %}
+
+{% block title %}
+  {% if task_kind_id == 4 %}청소{% elif task_kind_id == 5 %}간식{% elif task_kind_id == 6 %}비품{% endif %} 구역관리
+{% endblock %}
+
+{% block content %}
+<!-- Page Header -->
+<div class="page-header">
+  <div>
+    <h1 class="page-title">
+      {% if task_kind_id == 4 %}청소{% elif task_kind_id == 5 %}간식{% elif task_kind_id == 6 %}비품{% endif %} 구역관리
+    </h1>
+    <nav>
+      <ol class="breadcrumb">
+        <li class="breadcrumb-item"><a href="/">홈</a></li>
+        <li class="breadcrumb-item">
+          {% if task_kind_id == 4 %}청소{% elif task_kind_id == 5 %}간식{% elif task_kind_id == 6 %}비품{% else %}업무{% endif %}
+        </li>
+        <li class="breadcrumb-item"><a href="{{ url_for('tasks.task_list', task_kind_id=task_kind_id) }}">스케줄등록</a></li>
+        <li class="breadcrumb-item active">구역관리</li>
+      </ol>
+    </nav>
+  </div>
+</div>
+
+<!-- 구역 등록 폼 -->
+<div class="card mb-4">
+  <div class="card-header d-flex justify-content-between align-items-center">
+    <h5 class="card-title mb-0" id="areaFormTitle">구역 등록</h5>
+    <div class="d-flex gap-3 align-items-center text-muted small">
+      <span><strong>업체</strong> {{ task_info.client_name }}</span>
+      <span>|</span>
+      <span><strong>작업자</strong> {{ task_info.user_name }}</span>
+      <span>|</span>
+      <span><strong>스케줄</strong> {{ task_info.day_of_week }}</span>
+    </div>
+  </div>
+  <div class="card-body">
+    <form id="areaForm">
+      <input type="hidden" id="taskId" name="taskId" value="{{ task_id }}">
+      <input type="hidden" id="taskKindId" name="taskKindId" value="{{ task_kind_id }}">
+      <input type="hidden" id="taskAreaId" name="taskAreaId">
+      <div class="row">
+        <div class="col-md-2 mb-3">
+          <label for="floor" class="form-label">층 <span class="text-danger">*</span></label>
+          {{ input('text', 'floor', '', placeholder='예: 1F, B1', opt='required') }}
+        </div>
+        <div class="col-md-3 mb-3">
+          <label for="area" class="form-label">구역 <span class="text-danger">*</span></label>
+          {{ input('text', 'area', '', placeholder='예: 로비, 회의실', opt='required') }}
+        </div>
+        <div class="col-md-4 mb-3">
+          <label for="checkPoints" class="form-label">업무포인트 <span class="text-danger">*</span></label>
+          {{ input('text', 'checkPoints', '', placeholder='예: 바닥청소, 쓰레기통 비우기', opt='required') }}
+        </div>
+        <div class="col-md-1 mb-3">
+          <label for="minPhotoCnt" class="form-label">최소사진</label>
+          <input type="number" class="form-control" id="minPhotoCnt" name="minPhotoCnt" value="0" min="0">
+        </div>
+        <input type="hidden" id="useYn" name="useYn" value="1">
+        <div class="col-md-2 mb-3 d-flex align-items-end">
+          <button type="button" class="btn btn-primary w-100" id="areaSubmitBtn" onclick="submitArea()">등록</button>
+        </div>
+      </div>
+    </form>
+  </div>
+</div>
+
+<!-- 구역 목록 -->
+<div class="card">
+  <div class="card-header d-flex justify-content-between align-items-center">
+    <h5 class="card-title mb-0">구역 목록</h5>
+    <span class="badge bg-primary">{{ areas|length }}건</span>
+  </div>
+  <div class="card-body p-0">
+    <div class="users-table-wrap">
+      <table class="users-table">
+        <thead>
+          <tr>
+            <th style="width: 60px">No</th>
+            <th style="width: 80px">층</th>
+            <th style="width: 150px">구역</th>
+            <th>업무포인트</th>
+            <th style="width: 80px">최소사진</th>
+            <th style="width: 80px">사용</th>
+            <th style="width: 100px">등록일</th>
+            <th style="width: 80px" class="users-th-actions">작업</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% if areas %}
+            {% for area in areas %}
+            <tr>
+              <td class="text-center">{{ loop.index }}</td>
+              <td>{{ area.floor }}</td>
+              <td class="fw-semibold">{{ area.area }}</td>
+              <td>{{ area.check_points }}</td>
+              <td class="text-center">{{ area.min_photo_cnt }}</td>
+              <td class="text-center">
+                {% if area.use_yn %}
+                  <span class="badge bg-success-subtle text-success">사용</span>
+                {% else %}
+                  <span class="badge bg-danger-subtle text-danger">미사용</span>
+                {% endif %}
+              </td>
+              <td class="users-cell-meta">
+                <div>{{ area.created_at.strftime('%Y-%m-%d') if area.created_at else '-' }}</div>
+              </td>
+              <td>
+                <div class="table-actions justify-content-end">
+                  <button class="btn btn-icon btn-sm btn-light edit-area-btn" title="수정"
+                    data-area-id="{{ area.task_area_id }}"
+                    data-floor="{{ area.floor }}"
+                    data-area="{{ area.area }}"
+                    data-check-points="{{ area.check_points }}"
+                    data-min-photo-cnt="{{ area.min_photo_cnt }}"
+                    data-use-yn="{{ area.use_yn }}">
+                    <i class="ph ph-pencil-simple"></i>
+                  </button>
+                </div>
+              </td>
+            </tr>
+            {% endfor %}
+          {% else %}
+            <tr>
+              <td colspan="8" class="text-center py-5">
+                <div class="text-muted">
+                  <i class="ph ph-map-pin fs-1 d-block mb-2"></i>
+                  등록된 구역이 없습니다.
+                </div>
+              </td>
+            </tr>
+          {% endif %}
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>
+
+<!-- 스케줄 목록으로 돌아가기 -->
+<div class="mt-4 text-left">
+  <a href="{{ url_for('tasks.task_list', task_kind_id=task_kind_id) }}" class="btn btn-secondary">
+    <i class="ph ph-arrow-left me-1"></i> 스케줄 목록
+  </a>
+</div>
+
+{% endblock %}
+
+{% block extra_js %}
+<script>
+let isEditMode = false;
+
+// 구역 등록/수정
+function submitArea() {
+  const form = document.getElementById('areaForm');
+  if (!form.checkValidity()) {
+    form.reportValidity();
+    return;
+  }
+  
+  const formData = new FormData(form);
+  const taskAreaId = document.getElementById('taskAreaId').value;
+  
+  const url = taskAreaId 
+    ? '{{ url_for("tasks.task_area_update") }}'
+    : '{{ url_for("tasks.task_area_insert") }}';
+  
+  fetch(url, {
+    method: 'POST',
+    body: formData
+  })
+  .then(response => response.json())
+  .then(data => {
+    if (data.success) {
+      alert(data.message);
+      location.reload();
+    } else {
+      alert('처리에 실패했습니다.');
+    }
+  })
+  .catch(error => {
+    console.error('Error:', error);
+    alert('처리 중 오류가 발생했습니다.');
+  });
+}
+
+// 수정 버튼 클릭
+document.querySelectorAll('.edit-area-btn').forEach(button => {
+  button.addEventListener('click', function() {
+    isEditMode = true;
+    
+    document.getElementById('taskAreaId').value = this.dataset.areaId;
+    document.getElementById('floor').value = this.dataset.floor;
+    document.getElementById('area').value = this.dataset.area;
+    document.getElementById('checkPoints').value = this.dataset.checkPoints;
+    document.getElementById('minPhotoCnt').value = this.dataset.minPhotoCnt;
+    // 수정 모드 UI
+    document.getElementById('areaFormTitle').textContent = '구역 수정';
+    const submitBtn = document.getElementById('areaSubmitBtn');
+    submitBtn.textContent = '수정';
+    submitBtn.className = 'btn btn-success w-100';
+    
+    // 폼으로 스크롤
+    document.getElementById('areaForm').scrollIntoView({ behavior: 'smooth' });
+  });
+});
+
+// 폼 초기화 (등록 모드로 복귀)
+function resetForm() {
+  document.getElementById('areaForm').reset();
+  document.getElementById('taskAreaId').value = '';
+  document.getElementById('areaFormTitle').textContent = '구역 등록';
+  const submitBtn = document.getElementById('areaSubmitBtn');
+  submitBtn.textContent = '등록';
+  submitBtn.className = 'btn btn-primary w-100';
+  
+  isEditMode = false;
+}
+</script>
+{% endblock %}

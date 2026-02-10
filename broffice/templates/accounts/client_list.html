@@ -84,7 +84,7 @@
         </div>
       </div>
     </div>
-    <button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#addClientModal">
+    <button class="btn btn-primary" onclick="openClientModal()">
       <i class="ph ph-plus me-1"></i> 업체 등록
     </button>
   </div>
@@ -191,8 +191,8 @@
 
   <!-- Pagination -->
   <div class="users-pagination" id="clientsPagination" style="display: none;">
-    <div class="users-pagination-info" id="paginationInfo">
-      Showing <strong id="showingRange">1-10</strong> of <strong id="totalCount">0</strong> clients
+    <div class="users-pagination-info">
+      <strong id="showingRange">1-10</strong> / <strong id="totalCount">0</strong> 건
     </div>
     <nav>
       <ul class="pagination mb-0" id="paginationList">
@@ -202,16 +202,17 @@
   </div>
 </div>
 
-<!-- Add Client Modal -->
-<div class="modal fade" id="addClientModal" tabindex="-1" aria-labelledby="addClientModalLabel" aria-hidden="true">
+<!-- Client Modal (등록/수정 겸용) -->
+<div class="modal fade" id="clientModal" tabindex="-1" aria-labelledby="clientModalLabel" aria-hidden="true">
   <div class="modal-dialog modal-lg">
     <div class="modal-content">
       <div class="modal-header">
-        <h5 class="modal-title" id="addClientModalLabel">업체 등록</h5>
+        <h5 class="modal-title" id="clientModalLabel">업체 등록</h5>
         <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
       </div>
       <div class="modal-body">
-        <form id="addClientForm" action="{{ url_for('accounts.client_insert_post') }}" method="post">
+        <form id="clientForm" method="post">
+          <input type="hidden" id="clientId" name="clientId">
           <div class="row">
             <div class="col-md-6 mb-3">
               <label for="clientName" class="form-label">업체명 <span class="text-danger">*</span></label>
@@ -284,7 +285,7 @@
       </div>
       <div class="modal-footer">
         <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">취소</button>
-        <button type="button" class="btn btn-primary" onclick="submitAddClient()">등록</button>
+        <button type="button" class="btn btn-primary" id="clientSubmitBtn" onclick="submitClient()">등록</button>
       </div>
     </div>
   </div>
@@ -313,94 +314,6 @@
   </div>
 </div>
 
-<!-- Edit Client Modal -->
-<div class="modal fade" id="editClientModal" tabindex="-1" aria-labelledby="editClientModalLabel" aria-hidden="true">
-  <div class="modal-dialog modal-lg">
-    <div class="modal-content">
-      <div class="modal-header">
-        <h5 class="modal-title" id="editClientModalLabel">업체 수정</h5>
-        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-      </div>
-      <div class="modal-body">
-        <form id="editClientForm" action="{{ url_for('accounts.client_update_post') }}" method="post">
-          <input type="hidden" id="editClientId" name="clientId">
-          <div class="row">
-            <div class="col-md-6 mb-3">
-              <label for="editClientName" class="form-label">업체명 <span class="text-danger">*</span></label>
-              {{ input('text', 'editClientName', '', opt='required') }}
-            </div>
-            <div class="col-md-6 mb-3">
-              <label for="editClientBusinessNumber" class="form-label">사업자등록번호</label>
-              {{ input('text', 'editClientBusinessNumber', '', placeholder='000-00-00000') }}
-            </div>
-          </div>
-          <div class="row">
-            <div class="col-md-6 mb-3">
-              <label for="editClientPhone" class="form-label">업체 연락처 <span class="text-danger">*</span></label>
-              {{ input('tel', 'editClientPhone', '', opt='required') }}
-            </div>
-            <div class="col-md-6 mb-3">
-              <label for="editContractDate" class="form-label">계약일 <span class="text-danger">*</span></label>
-              {{ input('date', 'editContractDate', '', opt='required') }}
-            </div>
-          </div>
-          <div class="row">
-            <div class="col-md-4 mb-3">
-              <label for="editManagerName" class="form-label">담당자명</label>
-              {{ input('text', 'editManagerName', '') }}
-            </div>
-            <div class="col-md-4 mb-3">
-              <label for="editManagerPosition" class="form-label">담당자 직급</label>
-              {{ input('text', 'editManagerPosition', '', placeholder='예: 과장, 팀장') }}
-            </div>
-            <div class="col-md-4 mb-3">
-              <label for="editManagerMobile" class="form-label">담당자 연락처</label>
-              {{ input('tel', 'editManagerMobile', '', placeholder='010-0000-0000') }}
-            </div>
-          </div>
-          <div class="row">
-            <div class="col-md-6 mb-3">
-              <label for="editStatus" class="form-label">상태</label>
-              <select class="form-select" id="editStatus" name="editStatus">
-                <option value="active">활성</option>
-                <option value="inactive">비활성</option>
-              </select>
-            </div>
-            <div class="col-md-6 mb-3">
-              <label class="form-label">업무 종류 <span class="text-danger">*</span></label>
-              <div class="d-flex gap-3">
-                <div class="form-check">
-                  <input class="form-check-input" type="checkbox" id="editCleaningYn" name="editCleaningYn">
-                  <label class="form-check-label" for="editCleaningYn">청소</label>
-                </div>
-                <div class="form-check">
-                  <input class="form-check-input" type="checkbox" id="editSnackYn" name="editSnackYn">
-                  <label class="form-check-label" for="editSnackYn">간식</label>
-                </div>
-                <div class="form-check">
-                  <input class="form-check-input" type="checkbox" id="editOfficeSuppliesYn" name="editOfficeSuppliesYn">
-                  <label class="form-check-label" for="editOfficeSuppliesYn">비품</label>
-                </div>
-              </div>
-            </div>
-          </div>
-          <div class="mb-3">
-            <label for="editClientAddress" class="form-label">주소</label>
-            {{ input('text', 'editClientAddress', '') }}
-          </div>
-          <div class="mb-3">
-            <label for="editMemo" class="form-label">비고</label>
-            {{ textarea('editMemo', '', rows='3') }}
-          </div>
-        </form>
-      </div>
-      <div class="modal-footer">
-        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">취소</button>
-        <button type="button" class="btn btn-primary" onclick="submitEditClient()">수정</button>
-      </div>
-    </div>
-  </div>
-</div>
 
 {% endblock %}
 
@@ -415,32 +328,23 @@ const clientPagination = new TablePagination({
 
 // 커스텀 필터 함수 정의
 clientPagination.customFilter = function(row, filters) {
-  console.log('customFilter called:', filters);
-  
   // 업종 필터 - 복수 선택 지원
   if (filters.type && filters.type !== 'all') {
     const typeElements = row.querySelectorAll('.badge');
-    console.log('Type elements found:', typeElements.length);
     if (typeElements.length > 0) {
       const typeTexts = Array.from(typeElements).map(el => el.textContent);
-      console.log('Type texts:', typeTexts);
       const filterMap = {
         'cleaning': '청소',
         'snack': '간식',
         'office_supplies': '비품'
       };
       
-      // 쾔마로 구분된 필터 값 분할 (예: "cleaning,snack")
       const filterTypes = filters.type.split(',');
-      console.log('Filter types:', filterTypes);
-      
-      // 선택한 업종 중 하나라도 포함되어 있는지 확인
       const hasMatch = filterTypes.some(filterType => {
         const targetText = filterMap[filterType.trim()];
         return targetText && typeTexts.some(text => text.includes(targetText));
       });
       
-      console.log('Has match:', hasMatch);
       if (!hasMatch) return false;
     }
   }
@@ -448,11 +352,8 @@ clientPagination.customFilter = function(row, filters) {
   // 상태 필터
   if (filters.status && filters.status !== 'all') {
     const statusElement = row.querySelector('.users-status');
-    console.log('Status element:', statusElement);
     if (statusElement) {
-      const hasClass = statusElement.classList.contains(filters.status);
-      console.log('Status filter:', filters.status, 'has class:', hasClass);
-      if (!hasClass) return false;
+      if (!statusElement.classList.contains(filters.status)) return false;
     }
   }
   
@@ -467,11 +368,7 @@ document.getElementById('selectAll')?.addEventListener('change', function() {
 
 // 검색 기능
 document.getElementById('clientSearch')?.addEventListener('input', function(e) {
-  const searchValue = e.target.value;
-  console.log('Search input event fired! Value:', searchValue);
-  console.log('clientPagination exists:', !!clientPagination);
-  console.log('clientPagination.applySearchFilter exists:', !!clientPagination.applySearchFilter);
-  clientPagination.applySearchFilter(searchValue, ['.users-cell-name']);
+  clientPagination.applySearchFilter(e.target.value, ['.users-cell-name']);
 });
 
 // 필터 기능
@@ -481,8 +378,6 @@ document.querySelectorAll('[data-filter]').forEach(item => {
     const filterType = this.dataset.filter;
     const filterValue = this.dataset.value;
     
-    console.log('Filter clicked:', filterType, filterValue);
-    
     // 활성 상태 업데이트
     this.closest('.dropdown-menu').querySelectorAll('.dropdown-item').forEach(i => {
       i.classList.remove('active');
@@ -490,15 +385,56 @@ document.querySelectorAll('[data-filter]').forEach(item => {
     this.classList.add('active');
     
     // 필터 적용
-    console.log('Calling setFilter with:', filterType, filterValue);
     clientPagination.setFilter(filterType, filterValue);
   });
 });
 
-// Add Client Form Submit
-function submitAddClient() {
-  const form = document.getElementById('addClientForm');
+// 업체 모달 열기 (등록/수정 겸용)
+function openClientModal(data) {
+  const form = document.getElementById('clientForm');
+  const title = document.getElementById('clientModalLabel');
+  const submitBtn = document.getElementById('clientSubmitBtn');
   
+  // 폼 초기화
+  form.reset();
+  document.getElementById('clientId').value = '';
+  
+  if (data) {
+    // 수정 모드
+    title.textContent = '업체 수정';
+    submitBtn.textContent = '수정';
+    submitBtn.className = 'btn btn-success';
+    form.action = "{{ url_for('accounts.client_update_post') }}";
+    
+    document.getElementById('clientId').value = data.clientId;
+    document.getElementById('clientName').value = data.clientName || '';
+    document.getElementById('clientPhone').value = data.clientPhone || '';
+    document.getElementById('clientAddress').value = data.clientAddress || '';
+    document.getElementById('clientBusinessNumber').value = data.clientBusinessNumber || '';
+    document.getElementById('managerName').value = data.managerName || '';
+    document.getElementById('managerMobile').value = data.managerMobile || '';
+    document.getElementById('managerPosition').value = data.managerPosition || '';
+    document.getElementById('contractDate').value = data.contractDate || '';
+    document.getElementById('memo').value = data.memo || '';
+    document.getElementById('cleaningYn').checked = data.cleaningYn == 1;
+    document.getElementById('snackYn').checked = data.snackYn == 1;
+    document.getElementById('officeSuppliesYn').checked = data.officeSuppliesYn == 1;
+    document.getElementById('status').value = data.status || 'active';
+  } else {
+    // 등록 모드
+    title.textContent = '업체 등록';
+    submitBtn.textContent = '등록';
+    submitBtn.className = 'btn btn-primary';
+    form.action = "{{ url_for('accounts.client_insert_post') }}";
+  }
+  
+  const modal = new bootstrap.Modal(document.getElementById('clientModal'));
+  modal.show();
+}
+
+// 업체 폼 제출
+function submitClient() {
+  const form = document.getElementById('clientForm');
   if (form.checkValidity()) {
     form.submit();
   } else {
@@ -506,60 +442,27 @@ function submitAddClient() {
   }
 }
 
-// Edit Client - Load data into modal
+// 수정 버튼 클릭 이벤트
 document.querySelectorAll('.edit-client-btn').forEach(button => {
   button.addEventListener('click', function() {
-    const clientId = this.dataset.clientId;
-    const clientName = this.dataset.clientName;
-    const clientPhone = this.dataset.clientPhone;
-    const clientAddress = this.dataset.clientAddress;
-    const clientBusinessNumber = this.dataset.clientBusinessNumber;
-    const managerName = this.dataset.managerName;
-    const managerMobile = this.dataset.managerMobile;
-    const managerPosition = this.dataset.managerPosition;
-    const contractDate = this.dataset.contractDate;
-    const memo = this.dataset.memo;
-    const cleaningYn = this.dataset.cleaningYn;
-    const snackYn = this.dataset.snackYn;
-    const officeSuppliesYn = this.dataset.officeSuppliesYn;
-    const status = this.dataset.status;
-    
-    // Populate form fields
-    document.getElementById('editClientId').value = clientId;
-    document.getElementById('editClientName').value = clientName;
-    document.getElementById('editClientPhone').value = clientPhone;
-    document.getElementById('editClientAddress').value = clientAddress;
-    document.getElementById('editClientBusinessNumber').value = clientBusinessNumber;
-    document.getElementById('editManagerName').value = managerName;
-    document.getElementById('editManagerMobile').value = managerMobile;
-    document.getElementById('editManagerPosition').value = managerPosition;
-    document.getElementById('editContractDate').value = contractDate;
-    document.getElementById('editMemo').value = memo;
-    
-    // Set task kind checkboxes
-    document.getElementById('editCleaningYn').checked = cleaningYn == 1;
-    document.getElementById('editSnackYn').checked = snackYn == 1;
-    document.getElementById('editOfficeSuppliesYn').checked = officeSuppliesYn == 1;
-    
-    // Set status select
-    document.getElementById('editStatus').value = status;
-    
-    // Show modal
-    const modal = new bootstrap.Modal(document.getElementById('editClientModal'));
-    modal.show();
+    openClientModal({
+      clientId: this.dataset.clientId,
+      clientName: this.dataset.clientName,
+      clientPhone: this.dataset.clientPhone,
+      clientAddress: this.dataset.clientAddress,
+      clientBusinessNumber: this.dataset.clientBusinessNumber,
+      managerName: this.dataset.managerName,
+      managerMobile: this.dataset.managerMobile,
+      managerPosition: this.dataset.managerPosition,
+      contractDate: this.dataset.contractDate,
+      memo: this.dataset.memo,
+      cleaningYn: this.dataset.cleaningYn,
+      snackYn: this.dataset.snackYn,
+      officeSuppliesYn: this.dataset.officeSuppliesYn,
+      status: this.dataset.status
+    });
   });
 });
-
-// Edit Client Form Submit
-function submitEditClient() {
-  const form = document.getElementById('editClientForm');
-  
-  if (form.checkValidity()) {
-    form.submit();
-  } else {
-    form.reportValidity();
-  }
-}
 
 // Delete Client - Show confirmation modal
 function showDeleteClientModal(button) {
@@ -638,9 +541,5 @@ function createToastContainer() {
   return container;
 }
 
-// Old delete function (deprecated)
-function deleteClient(clientId) {
-  // Deprecated: use showDeleteClientModal instead
-}
 </script>
 {% endblock %}
