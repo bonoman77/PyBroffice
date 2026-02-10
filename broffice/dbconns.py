@@ -86,6 +86,12 @@ class ConnectionPool:
         """새 데이터베이스 연결 생성"""
         try:
             conn = pymysql.connect(**self.db_config)
+            
+            # 한국시간 타임존 설정
+            with conn.cursor() as cursor:
+                cursor.execute("SET time_zone = '+09:00'")
+                cursor.execute("SET SESSION time_zone = '+09:00'")
+            
             return conn
         except Exception as e:
             logger.error(f"데이터베이스 연결 생성 중 오류: {str(e)}")

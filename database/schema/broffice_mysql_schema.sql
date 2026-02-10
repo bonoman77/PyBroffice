@@ -1,6 +1,6 @@
--- MySQL DDL (converted from SQL Server 2008)
--- Database: brobiz
--- Generated: 2026-02-09
+-- MySQL DDL (converted from SQL Server 2008 ERD)
+-- Database: Broffice$brobiz
+-- Generated: 2026-02-10
 
 USE Broffice$brobiz;
 
@@ -12,7 +12,6 @@ DROP TABLE IF EXISTS task_sns_logs;
 DROP TABLE IF EXISTS task_area_photos;
 DROP TABLE IF EXISTS task_area_logs;
 DROP TABLE IF EXISTS task_areas;
-DROP TABLE IF EXISTS task_logs;
 DROP TABLE IF EXISTS task_schedules;
 DROP TABLE IF EXISTS tasks;
 DROP TABLE IF EXISTS user_login_logs;
@@ -29,17 +28,16 @@ CREATE TABLE clients (
     client_name           VARCHAR(100) NOT NULL COMMENT '고객사명',
     client_phone          VARCHAR(100) NULL COMMENT '업체 연락처',
     client_address        VARCHAR(300) NOT NULL COMMENT '고객사주소',
-    client_business_number VARCHAR(30) NULL COMMENT '사업자등록번호',
+    client_business       VARCHAR(30) NULL COMMENT '사업자등록번호',
     manager_name          VARCHAR(100) NOT NULL COMMENT '관리자명',
     manager_position      VARCHAR(30) NULL COMMENT '관리자직급',
     manager_mobile        VARCHAR(100) NOT NULL COMMENT '관리자연락처',
-    content_to            VARCHAR(500) NULL COMMENT '특이사항',
     cleaning_yn           TINYINT(1) DEFAULT 0 NOT NULL COMMENT '청소여부',
     snack_yn              TINYINT(1) DEFAULT 0 NOT NULL COMMENT '간식여부',
     office_supplies_yn    TINYINT(1) DEFAULT 0 NOT NULL COMMENT '비품여부',
     memo                  VARCHAR(500) NOT NULL DEFAULT '' COMMENT '한글멘트',
+	use_yn				  TINYINT(1) DEFAULT 0 NOT NULL COMMENT '사용여부',
     contracted_at         DATETIME NULL COMMENT '계약일',
-    use_yn                TINYINT(1) DEFAULT 1 NOT NULL COMMENT '사용여부',
     created_at            DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT '등록일',
     updated_at            DATETIME NULL COMMENT '수정일',
     deleted_at            DATETIME NULL COMMENT '삭제일',
@@ -116,57 +114,43 @@ CREATE TABLE task_area_photos (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='task_area_photos 업무세부사진';
 
 -- ============================================================
--- TABLE: task_areas (고객사업무구역)
+-- TABLE: task_areas (업무구역)
 -- ============================================================
 CREATE TABLE task_areas (
     task_area_id          INT NOT NULL AUTO_INCREMENT COMMENT '업무구역ID',
-    task_schedule_id      INT NOT NULL COMMENT '의뢰업무일정ID',
+    task_id               INT NOT NULL COMMENT '업무관리ID',
     floor                 VARCHAR(10) NOT NULL COMMENT '층',
     area                  VARCHAR(30) NOT NULL COMMENT '구역',
-    check_points          VARCHAR(500) NOT NULL COMMENT '업무범위',
+    check_points          VARCHAR(300) NOT NULL COMMENT '업무포인트',
     min_photo_cnt         INT DEFAULT 0 NOT NULL COMMENT '최소사진수량',
+	use_yn				  TINYINT(1) DEFAULT 0 NOT NULL COMMENT '사용여부',
     created_at            DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT '등록일',
     updated_at            DATETIME NULL COMMENT '수정일',
     deleted_at            DATETIME NULL COMMENT '삭제일',
     PRIMARY KEY (task_area_id),
-    INDEX idx_task_areas_task_schedule_id (task_schedule_id),
+    INDEX idx_task_areas_task_id (task_id),
     INDEX idx_task_areas_deleted_at (deleted_at)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='task_areas 고객사업무구역';
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='task_areas 업무구역';
 
 -- ============================================================
--- TABLE: task_logs (업무결과)
+-- TABLE: task_schedules (업무일정)
 -- ============================================================
-CREATE TABLE task_logs (
+CREATE TABLE task_schedules (
     task_log_id           INT NOT NULL AUTO_INCREMENT COMMENT '업무결과ID',
-    task_schedule_id      INT NOT NULL COMMENT '의뢰업무일정ID',
-    user_id               INT NOT NULL COMMENT '사용자ID',
+    task_id               INT NOT NULL COMMENT '업무관리ID',
+    user_id               INT NOT NULL COMMENT '작업자ID',
     memo                  VARCHAR(500) NULL COMMENT '메모',
-    completed_at          DATETIME NOT NULL COMMENT '작업일',
+    scheduled_at          DATETIME NOT NULL COMMENT '생성일정',
+    change_scheduled_at   DATETIME NULL COMMENT '변경일정',
+    completed_at          DATETIME NULL COMMENT '작업완료일',
+    canceled_at           TINYINT(1) DEFAULT 0 NOT NULL COMMENT '작업취소일',
     created_at            DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT '등록일',
     updated_at            DATETIME NULL COMMENT '수정일',
     PRIMARY KEY (task_log_id),
-    INDEX idx_task_logs_task_schedule_id (task_schedule_id),
-    INDEX idx_task_logs_user_id (user_id),
-    INDEX idx_task_logs_completed_at (completed_at)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='task_logs 업무결과';
-
--- ============================================================
--- TABLE: task_schedules (의뢰업무일정)
--- ============================================================
-CREATE TABLE task_schedules (
-    task_schedule_id      INT NOT NULL AUTO_INCREMENT COMMENT '의뢰업무일정ID',
-    task_id               INT NOT NULL COMMENT '업무관리ID',
-    day_of_week           TINYINT DEFAULT 0 NOT NULL COMMENT '요일',
-    start_time            INT DEFAULT 0 NOT NULL COMMENT '시작시간',
-    end_time              INT DEFAULT 0 NOT NULL COMMENT '종료시간',
-    created_at            DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT '등록일',
-    updated_at            DATETIME NULL COMMENT '수정일',
-    deleted_at            DATETIME NULL COMMENT '삭제일',
-    PRIMARY KEY (task_schedule_id),
     INDEX idx_task_schedules_task_id (task_id),
-    INDEX idx_task_schedules_day_of_week (day_of_week),
-    INDEX idx_task_schedules_deleted_at (deleted_at)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='task_schedules 의뢰업무일정';
+    INDEX idx_task_schedules_user_id (user_id),
+    INDEX idx_task_schedules_scheduled_at (scheduled_at)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='task_schedules 업무일정';
 
 -- ============================================================
 -- TABLE: task_sns_logs (업무알림결과)
@@ -195,13 +179,16 @@ CREATE TABLE task_sns_logs (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='task_sns_logs 업무알림결과';
 
 -- ============================================================
--- TABLE: tasks (고객사업무관리)
+-- TABLE: tasks (업무관리)
 -- ============================================================
 CREATE TABLE tasks (
     task_id               INT NOT NULL AUTO_INCREMENT COMMENT '업무관리ID',
     client_id             INT NOT NULL COMMENT '고객사ID',
     user_id               INT NOT NULL COMMENT '사용자ID',
     task_kind_id          INT DEFAULT 0 NOT NULL COMMENT '업무종류ID',
+    schedule_type         VARCHAR(10) NOT NULL COMMENT '스케줄타입',
+    days_of_week          INT DEFAULT 0 NOT NULL COMMENT '요일',
+	use_yn				  TINYINT(1) DEFAULT 0 NOT NULL COMMENT '사용여부',
     service_started_at    DATETIME NOT NULL COMMENT '관리시작일',
     service_ended_at      DATETIME NULL COMMENT '관리종료일',
     created_at            DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT '등록일',
@@ -212,10 +199,10 @@ CREATE TABLE tasks (
     INDEX idx_tasks_user_id (user_id),
     INDEX idx_tasks_task_kind_id (task_kind_id),
     INDEX idx_tasks_deleted_at (deleted_at)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='tasks 고객사업무관리';
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='tasks 업무관리';
 
 -- ============================================================
--- TABLE: user_login_logs (사용자로그인기록)
+-- TABLE: user_login_logs (로그인기록)
 -- ============================================================
 CREATE TABLE user_login_logs (
     login_log_id          INT NOT NULL AUTO_INCREMENT COMMENT '로그인로그ID',
@@ -224,7 +211,7 @@ CREATE TABLE user_login_logs (
     PRIMARY KEY (login_log_id),
     INDEX idx_user_login_logs_user_id (user_id),
     INDEX idx_user_login_logs_login_at (login_at)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='user_login_logs 사용자로그인기록';
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='user_login_logs 로그인기록';
 
 -- ============================================================
 -- TABLE: users (사용자)
@@ -239,8 +226,8 @@ CREATE TABLE users (
     client_id             INT NULL COMMENT '고객사ID',
     auth_code             VARCHAR(100) NULL COMMENT '인증코드',
     admin_auth_user_id    INT DEFAULT 0 NULL COMMENT '관리자인증자',
+	use_yn				  TINYINT(1) DEFAULT 0 NOT NULL COMMENT '사용여부',
     admin_authed_at       DATETIME NULL COMMENT '관리자인증일',
-    use_yn                TINYINT(1) DEFAULT 1 NOT NULL COMMENT '사용여부',
     created_at            DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT '등록일',
     updated_at            DATETIME NULL COMMENT '수정일',
     deleted_at            DATETIME NULL COMMENT '삭제일',
@@ -248,7 +235,6 @@ CREATE TABLE users (
     INDEX idx_users_user_email (user_email),
     INDEX idx_users_user_kind_id (user_kind_id),
     INDEX idx_users_client_id (client_id),
-    INDEX idx_users_use_yn (use_yn),
     INDEX idx_users_deleted_at (deleted_at)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='users 사용자';
 
@@ -267,8 +253,8 @@ ALTER TABLE task_area_logs
     FOREIGN KEY (task_area_id) REFERENCES task_areas(task_area_id);
 
 ALTER TABLE task_area_logs
-    ADD CONSTRAINT fk_task_logs_task_area_logs
-    FOREIGN KEY (task_log_id) REFERENCES task_logs(task_log_id);
+    ADD CONSTRAINT fk_task_schedules_task_area_logs
+    FOREIGN KEY (task_log_id) REFERENCES task_schedules(task_log_id);
 
 -- task_area_photos FK
 ALTER TABLE task_area_photos
@@ -277,27 +263,22 @@ ALTER TABLE task_area_photos
 
 -- task_areas FK
 ALTER TABLE task_areas
-    ADD CONSTRAINT fk_task_schedules_task_areas
-    FOREIGN KEY (task_schedule_id) REFERENCES task_schedules(task_schedule_id);
+    ADD CONSTRAINT fk_tasks_task_areas
+    FOREIGN KEY (task_id) REFERENCES tasks(task_id);
 
--- task_logs FKs
-ALTER TABLE task_logs
-    ADD CONSTRAINT fk_task_schedules_task_logs
-    FOREIGN KEY (task_schedule_id) REFERENCES task_schedules(task_schedule_id);
-
-ALTER TABLE task_logs
-    ADD CONSTRAINT fk_users_task_logs
-    FOREIGN KEY (user_id) REFERENCES users(user_id);
-
--- task_schedules FK
+-- task_schedules FKs
 ALTER TABLE task_schedules
     ADD CONSTRAINT fk_tasks_task_schedules
     FOREIGN KEY (task_id) REFERENCES tasks(task_id);
 
+ALTER TABLE task_schedules
+    ADD CONSTRAINT fk_users_task_schedules
+    FOREIGN KEY (user_id) REFERENCES users(user_id);
+
 -- task_sns_logs FKs
 ALTER TABLE task_sns_logs
-    ADD CONSTRAINT fk_task_logs_task_sns_logs
-    FOREIGN KEY (task_log_id) REFERENCES task_logs(task_log_id);
+    ADD CONSTRAINT fk_task_schedules_task_sns_logs
+    FOREIGN KEY (task_log_id) REFERENCES task_schedules(task_log_id);
 
 ALTER TABLE task_sns_logs
     ADD CONSTRAINT fk_users_task_sns_logs
