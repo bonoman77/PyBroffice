@@ -370,8 +370,8 @@ def client_insert_post():
     res = conn.execute_return('set_client_insert', [
         client_name,
         client_phone,
-        client_address,
-        client_business_number,
+        client_business_number,  # 사업자등록번호를 3번째로
+        client_address,         # 주소를 4번째로
         manager_name,
         manager_mobile,
         manager_position,

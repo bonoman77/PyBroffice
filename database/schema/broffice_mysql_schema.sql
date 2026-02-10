@@ -28,7 +28,7 @@ CREATE TABLE clients (
     client_name           VARCHAR(100) NOT NULL COMMENT '고객사명',
     client_phone          VARCHAR(100) NULL COMMENT '업체 연락처',
     client_address        VARCHAR(300) NOT NULL COMMENT '고객사주소',
-    client_business       VARCHAR(30) NULL COMMENT '사업자등록번호',
+    client_business_number VARCHAR(30) NULL COMMENT '사업자등록번호',
     manager_name          VARCHAR(100) NOT NULL COMMENT '관리자명',
     manager_position      VARCHAR(30) NULL COMMENT '관리자직급',
     manager_mobile        VARCHAR(100) NOT NULL COMMENT '관리자연락처',
