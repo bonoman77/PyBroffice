@@ -267,6 +267,7 @@ def execute_return(proc_name, params=None):
                 call_sql = _build_call_statement(proc_name, params)
                 cursor.execute(call_sql, params if params else [])
                 result = cursor.fetchone()
+                conn.commit()
                 return result
     except Exception as e:
         logger.error(f"프로시저 실행 중 오류 (단일 결과): {proc_name}, {str(e)}")

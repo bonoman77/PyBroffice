@@ -39,3 +39,17 @@
         <label class="form-check-label" for="{{name}}_{{value}}">{{label}}</label>
     </div>
 {%- endmacro %}
+
+{% macro datepicker(name='', value='', picker='date', placeholder='날짜 선택', icon='bi-calendar3', opt='') -%}
+    <div class="input-group">
+        <input type="text" class="form-control" id="{{name}}" name="{{name}}" value="{{value}}" placeholder="{{placeholder}}" data-picker="{{picker}}" {{opt}}>
+        <span class="input-group-text"><i class="bi {{icon}}"></i></span>
+    </div>
+{%- endmacro %}
+
+{% macro monthpicker(name='', value='', placeholder='월 선택', opt='') -%}
+    <div class="input-group">
+        <input type="text" class="form-control" id="{{name}}" name="{{name}}" value="{{value}}" placeholder="{{placeholder}}" data-picker="month" {{opt}}>
+        <span class="input-group-text"><i class="bi bi-calendar-month"></i></span>
+    </div>
+{%- endmacro %}

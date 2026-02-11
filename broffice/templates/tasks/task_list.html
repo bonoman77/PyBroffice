@@ -1,5 +1,5 @@
 {% extends "layout.html" %}
-{% from "macros/form.html" import input, textarea %}
+{% from "macros/form.html" import input, textarea, datepicker %}
 
 {% block title %}
   {% if task_kind_id == 4 %}청소 작업
@@ -84,7 +84,8 @@
           <th>작업주기</th>
           <th>구역수</th>
           <th>상태</th>
-          <th>등록일</th>
+          <th>당월</th>
+          <th>익월</th>
           <th class="users-th-actions">작업</th>
         </tr>
       </thead>
@@ -109,8 +110,8 @@
             <td class="users-cell-meta">
               <div>{{ task.day_of_week }}</div>
             </td>
-            <td class="users-cell-meta">
-              <div>-</div>
+            <td class="users-cell-meta text-center">
+              <div>{{ task.area_count }}</div>
             </td>
             <td class="text-center">
               {% if task.task_status == 'active' %}
@@ -121,8 +122,11 @@
                 <span class="users-status inactive">비활성</span>
               {% endif %}
             </td>
-            <td class="users-cell-meta">
-              <div>{{ task.created_at.strftime('%Y-%m-%d') if task.created_at else '-' }}</div>
+            <td class="users-cell-meta text-center">
+              <div>{{ task.current_month_schedule_count }}</div>
+            </td>
+            <td class="users-cell-meta text-center">
+              <div>{{ task.next_month_schedule_count }}</div>
             </td>
             <td>
               <div class="table-actions justify-content-end">
@@ -135,7 +139,7 @@
           {% endfor %}
         {% else %}
           <tr>
-            <td colspan="8" class="text-center py-5">
+            <td colspan="9" class="text-center py-5">
               <div class="text-muted">
                 <i class="ph 
                   {% if task_kind_id == 4 %}ph-broom
@@ -314,11 +318,11 @@
           <div class="row">
             <div class="col-md-6 mb-3">
               <label for="serviceStartedAt" class="form-label">관리 시작일 <span class="text-danger">*</span></label>
-              {{ input('date', 'serviceStartedAt', '', opt='required') }}
+              {{ datepicker('serviceStartedAt', '', 'date', '시작일 선택', opt='required') }}
             </div>
             <div class="col-md-6 mb-3">
               <label for="serviceEndedAt" class="form-label">관리 종료일</label>
-              {{ input('date', 'serviceEndedAt', '') }}
+              {{ datepicker('serviceEndedAt', '', 'date', '종료일 선택') }}
             </div>
           </div>
           
@@ -540,12 +544,18 @@ function editTaskModal(task) {
         document.getElementById('fixDates').value = task.fix_dates;
     }
     
-    // 시작일/종료일
-    if (task.service_started_date) {
-        document.getElementById('serviceStartedAt').value = task.service_started_date;
+    // 시작일/종료일 (flatpickr API 사용)
+    const startEl = document.getElementById('serviceStartedAt');
+    if (startEl._flatpickr) {
+        startEl._flatpickr.setDate(task.service_started_date || '', true);
+    } else {
+        startEl.value = task.service_started_date || '';
     }
-    if (task.service_ended_date) {
-        document.getElementById('serviceEndedAt').value = task.service_ended_date;
+    const endEl = document.getElementById('serviceEndedAt');
+    if (endEl._flatpickr) {
+        endEl._flatpickr.setDate(task.service_ended_date || '', true);
+    } else {
+        endEl.value = task.service_ended_date || '';
     }
     
     // 사용 여부

@@ -21,6 +21,7 @@
     initBackToTop();
     initDropdowns();
     initTooltips();
+    initFlatpickr();
   });
 
   /**
@@ -325,5 +326,81 @@
       document.body.classList.remove('fullscreen-active');
     }
   });
+
+  /**
+   * Flatpickr Date/Time Pickers
+   * data-picker 속성 기반 자동 초기화
+   */
+  function initFlatpickr() {
+    if (typeof flatpickr === 'undefined') return;
+
+    // Basic date picker
+    flatpickr('[data-picker="date"]', {
+      dateFormat: 'Y-m-d',
+      allowInput: true
+    });
+
+    // Date picker with today as default
+    flatpickr('[data-picker="date-today"]', {
+      dateFormat: 'Y-m-d',
+      defaultDate: 'today',
+      allowInput: true
+    });
+
+    // Time picker (24h)
+    flatpickr('[data-picker="time"]', {
+      enableTime: true,
+      noCalendar: true,
+      dateFormat: 'H:i',
+      time_24hr: true,
+      allowInput: true
+    });
+
+    // DateTime picker
+    flatpickr('[data-picker="datetime"]', {
+      enableTime: true,
+      dateFormat: 'Y-m-d H:i',
+      time_24hr: true,
+      allowInput: true
+    });
+
+    // Date range picker
+    flatpickr('[data-picker="range"]', {
+      mode: 'range',
+      dateFormat: 'Y-m-d',
+      allowInput: true
+    });
+
+    // Month picker (YYYY-MM)
+    flatpickr('[data-picker="month"]', {
+      dateFormat: 'Y-m',
+      disableMobile: true,
+      allowInput: true,
+      plugins: []
+    });
+
+    // Min date = today
+    flatpickr('[data-picker="min-today"]', {
+      dateFormat: 'Y-m-d',
+      minDate: 'today',
+      allowInput: true
+    });
+
+    // Max date = today
+    flatpickr('[data-picker="max-today"]', {
+      dateFormat: 'Y-m-d',
+      maxDate: 'today',
+      allowInput: true
+    });
+
+    // Preselected date (data-default-date 속성 지원)
+    document.querySelectorAll('[data-picker][data-default-date]').forEach(function(el) {
+      if (el._flatpickr) {
+        var defaultDate = el.dataset.defaultDate;
+        if (defaultDate === 'today') defaultDate = new Date();
+        el._flatpickr.setDate(defaultDate);
+      }
+    });
+  }
 
 })();

@@ -1,4 +1,8 @@
-from flask import Blueprint, render_template, request, jsonify, redirect, url_for
+import os
+import uuid
+from datetime import datetime
+from flask import Blueprint, render_template, request, jsonify, redirect, url_for, session, current_app
+from werkzeug.utils import secure_filename
 from broffice.utils.auth_handler import login_required, admin_required
 import broffice.dbconns as conn
 
@@ -14,7 +18,6 @@ def task_list():
     # 스케줄 목록 조회 (tasks 테이블 기반)
     if task_kind_id in [4, 5, 6]:  # 청소, 간식, 비품
         tasks = conn.return_list('get_task_list', [task_kind_id])
-        print(tasks)
         # 모달용 업체 목록 조회
         clients = conn.return_list('get_client_list_by_task_kind', [task_kind_id])
         # 작업자 목록 조회 (user_kind_id=2)
@@ -30,11 +33,65 @@ def task_list():
 @bp.route("/task_schedule_list", methods=['GET'])
 @admin_required
 def task_schedule_list():
-    """업체 업무 목록 (task_kind_id로 구분)"""
+    """스케줄 일정 목록 (날짜순)"""
+    from datetime import datetime
     task_kind_id = request.args.get('task_kind_id', type=int)
-    # TODO: DB에서 task_kind_id별 업체 목록 조회
-    # res_list = conn.return_list('uspGetClientTaskList', task_kind_id=task_kind_id)
-    return render_template('tasks/task_schedule_list.html', task_kind_id=task_kind_id)
+    year_month = request.args.get('year_month', '')
+    
+    # 년월 기본값: 당월
+    if not year_month:
+        year_month = datetime.now().strftime('%Y-%m')
+    
+    schedules = []
+    if task_kind_id in [4, 5, 6]:
+        schedules = conn.return_list('get_task_schedule_list', [task_kind_id, year_month])
+    
+    return render_template('tasks/task_schedule_list.html',
+                           task_kind_id=task_kind_id,
+                           schedules=schedules,
+                           year_month=year_month)
+
+
+@bp.route("/schedule_date_update", methods=['POST'])
+@admin_required
+def schedule_date_update():
+    """스케줄 날짜 변경"""
+    from flask import session
+    task_schedule_id = request.form.get('taskScheduleId', type=int)
+    change_scheduled_at = request.form.get('changeScheduledAt') or None
+    admin_user_id = session.get('user_id')
+    
+    res = conn.execute_return('set_task_schedule_update', [
+        task_schedule_id, change_scheduled_at, admin_user_id
+    ])
+    
+    return jsonify({
+        'success': True,
+        'message': '스케줄 날짜가 변경되었습니다.',
+        'data': res
+    })
+
+
+@bp.route("/schedule_delete", methods=['POST'])
+@admin_required
+def schedule_delete():
+    """스케줄 삭제"""
+    task_schedule_id = request.form.get('taskScheduleId', type=int)
+    
+    res = conn.execute_return('set_task_schedule_delete', [task_schedule_id])
+    
+    if res and res.get('return_value', 0) > 0:
+        return jsonify({
+            'success': True,
+            'message': '스케줄이 삭제되었습니다.',
+            'data': res
+        })
+    else:
+        return jsonify({
+            'success': False,
+            'message': '완료된 스케줄은 삭제할 수 없습니다.',
+            'data': res
+        })
 
 
 @bp.route("/task_update", methods=['POST'])
@@ -93,15 +150,33 @@ def task_schedule_generate():
     
     results = []
     total_count = 0
+    skipped_messages = []
     for task_id in task_ids:
         res = conn.execute_return('set_task_schedule_generate', [int(task_id), year_month])
         if res:
-            total_count += res.get('return_value', 0)
+            rv = res.get('return_value', 0)
+            msg = res.get('message', '')
+            if rv > 0:
+                total_count += rv
+            elif msg:
+                skipped_messages.append(msg)
             results.append(res)
+    
+    message = f'총 {total_count}건의 스케줄이 생성되었습니다.'
+    if skipped_messages:
+        inactive_cnt = sum(1 for m in skipped_messages if '비활성' in m)
+        no_area_cnt = sum(1 for m in skipped_messages if '구역' in m)
+        skip_parts = []
+        if inactive_cnt:
+            skip_parts.append(f'비활성 {inactive_cnt}건')
+        if no_area_cnt:
+            skip_parts.append(f'구역미등록 {no_area_cnt}건')
+        if skip_parts:
+            message += ' (건너뜀: ' + ', '.join(skip_parts) + ')'
     
     return jsonify({
         'success': True,
-        'message': f'총 {total_count}건의 스케줄이 생성되었습니다.',
+        'message': message,
         'data': results
     })
 
@@ -241,9 +316,164 @@ def task_area_update():
         'message': '구역이 수정되었습니다.',
         'data': res
     })
+    
 
 
-@bp.route("/insert", methods=['GET', 'POST'])
+@bp.route("/task_my_list", methods=['GET'])
+@login_required
+def task_my_list():
+    """내 업무 목록"""
+    user_id = session['login_user']['user_id']
+    year_month = request.args.get('year_month', datetime.now().strftime('%Y-%m'))
+    
+    schedules = conn.return_list('get_task_my_list', [user_id, year_month])
+    
+    from datetime import timedelta
+    today = datetime.now().strftime('%Y-%m-%d')
+    tomorrow = (datetime.now() + timedelta(days=1)).strftime('%Y-%m-%d')
+    total_count = len(schedules)
+    completed_count = sum(1 for s in schedules if s.get('schedule_status') == 'completed')
+    pending_count = sum(1 for s in schedules if s.get('schedule_status') in ('scheduled', 'today') and s.get('effective_date', '') >= today)
+    
+    return render_template('tasks/task_my_list.html',
+        schedules=schedules,
+        year_month=year_month,
+        today=today,
+        tomorrow=tomorrow,
+        total_count=total_count,
+        completed_count=completed_count,
+        pending_count=pending_count
+    )
+
+
+@bp.route("/task_detail", methods=['GET'])
+@login_required
+def task_detail():
+    """업무 상세 (업무보고)"""
+    task_schedule_id = request.args.get('task_schedule_id', type=int)
+    
+    schedule = conn.execute_return('get_task_detail', [task_schedule_id])
+    areas = conn.return_list('get_task_detail_areas', [task_schedule_id])
+    
+    # 각 구역의 사진 목록 조회
+    for area in areas:
+        if area.get('task_area_log_id'):
+            area['photos'] = conn.return_list('get_task_area_photos', [area['task_area_log_id']])
+        else:
+            area['photos'] = []
+    
+    return render_template('tasks/task_detail.html',
+        schedule=schedule,
+        areas=areas
+    )
+
+
+@bp.route("/task_area_log_save", methods=['POST'])
+@login_required
+def task_area_log_save():
+    """구역별 업무 로그 저장"""
+    task_area_id = request.form.get('taskAreaId', type=int)
+    task_schedule_id = request.form.get('taskScheduleId', type=int)
+    content = request.form.get('content', '')
+    
+    res = conn.execute_return('set_task_area_log', [task_area_id, task_schedule_id, content])
+    log_id = res.get('return_value', 0) if res else 0
+    
+    return jsonify({
+        'success': log_id > 0,
+        'message': '저장되었습니다.' if log_id > 0 else '저장에 실패했습니다.',
+        'task_area_log_id': log_id
+    })
+
+
+@bp.route("/task_area_photo_upload", methods=['POST'])
+@login_required
+def task_area_photo_upload():
+    """구역 사진 업로드 (여러 장, 이미지 경량화)"""
+    from PIL import Image
+    import io
+    
+    task_area_log_id = request.form.get('taskAreaLogId', type=int)
+    files = request.files.getlist('photos')
+    
+    if not files or all(f.filename == '' for f in files):
+        return jsonify({'success': False, 'message': '파일이 없습니다.'}), 400
+    
+    upload_dir = os.path.join(current_app.static_folder, 'uploads', 'task_photos')
+    os.makedirs(upload_dir, exist_ok=True)
+    
+    MAX_SIZE = (1280, 1280)
+    QUALITY = 80
+    
+    uploaded = []
+    for file in files:
+        if file.filename == '':
+            continue
+        
+        unique_name = f"{uuid.uuid4().hex}.jpg"
+        file_path = os.path.join(upload_dir, unique_name)
+        
+        # 이미지 경량화: 리사이즈 + JPEG 압축
+        try:
+            img = Image.open(file.stream)
+            img = img.convert('RGB')
+            img.thumbnail(MAX_SIZE, Image.LANCZOS)
+            img.save(file_path, 'JPEG', quality=QUALITY, optimize=True)
+        except Exception:
+            file.stream.seek(0)
+            file.save(file_path)
+        
+        db_path = f'/static/uploads/task_photos/{unique_name}'
+        res = conn.execute_return('set_task_area_photo_insert', [task_area_log_id, db_path])
+        photo_id = res.get('return_value', 0) if res else 0
+        
+        if photo_id > 0:
+            uploaded.append({
+                'task_area_photo_id': photo_id,
+                'photo_file_path': db_path
+            })
+    
+    return jsonify({
+        'success': len(uploaded) > 0,
+        'message': f'{len(uploaded)}장 업로드되었습니다.',
+        'photos': uploaded
+    })
+
+
+@bp.route("/task_area_photo_delete", methods=['POST'])
+@login_required
+def task_area_photo_delete():
+    """구역 사진 삭제"""
+    task_area_photo_id = request.form.get('taskAreaPhotoId', type=int)
+    
+    res = conn.execute_return('set_task_area_photo_delete', [task_area_photo_id])
+    
+    if res and res.get('return_value', 0) > 0:
+        # 실제 파일 삭제
+        file_path = res.get('file_path', '')
+        if file_path:
+            full_path = os.path.join(current_app.root_path, file_path.lstrip('/'))
+            if os.path.exists(full_path):
+                os.remove(full_path)
+        
+        return jsonify({'success': True, 'message': '삭제되었습니다.'})
+    else:
+        return jsonify({'success': False, 'message': '삭제에 실패했습니다.'}), 400
+
+
+@bp.route("/task_schedule_complete", methods=['POST'])
+@login_required
+def task_schedule_complete():
+    """업무 완료 처리"""
+    task_schedule_id = request.form.get('taskScheduleId', type=int)
+    memo = request.form.get('memo', '')
+    
+    res = conn.execute_return('set_task_schedule_complete', [task_schedule_id, memo])
+    
+    if res and res.get('return_value', 0) > 0:
+        return jsonify({'success': True, 'message': '업무가 완료 처리되었습니다.'})
+    else:
+        return jsonify({'success': False, 'message': '이미 완료된 업무이거나 처리에 실패했습니다.'}), 400
 
 @admin_required
 def insert():
@@ -260,12 +490,12 @@ def assign():
     return render_template('tasks/assign.html', task_kind_id=task_kind_id)
 
 
-@bp.route("/result", methods=['GET'])
+@bp.route("/task_client_result", methods=['GET'])
 @login_required
-def result():
+def task_client_result():
     """업무 결과 확인"""
     task_kind_id = request.args.get('task_kind_id', type=int)
-    return render_template('tasks/result.html', task_kind_id=task_kind_id)
+    return render_template('tasks/task_client_result.html', task_kind_id=task_kind_id)
 
 
 @bp.route("/notify", methods=['GET', 'POST'])

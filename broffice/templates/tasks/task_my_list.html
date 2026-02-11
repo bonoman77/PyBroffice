@@ -1,0 +1,139 @@
+{% extends "layout.html" %}
+
+{% block title %}내 업무{% endblock %}
+
+{% block content %}
+<!-- Page Header -->
+<div class="page-header">
+  <div>
+    <h1 class="page-title">내 업무</h1>
+    <nav>
+      <ol class="breadcrumb">
+        <li class="breadcrumb-item"><a href="/">홈</a></li>
+        <li class="breadcrumb-item active">내 업무</li>
+      </ol>
+    </nav>
+  </div>
+</div>
+
+<!-- 월 선택 + 통계 -->
+<div class="row mb-3">
+  <div class="col-12">
+    <div class="d-flex align-items-center justify-content-between flex-wrap gap-2">
+      <!-- 월 선택 -->
+      <div class="d-flex align-items-center gap-2">
+        <button class="btn btn-sm btn-outline-secondary" onclick="changeMonth(-1)" title="이전 달">
+          <i class="ph ph-caret-left"></i>
+        </button>
+        <span class="fw-semibold fs-15 px-2">
+          <i class="bi bi-calendar-month me-1"></i>{{ year_month }}
+        </span>
+        <button class="btn btn-sm btn-outline-secondary" onclick="changeMonth(1)" title="다음 달">
+          <i class="ph ph-caret-right"></i>
+        </button>
+      </div>
+      <!-- 통계 뱃지 -->
+      <div class="d-flex gap-2">
+        <span class="badge bg-primary px-3 py-2">
+          <i class="ph ph-list-checks me-1"></i>전체 <strong>{{ total_count }}</strong>
+        </span>
+        <span class="badge bg-info px-3 py-2">
+          <i class="ph ph-clock me-1"></i>대기 <strong>{{ pending_count }}</strong>
+        </span>
+        <span class="badge bg-warning px-3 py-2">
+          <i class="ph ph-check-circle me-1"></i>완료 <strong>{{ completed_count }}</strong>
+        </span>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- 탭 (오늘부터 / 전체) -->
+<ul class="nav nav-tabs mb-3" role="tablist">
+  <li class="nav-item" role="presentation">
+    <button class="nav-link active" id="tab-from-today" data-bs-toggle="tab" 
+            data-bs-target="#pane-from-today" type="button" role="tab">
+      <i class="ph ph-calendar-check me-1"></i>오늘부터
+    </button>
+  </li>
+  <li class="nav-item" role="presentation">
+    <button class="nav-link" id="tab-all" data-bs-toggle="tab" 
+            data-bs-target="#pane-all" type="button" role="tab">
+      <i class="ph ph-calendar-blank me-1"></i>전체
+    </button>
+  </li>
+</ul>
+
+<div class="tab-content">
+  <!-- 오늘부터 탭 -->
+  <div class="tab-pane fade show active" id="pane-from-today" role="tabpanel">
+    {% set today_schedules = schedules | selectattr('effective_date', '>=', today) | list %}
+    {% if today_schedules %}
+      {% set ns = namespace(current_date='') %}
+      {% for s in today_schedules %}
+        {% if s.effective_date != ns.current_date %}
+          {% set ns.current_date = s.effective_date %}
+          <div class="d-flex align-items-center gap-2 mb-2 {% if not loop.first %}mt-4{% endif %}">
+            <span class="badge fs-13 px-3 py-2
+              {% if s.effective_date == today %}bg-primary
+              {% elif s.effective_date == tomorrow %}bg-primary
+              {% else %}bg-secondary{% endif %}">
+              {{ s.effective_date }} ({{ s.effective_day }})
+              {% if s.effective_date == today %}<small class="ms-1">오늘</small>
+              {% elif s.effective_date == tomorrow %}<small class="ms-1">내일</small>{% endif %}
+            </span>
+          </div>
+        {% endif %}
+        {% include "tasks/_schedule_card.html" %}
+      {% endfor %}
+    {% else %}
+      <div class="text-center text-muted py-5">
+        <i class="ph ph-calendar-x fs-1 d-block mb-2"></i>
+        <p>오늘 이후 예정된 업무가 없습니다.</p>
+      </div>
+    {% endif %}
+  </div>
+
+  <!-- 전체 탭 -->
+  <div class="tab-pane fade" id="pane-all" role="tabpanel">
+    {% if schedules %}
+      {% set ns = namespace(current_date='') %}
+      {% for s in schedules %}
+        {% if s.effective_date != ns.current_date %}
+          {% set ns.current_date = s.effective_date %}
+          <div class="d-flex align-items-center gap-2 mb-2 {% if not loop.first %}mt-4{% endif %}">
+            <span class="badge fs-13 px-3 py-2
+              {% if s.effective_date == today %}bg-primary
+              {% elif s.effective_date == tomorrow %}bg-primary
+              {% elif s.effective_date < today %}bg-light text-muted border
+              {% else %}bg-secondary{% endif %}">
+              {{ s.effective_date }} ({{ s.effective_day }})
+              {% if s.effective_date == today %}<small class="ms-1">오늘</small>
+              {% elif s.effective_date == tomorrow %}<small class="ms-1">내일</small>{% endif %}
+            </span>
+          </div>
+        {% endif %}
+        {% include "tasks/_schedule_card.html" %}
+      {% endfor %}
+    {% else %}
+      <div class="text-center text-muted py-5">
+        <i class="ph ph-calendar-x fs-1 d-block mb-2"></i>
+        <p>이 달에 예정된 업무가 없습니다.</p>
+      </div>
+    {% endif %}
+  </div>
+</div>
+
+{% endblock %}
+
+{% block extra_js %}
+<script>
+function changeMonth(offset) {
+    const current = '{{ year_month }}';
+    const [year, month] = current.split('-').map(Number);
+    const d = new Date(year, month - 1 + offset, 1);
+    const ym = d.getFullYear() + '-' + String(d.getMonth() + 1).padStart(2, '0');
+    window.location.href = '/tasks/task_my_list?year_month=' + ym;
+}
+</script>
+{% endblock %}

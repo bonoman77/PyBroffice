@@ -1,0 +1,400 @@
+{% extends "layout.html" %}
+
+{% block title %}업무 상세{% endblock %}
+
+{% block content %}
+<!-- Page Header -->
+<div class="page-header">
+  <div>
+    <h1 class="page-title">업무보고</h1>
+    <nav>
+      <ol class="breadcrumb">
+        <li class="breadcrumb-item"><a href="/">홈</a></li>
+        <li class="breadcrumb-item"><a href="/tasks/task_my_list">내 업무</a></li>
+        <li class="breadcrumb-item active">업무보고</li>
+      </ol>
+    </nav>
+  </div>
+</div>
+
+{% if schedule %}
+<!-- 업무 기본 정보 카드 -->
+<div class="card mb-3">
+  <div class="card-body">
+    <div class="d-flex align-items-center justify-content-between mb-3">
+      <div>
+        <h5 class="mb-1">{{ schedule.client_name }}</h5>
+        <div class="text-muted">
+          <span class="badge bg-light text-dark me-1">{{ schedule.task_kind_name }}</span>
+          <span>{{ schedule.effective_date }} ({{ schedule.worker_name }})</span>
+        </div>
+      </div>
+      <div>
+        {% if schedule.schedule_status == 'completed' %}
+          <span class="badge bg-success fs-13 px-3 py-2">완료</span>
+        {% elif schedule.schedule_status == 'today' %}
+          <span class="badge bg-primary fs-13 px-3 py-2">오늘</span>
+        {% elif schedule.schedule_status == 'overdue' %}
+          <span class="badge bg-danger fs-13 px-3 py-2">미완료</span>
+        {% elif schedule.schedule_status == 'canceled' %}
+          <span class="badge bg-secondary fs-13 px-3 py-2">취소</span>
+        {% else %}
+          <span class="badge bg-info fs-13 px-3 py-2">예정</span>
+        {% endif %}
+      </div>
+    </div>
+    {% if schedule.completed_date %}
+      <div class="small text-success">
+        <i class="ph ph-check-circle me-1"></i>완료: {{ schedule.completed_date }}
+      </div>
+    {% endif %}
+    {% if schedule.memo %}
+      <div class="small text-muted mt-1">
+        <i class="ph ph-note me-1"></i>{{ schedule.memo }}
+      </div>
+    {% endif %}
+    {% if schedule.change_scheduled_date %}
+      <div class="small text-warning mt-1">
+        <i class="ph ph-arrow-right me-1"></i>날짜 변경: {{ schedule.scheduled_date }} → {{ schedule.change_scheduled_date }}
+      </div>
+    {% endif %}
+  </div>
+</div>
+
+<!-- 구역별 업무 -->
+<h6 class="mb-3"><i class="ph ph-map-pin me-1"></i>구역별 업무 ({{ areas|length }}개)</h6>
+
+{% for area in areas %}
+<div class="card mb-3" id="area-card-{{ area.task_area_id }}">
+  <div class="card-header d-flex align-items-center justify-content-between py-2">
+    <div>
+      <strong>{{ area.floor }}층 - {{ area.area }}</strong>
+      {% if area.task_area_log_id %}
+        <span class="badge bg-success text-dark ms-2">보고완료</span>
+      {% else %}
+        <span class="badge bg-warning text-dark ms-2">미보고</span>
+      {% endif %}
+    </div>
+    {% if area.min_photo_cnt > 0 %}
+      <span class="badge bg-light text-dark">
+        <i class="ph ph-camera me-1"></i>최소 {{ area.min_photo_cnt }}장
+      </span>
+    {% endif %}
+  </div>
+  <div class="card-body">
+    <!-- 업무 포인트 -->
+    {% if area.check_points %}
+      <div class="alert alert-light py-2 mb-3">
+        <small class="fw-semibold"><i class="ph ph-info me-1"></i>업무 포인트</small>
+        <div class="small mt-1">{{ area.check_points }}</div>
+      </div>
+    {% endif %}
+
+    <!-- 사진 영역 -->
+    <div class="mb-3">
+      <label class="form-label small fw-semibold">
+        <i class="ph ph-camera me-1"></i>사진
+        <span class="photo-count-{{ area.task_area_id }}">({{ area.photos|length }}장)</span>
+      </label>
+      <div class="d-flex flex-wrap gap-2 mb-2" id="photo-list-{{ area.task_area_id }}">
+        {% for photo in area.photos %}
+          <div class="position-relative" id="photo-item-{{ photo.task_area_photo_id }}">
+            <img src="{{ photo.photo_file_path }}" class="rounded border" 
+                 style="width: 80px; height: 80px; object-fit: cover; cursor: pointer;"
+                 onclick="showPhotoModal('{{ photo.photo_file_path }}')">
+            {% if schedule.schedule_status != 'completed' %}
+              <button type="button" class="btn btn-sm btn-danger position-absolute top-0 end-0 p-0" 
+                      style="width: 20px; height: 20px; font-size: 10px; line-height: 1;"
+                      onclick="deletePhoto({{ photo.task_area_photo_id }}, {{ area.task_area_id }})">
+                <i class="ph ph-x"></i>
+              </button>
+            {% endif %}
+          </div>
+        {% endfor %}
+      </div>
+      {% if schedule.schedule_status != 'completed' %}
+        <div class="d-flex gap-2">
+          <input type="file" class="form-control form-control-sm" id="photo-input-{{ area.task_area_id }}" 
+                 accept="image/*" multiple style="max-width: 300px;">
+          <button type="button" class="btn btn-sm btn-outline-primary" 
+                  onclick="uploadPhotos({{ area.task_area_id }}, {{ schedule.task_schedule_id }})">
+            <i class="ph ph-upload me-1"></i>업로드
+          </button>
+        </div>
+      {% endif %}
+    </div>
+
+    <!-- 특이사항 -->
+    <div>
+      <label class="form-label small fw-semibold">
+        <i class="ph ph-note-pencil me-1"></i>특이사항
+      </label>
+      <textarea class="form-control form-control-sm" rows="2" id="content-{{ area.task_area_id }}" 
+                placeholder="특이사항을 입력하세요" 
+                {% if schedule.schedule_status == 'completed' %}readonly{% endif %}>{{ area.log_content or '' }}</textarea>
+      {% if schedule.schedule_status != 'completed' %}
+        <div class="text-end mt-1">
+          <button type="button" class="btn btn-sm btn-outline-secondary"
+                  onclick="saveAreaLog({{ area.task_area_id }}, {{ schedule.task_schedule_id }})">
+            <i class="ph ph-floppy-disk me-1"></i>저장
+          </button>
+        </div>
+      {% endif %}
+    </div>
+  </div>
+</div>
+{% endfor %}
+
+<!-- 업무 완료 처리 -->
+{% if schedule.schedule_status != 'completed' and schedule.schedule_status != 'canceled' %}
+<div class="card mb-3 border-success">
+  <div class="card-body">
+    <h6 class="mb-3"><i class="ph ph-check-circle me-1 text-success"></i>업무 완료</h6>
+    <div class="mb-3">
+      <label for="completeMemo" class="form-label small fw-semibold">메모 (선택)</label>
+      <textarea class="form-control" rows="2" id="completeMemo" placeholder="완료 메모를 입력하세요"></textarea>
+    </div>
+    <div class="text-end">
+      <button type="button" class="btn btn-success" onclick="completeTask({{ schedule.task_schedule_id }})">
+        <i class="ph ph-check-circle me-1"></i>업무 완료
+      </button>
+    </div>
+  </div>
+</div>
+{% endif %}
+
+<!-- 뒤로가기 -->
+<div class="text-center mb-4">
+  <a href="/tasks/task_my_list" class="btn btn-outline-secondary">
+    <i class="ph ph-arrow-left me-1"></i>목록으로
+  </a>
+</div>
+
+{% else %}
+<div class="text-center text-muted py-5">
+  <i class="ph ph-warning fs-1 d-block mb-2"></i>
+  <p>업무 정보를 찾을 수 없습니다.</p>
+  <a href="/tasks/task_my_list" class="btn btn-outline-secondary btn-sm">목록으로</a>
+</div>
+{% endif %}
+
+<!-- 사진 확대 모달 -->
+<div class="modal fade" id="photoModal" tabindex="-1" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered modal-lg">
+    <div class="modal-content">
+      <div class="modal-header py-2">
+        <h6 class="modal-title">사진</h6>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body text-center p-2">
+        <img id="photoModalImg" src="" class="img-fluid rounded" style="max-height: 70vh;">
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+// 사진 확대
+function showPhotoModal(src) {
+    document.getElementById('photoModalImg').src = src;
+    const modal = new bootstrap.Modal(document.getElementById('photoModal'));
+    modal.show();
+}
+
+// 구역 로그 저장 (사진 업로드 전에 로그를 먼저 생성해야 함)
+function ensureAreaLog(taskAreaId, taskScheduleId) {
+    return new Promise((resolve, reject) => {
+        const content = document.getElementById('content-' + taskAreaId).value;
+        const formData = new FormData();
+        formData.append('taskAreaId', taskAreaId);
+        formData.append('taskScheduleId', taskScheduleId);
+        formData.append('content', content);
+        
+        fetch('/tasks/task_area_log_save', {
+            method: 'POST',
+            body: formData
+        })
+        .then(r => r.json())
+        .then(data => {
+            if (data.success) {
+                resolve(data.task_area_log_id);
+            } else {
+                reject(data.message);
+            }
+        })
+        .catch(reject);
+    });
+}
+
+// 구역 로그 저장
+function saveAreaLog(taskAreaId, taskScheduleId) {
+    ensureAreaLog(taskAreaId, taskScheduleId)
+        .then(logId => {
+            showToast('success', '저장되었습니다.');
+            // 상태 뱃지 업데이트
+            const card = document.getElementById('area-card-' + taskAreaId);
+            const badge = card.querySelector('.badge.badge-soft-warning');
+            if (badge) {
+                badge.className = 'badge badge-soft-success ms-2';
+                badge.textContent = '보고완료';
+            }
+        })
+        .catch(err => showToast('danger', '저장에 실패했습니다.'));
+}
+
+// 사진 업로드 (여러 장 한번에)
+async function uploadPhotos(taskAreaId, taskScheduleId) {
+    const input = document.getElementById('photo-input-' + taskAreaId);
+    const files = input.files;
+    
+    if (!files || files.length === 0) {
+        showToast('warning', '사진을 선택해주세요.');
+        return;
+    }
+    
+    try {
+        // 로그가 없으면 먼저 생성
+        const logId = await ensureAreaLog(taskAreaId, taskScheduleId);
+        
+        const formData = new FormData();
+        formData.append('taskAreaLogId', logId);
+        for (const file of files) {
+            formData.append('photos', file);
+        }
+        
+        const response = await fetch('/tasks/task_area_photo_upload', {
+            method: 'POST',
+            body: formData
+        });
+        const data = await response.json();
+        
+        if (data.success && data.photos) {
+            const photoList = document.getElementById('photo-list-' + taskAreaId);
+            data.photos.forEach(photo => {
+                const div = document.createElement('div');
+                div.className = 'position-relative';
+                div.id = 'photo-item-' + photo.task_area_photo_id;
+                div.innerHTML = `
+                    <img src="${photo.photo_file_path}" class="rounded border" 
+                         style="width: 80px; height: 80px; object-fit: cover; cursor: pointer;"
+                         onclick="showPhotoModal('${photo.photo_file_path}')">
+                    <button type="button" class="btn btn-sm btn-danger position-absolute top-0 end-0 p-0" 
+                            style="width: 20px; height: 20px; font-size: 10px; line-height: 1;"
+                            onclick="deletePhoto(${photo.task_area_photo_id}, ${taskAreaId})">
+                        <i class="ph ph-x"></i>
+                    </button>
+                `;
+                photoList.appendChild(div);
+            });
+            
+            showToast('success', data.message);
+            input.value = '';
+            updatePhotoCount(taskAreaId);
+            // 상태 뱃지 업데이트
+            const card = document.getElementById('area-card-' + taskAreaId);
+            const badge = card.querySelector('.badge.badge-soft-warning');
+            if (badge) {
+                badge.className = 'badge badge-soft-success ms-2';
+                badge.textContent = '보고완료';
+            }
+        } else {
+            showToast('danger', data.message || '업로드에 실패했습니다.');
+        }
+    } catch (err) {
+        console.error(err);
+        showToast('danger', '업로드 중 오류가 발생했습니다.');
+    }
+}
+
+// 사진 삭제
+function deletePhoto(photoId, taskAreaId) {
+    if (!confirm('사진을 삭제하시겠습니까?')) return;
+    
+    const formData = new FormData();
+    formData.append('taskAreaPhotoId', photoId);
+    
+    fetch('/tasks/task_area_photo_delete', {
+        method: 'POST',
+        body: formData
+    })
+    .then(r => r.json())
+    .then(data => {
+        if (data.success) {
+            const item = document.getElementById('photo-item-' + photoId);
+            if (item) item.remove();
+            showToast('success', '삭제되었습니다.');
+            updatePhotoCount(taskAreaId);
+        } else {
+            showToast('danger', data.message);
+        }
+    })
+    .catch(() => showToast('danger', '삭제 중 오류가 발생했습니다.'));
+}
+
+// 사진 수 업데이트
+function updatePhotoCount(taskAreaId) {
+    const photoList = document.getElementById('photo-list-' + taskAreaId);
+    const count = photoList ? photoList.children.length : 0;
+    const countEl = document.querySelector('.photo-count-' + taskAreaId);
+    if (countEl) countEl.textContent = '(' + count + '장)';
+}
+
+// 업무 완료
+function completeTask(taskScheduleId) {
+    if (!confirm('업무를 완료 처리하시겠습니까?\n완료 후에는 수정할 수 없습니다.')) return;
+    
+    const memo = document.getElementById('completeMemo').value;
+    const formData = new FormData();
+    formData.append('taskScheduleId', taskScheduleId);
+    formData.append('memo', memo);
+    
+    fetch('/tasks/task_schedule_complete', {
+        method: 'POST',
+        body: formData
+    })
+    .then(r => r.json())
+    .then(data => {
+        if (data.success) {
+            showToast('success', data.message);
+            setTimeout(() => location.reload(), 1000);
+        } else {
+            showToast('danger', data.message);
+        }
+    })
+    .catch(() => showToast('danger', '처리 중 오류가 발생했습니다.'));
+}
+
+// Toast 알림 함수
+function showToast(type, message) {
+    const toastContainer = document.getElementById('toastContainer') || createToastContainer();
+    const toastId = 'toast-' + Date.now();
+    
+    const toastHtml = `
+        <div id="${toastId}" class="toast align-items-center text-white bg-${type} border-0" role="alert" aria-live="assertive" aria-atomic="true">
+            <div class="d-flex">
+                <div class="toast-body">${message}</div>
+                <button type="button" class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast" aria-label="Close"></button>
+            </div>
+        </div>
+    `;
+    
+    toastContainer.insertAdjacentHTML('beforeend', toastHtml);
+    const toastElement = document.getElementById(toastId);
+    const toast = new bootstrap.Toast(toastElement, { delay: 3000 });
+    toast.show();
+    
+    toastElement.addEventListener('hidden.bs.toast', () => toastElement.remove());
+}
+
+function createToastContainer() {
+    const container = document.createElement('div');
+    container.id = 'toastContainer';
+    container.className = 'toast-container position-fixed top-0 end-0 p-3';
+    container.style.zIndex = '1050';
+    document.body.appendChild(container);
+    return container;
+}
+</script>
+{% endblock %}

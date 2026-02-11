@@ -1,29 +1,391 @@
 {% extends "layout.html" %}
+{% from "macros/form.html" import input, datepicker %}
 
-{% block title %}업무일정{% endblock %}
+{% block title %}
+  {% if task_kind_id == 4 %}청소{% elif task_kind_id == 5 %}간식{% elif task_kind_id == 6 %}비품{% endif %} 업무일정
+{% endblock %}
 
 {% block content %}
-<div class="container-fluid">
-    <div class="row">
-        <div class="col-12">
-            <h4 class="mb-4">
-                {% if task_kind_id == 4 %}
-                    <i class="bi bi-broom me-2"></i>청소 업무일정
-                {% elif task_kind_id == 5 %}
-                    <i class="bi bi-cup-straw me-2"></i>간식 업무일정
-                {% elif task_kind_id == 6 %}
-                    <i class="bi bi-box-seam me-2"></i>비품 업무일정
-                {% else %}
-                    <i class="bi bi-clipboard-plus me-2"></i>업무일정
-                {% endif %}
-            </h4>
-            
-            <div class="card">
-                <div class="card-body">
-                    <p class="text-muted">업무 일정 페이지입니다. (task_kind_id: {{ task_kind_id }})</p>
+<!-- Page Header -->
+<div class="page-header">
+  <div>
+    <h1 class="page-title">
+      {% if task_kind_id == 4 %}청소{% elif task_kind_id == 5 %}간식{% elif task_kind_id == 6 %}비품{% endif %} 업무일정
+    </h1>
+    <nav>
+      <ol class="breadcrumb">
+        <li class="breadcrumb-item"><a href="/">홈</a></li>
+        <li class="breadcrumb-item">
+          {% if task_kind_id == 4 %}청소{% elif task_kind_id == 5 %}간식{% elif task_kind_id == 6 %}비품{% else %}작업{% endif %}
+        </li>
+        <li class="breadcrumb-item active">업무일정</li>
+      </ol>
+    </nav>
+  </div>
+</div>
+
+<!-- Schedule List Card -->
+<div class="card">
+  <div class="users-toolbar">
+    <div class="users-toolbar-left">
+      <div class="users-search">
+        <i class="ph ph-magnifying-glass"></i>
+        <input type="text" placeholder="업체 / 작업자 검색..." id="scheduleSearch">
+      </div>
+      <div class="users-filter-group">
+        <!-- 년월 선택 -->
+        <div class="d-flex align-items-center gap-2">
+          <button class="btn btn-sm btn-outline-secondary" onclick="changeMonth(-1)" title="이전 달">
+            <i class="ph ph-caret-left"></i>
+          </button>
+          <span class="fw-semibold fs-15 px-2">
+            <i class="bi bi-calendar-month me-1"></i>{{ year_month }}
+          </span>
+          <button class="btn btn-sm btn-outline-secondary" onclick="changeMonth(1)" title="다음 달">
+            <i class="ph ph-caret-right"></i>
+          </button>
+        </div>
+        <!-- 상태 필터 -->
+        <div class="dropdown">
+          <button class="users-filter-btn" data-bs-toggle="dropdown">
+            <i class="ph ph-funnel"></i> 상태
+            <i class="ph ph-caret-down"></i>
+          </button>
+          <ul class="dropdown-menu">
+            <li><a class="dropdown-item active" href="#" data-filter="status" data-value="all">전체</a></li>
+            <li><a class="dropdown-item" href="#" data-filter="status" data-value="scheduled">예정</a></li>
+            <li><a class="dropdown-item" href="#" data-filter="status" data-value="today">오늘</a></li>
+            <li><a class="dropdown-item" href="#" data-filter="status" data-value="completed">완료</a></li>
+            <li><a class="dropdown-item" href="#" data-filter="status" data-value="overdue">지연</a></li>
+            <li><a class="dropdown-item" href="#" data-filter="status" data-value="canceled">취소</a></li>
+          </ul>
+        </div>
+      </div>
+    </div>
+    <div class="users-toolbar-right">
+      <span class="text-muted small">총 <strong>{{ schedules|length }}</strong>건</span>
+    </div>
+  </div>
+
+  <div class="users-table-wrap">
+    <table class="users-table">
+      <thead>
+        <tr>
+          <th>날짜</th>
+          <th>요일</th>
+          <th>업체명</th>
+          <th>작업자</th>
+          <th>상태</th>
+          <th>원래날짜</th>
+          <th>변경자</th>
+          <th class="users-th-actions">작업</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% if schedules %}
+          {% for s in schedules %}
+          <tr data-task-log-id="{{ s.task_schedule_id }}" data-status="{{ s.schedule_status }}">
+            <td class="users-cell-meta">
+              <div class="fw-semibold">{{ s.effective_date }}</div>
+            </td>
+            <td class="users-cell-meta text-center">
+              <div>{{ s.effective_day }}</div>
+            </td>
+            <td>
+              <div class="users-cell-user">
+                <div>
+                  <span class="users-cell-name">{{ s.client_name }}</span>
                 </div>
+              </div>
+            </td>
+            <td class="users-cell-meta">
+              <div>{{ s.worker_name }}</div>
+              <div class="users-cell-email">{{ s.worker_mobile }}</div>
+            </td>
+            <td class="text-center">
+              {% if s.schedule_status == 'completed' %}
+                <span class="users-status active">완료</span>
+              {% elif s.schedule_status == 'today' %}
+                <span class="users-status pending">오늘</span>
+              {% elif s.schedule_status == 'overdue' %}
+                <span class="users-status inactive">지연</span>
+              {% elif s.schedule_status == 'canceled' %}
+                <span class="users-status inactive">취소</span>
+              {% else %}
+                <span class="users-status pending">예정</span>
+              {% endif %}
+            </td>
+            <td class="users-cell-meta">
+              {% if s.change_scheduled_date %}
+                <div class="text-decoration-line-through text-muted small">{{ s.scheduled_date }}</div>
+              {% else %}
+                <div class="text-muted small">-</div>
+              {% endif %}
+            </td>
+            <td class="users-cell-meta">
+              <div>{{ s.admin_name or '-' }}</div>
+            </td>
+            <td>
+              <div class="table-actions justify-content-end">
+                {% if s.schedule_status != 'completed' and s.schedule_status != 'canceled' %}
+                <button class="btn btn-icon btn-sm btn-light" title="날짜변경"
+                        onclick="showChangeDateModal({{ s.task_schedule_id }}, '{{ s.effective_date }}', '{{ s.client_name }}')">
+                  <i class="ph ph-calendar"></i>
+                </button>
+                <button class="btn btn-icon btn-sm btn-light text-danger" title="삭제"
+                        onclick="showDeleteScheduleModal({{ s.task_schedule_id }}, '{{ s.client_name }}', '{{ s.effective_date }}')">
+                  <i class="ph ph-trash"></i>
+                </button>
+                {% endif %}
+              </div>
+            </td>
+          </tr>
+          {% endfor %}
+        {% else %}
+          <tr>
+            <td colspan="8" class="text-center py-5">
+              <div class="text-muted">
+                <i class="ph ph-calendar-blank" style="font-size: 48px; opacity: 0.3;"></i>
+                <p class="mt-3 mb-0">해당 월에 생성된 스케줄이 없습니다.</p>
+              </div>
+            </td>
+          </tr>
+        {% endif %}
+      </tbody>
+    </table>
+  </div>
+
+  <!-- Pagination -->
+  <div class="users-pagination" id="schedulesPagination" style="display: none;">
+    <div class="users-pagination-info">
+      <strong id="showingRange">1-10</strong> / <strong id="totalCount">0</strong> 건
+    </div>
+    <nav>
+      <ul class="pagination mb-0" id="paginationList"></ul>
+    </nav>
+  </div>
+</div>
+
+<!-- Change Date Modal -->
+<div class="modal fade" id="changeDateModal" tabindex="-1" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered modal-sm">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title">날짜 변경</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body">
+        <p class="text-muted mb-3" id="changeDateInfo"></p>
+        <input type="hidden" id="changeDateTaskScheduleId">
+        <div class="mb-3">
+          <label for="newScheduledDate" class="form-label">변경할 날짜 <span class="text-danger">*</span></label>
+          <div class="input-group">
+            <input type="text" class="form-control" id="newScheduledDate" placeholder="날짜 선택" data-picker="date" required>
+            <span class="input-group-text"><i class="bi bi-calendar3"></i></span>
+          </div>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary btn-sm" data-bs-dismiss="modal">취소</button>
+        <button type="button" class="btn btn-primary btn-sm" onclick="confirmChangeDate()">변경</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Delete Schedule Modal -->
+<div class="modal fade" id="deleteScheduleModal" tabindex="-1" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered">
+    <div class="modal-content">
+      <div class="modal-body text-center py-4">
+        <div class="mb-3">
+          <span class="bg-danger-subtle text-danger rounded-circle d-inline-flex align-items-center justify-content-center" style="width: 64px; height: 64px;">
+            <i class="bi bi-exclamation-triangle fs-1"></i>
+          </span>
+        </div>
+        <h5>스케줄 삭제</h5>
+        <p class="text-muted mb-0" id="deleteScheduleMessage"></p>
+        <input type="hidden" id="deleteScheduleTaskScheduleId">
+      </div>
+      <div class="modal-footer justify-content-center border-0 pt-0">
+        <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">취소</button>
+        <button type="button" class="btn btn-danger" onclick="confirmDeleteSchedule()">삭제</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+{% endblock %}
+
+{% block extra_js %}
+<script>
+// 페이징 인스턴스 생성
+const schedulePagination = new TablePagination({
+  tableSelector: '.users-table tbody',
+  paginationSelector: '#schedulesPagination',
+  itemsPerPage: 20
+});
+
+// 커스텀 필터 함수 정의
+schedulePagination.customFilter = function(row, filters) {
+  if (filters.status && filters.status !== 'all') {
+    const status = row.dataset.status;
+    if (status !== filters.status) return false;
+  }
+  return true;
+};
+
+// 검색 기능
+document.getElementById('scheduleSearch')?.addEventListener('input', function(e) {
+  schedulePagination.applySearchFilter(e.target.value, ['.users-cell-name', '.users-cell-meta']);
+});
+
+// 필터 기능
+document.querySelectorAll('[data-filter]').forEach(item => {
+  item.addEventListener('click', function(e) {
+    e.preventDefault();
+    const filterType = this.dataset.filter;
+    const filterValue = this.dataset.value;
+    
+    this.closest('.dropdown-menu').querySelectorAll('.dropdown-item').forEach(i => {
+      i.classList.remove('active');
+    });
+    this.classList.add('active');
+    
+    schedulePagination.setFilter(filterType, filterValue);
+  });
+});
+
+// 이전/다음 달 이동
+function changeMonth(offset) {
+    const current = '{{ year_month }}';
+    const [year, month] = current.split('-').map(Number);
+    const d = new Date(year, month - 1 + offset, 1);
+    const ym = d.getFullYear() + '-' + String(d.getMonth() + 1).padStart(2, '0');
+    window.location.href = '/tasks/task_schedule_list?task_kind_id={{ task_kind_id }}&year_month=' + ym;
+}
+
+// 날짜 변경 모달 표시
+function showChangeDateModal(taskScheduleId, currentDate, clientName) {
+    document.getElementById('changeDateTaskScheduleId').value = taskScheduleId;
+    const dateEl = document.getElementById('newScheduledDate');
+    if (dateEl._flatpickr) {
+        dateEl._flatpickr.setDate(currentDate, true);
+    } else {
+        dateEl.value = currentDate;
+    }
+    document.getElementById('changeDateInfo').innerHTML = 
+        '<strong>' + clientName + '</strong><br>현재 날짜: ' + currentDate;
+    
+    const modal = new bootstrap.Modal(document.getElementById('changeDateModal'));
+    modal.show();
+}
+
+// 날짜 변경 확인
+function confirmChangeDate() {
+    const taskScheduleId = document.getElementById('changeDateTaskScheduleId').value;
+    const newDate = document.getElementById('newScheduledDate').value;
+    
+    if (!newDate) {
+        alert('변경할 날짜를 선택해주세요.');
+        return;
+    }
+    
+    const formData = new FormData();
+    formData.append('taskScheduleId', taskScheduleId);
+    formData.append('changeScheduledAt', newDate);
+    
+    fetch('/tasks/schedule_date_update', {
+        method: 'POST',
+        body: formData
+    })
+    .then(response => response.json())
+    .then(data => {
+        const modal = bootstrap.Modal.getInstance(document.getElementById('changeDateModal'));
+        modal.hide();
+        
+        if (data.success) {
+            showToast('success', data.message);
+            setTimeout(() => location.reload(), 1000);
+        } else {
+            showToast('danger', '날짜 변경에 실패했습니다.');
+        }
+    })
+    .catch(error => {
+        console.error('Error:', error);
+        showToast('danger', '날짜 변경 중 오류가 발생했습니다.');
+    });
+}
+
+// 스케줄 삭제 모달 표시
+function showDeleteScheduleModal(taskScheduleId, clientName, date) {
+    document.getElementById('deleteScheduleTaskScheduleId').value = taskScheduleId;
+    document.getElementById('deleteScheduleMessage').innerHTML = 
+        '<strong>' + clientName + '</strong>의 <strong>' + date + '</strong> 스케줄을 삭제하시겠습니까?';
+    
+    const modal = new bootstrap.Modal(document.getElementById('deleteScheduleModal'));
+    modal.show();
+}
+
+// 스케줄 삭제 확인
+function confirmDeleteSchedule() {
+    const taskScheduleId = document.getElementById('deleteScheduleTaskScheduleId').value;
+    
+    const formData = new FormData();
+    formData.append('taskScheduleId', taskScheduleId);
+    
+    fetch('/tasks/schedule_delete', {
+        method: 'POST',
+        body: formData
+    })
+    .then(response => response.json())
+    .then(data => {
+        const modal = bootstrap.Modal.getInstance(document.getElementById('deleteScheduleModal'));
+        modal.hide();
+        
+        if (data.success) {
+            showToast('success', data.message);
+            setTimeout(() => location.reload(), 1000);
+        } else {
+            showToast('warning', data.message);
+        }
+    })
+    .catch(error => {
+        console.error('Error:', error);
+        showToast('danger', '삭제 중 오류가 발생했습니다.');
+    });
+}
+
+// Toast 알림 함수
+function showToast(type, message) {
+    const toastContainer = document.getElementById('toastContainer') || createToastContainer();
+    const toastId = 'toast-' + Date.now();
+    
+    const toastHtml = `
+        <div id="${toastId}" class="toast align-items-center text-white bg-${type} border-0" role="alert" aria-live="assertive" aria-atomic="true">
+            <div class="d-flex">
+                <div class="toast-body">${message}</div>
+                <button type="button" class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast" aria-label="Close"></button>
             </div>
         </div>
-    </div>
-</div>
+    `;
+    
+    toastContainer.insertAdjacentHTML('beforeend', toastHtml);
+    const toastElement = document.getElementById(toastId);
+    const toast = new bootstrap.Toast(toastElement, { delay: 3000 });
+    toast.show();
+    
+    toastElement.addEventListener('hidden.bs.toast', () => toastElement.remove());
+}
+
+function createToastContainer() {
+    const container = document.createElement('div');
+    container.id = 'toastContainer';
+    container.className = 'toast-container position-fixed top-0 end-0 p-3';
+    container.style.zIndex = '1050';
+    document.body.appendChild(container);
+    return container;
+}
+
+</script>
 {% endblock %}

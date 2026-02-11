@@ -74,6 +74,7 @@ ALTER TABLE commons
 CREATE TABLE notices (
     notice_id             INT NOT NULL AUTO_INCREMENT COMMENT '공지사항ID',
     user_id               INT NOT NULL COMMENT '사용자ID',
+    title                 VARCHAR(200) NOT NULL COMMENT '제목', 
     content               TEXT NOT NULL COMMENT '내용',
     display_yn            TINYINT(1) DEFAULT 0 NOT NULL COMMENT '게시여부',
     top_expose_yn         TINYINT(1) DEFAULT 0 NOT NULL COMMENT '상단노출여부',
@@ -93,13 +94,13 @@ CREATE TABLE notices (
 CREATE TABLE task_area_logs (
     task_area_log_id      INT NOT NULL AUTO_INCREMENT COMMENT '업무세부결과ID',
     task_area_id          INT NOT NULL COMMENT '업무구역ID',
-    task_log_id           INT NOT NULL COMMENT '업무결과ID',
+    task_schedule_id      INT NOT NULL COMMENT '업무결과ID',
     content               VARCHAR(500) NULL COMMENT '특이사항',
     created_at            DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT '등록일',
     updated_at            DATETIME NULL COMMENT '수정일',
     PRIMARY KEY (task_area_log_id),
     INDEX idx_task_area_logs_task_area_id (task_area_id),
-    INDEX idx_task_area_logs_task_log_id (task_log_id)
+    INDEX idx_task_area_logs_task_schedule_id (task_schedule_id)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='task_area_logs 업무세부결과';
 
 -- ============================================================
@@ -136,9 +137,10 @@ CREATE TABLE task_areas (
 -- TABLE: task_schedules (업무일정)
 -- ============================================================
 CREATE TABLE task_schedules (
-    task_log_id           INT NOT NULL AUTO_INCREMENT COMMENT '업무결과ID',
+    task_schedule_id      INT NOT NULL AUTO_INCREMENT COMMENT '업무결과ID',
     task_id               INT NOT NULL COMMENT '업무관리ID',
     user_id               INT NOT NULL COMMENT '작업자ID',
+    admin_user_id         INT NULL COMMENT '관리자ID',
     memo                  VARCHAR(500) NULL COMMENT '메모',
     scheduled_at          DATETIME NOT NULL COMMENT '생성일정',
     change_scheduled_at   DATETIME NULL COMMENT '변경일정',
@@ -146,7 +148,7 @@ CREATE TABLE task_schedules (
     canceled_at           TINYINT(1) DEFAULT 0 NOT NULL COMMENT '작업취소일',
     created_at            DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT '등록일',
     updated_at            DATETIME NULL COMMENT '수정일',
-    PRIMARY KEY (task_log_id),
+    PRIMARY KEY (task_schedule_id),
     INDEX idx_task_schedules_task_id (task_id),
     INDEX idx_task_schedules_user_id (user_id),
     INDEX idx_task_schedules_scheduled_at (scheduled_at)
@@ -158,7 +160,7 @@ CREATE TABLE task_schedules (
 CREATE TABLE task_sns_logs (
     task_sns_log_id       INT NOT NULL AUTO_INCREMENT COMMENT '업무알림결과ID',
     user_id               INT NOT NULL COMMENT '사용자ID',
-    task_log_id           INT NOT NULL COMMENT '업무결과ID',
+    task_schedule_id      INT NOT NULL COMMENT '업무결과ID',
     from_mobile           VARCHAR(100) NOT NULL COMMENT '발신전화번호',
     to_mobile             VARCHAR(100) NOT NULL COMMENT '수신전화번호',
     content               VARCHAR(500) NOT NULL COMMENT '메시지내용',
@@ -173,7 +175,7 @@ CREATE TABLE task_sns_logs (
     updated_at            DATETIME NULL COMMENT '수정일',
     PRIMARY KEY (task_sns_log_id),
     INDEX idx_task_sns_logs_user_id (user_id),
-    INDEX idx_task_sns_logs_task_log_id (task_log_id),
+    INDEX idx_task_sns_logs_task_schedule_id (task_schedule_id),
     INDEX idx_task_sns_logs_send_status (send_status),
     INDEX idx_task_sns_logs_scheduled_send_at (scheduled_send_at)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='task_sns_logs 업무알림결과';
@@ -254,7 +256,7 @@ ALTER TABLE task_area_logs
 
 ALTER TABLE task_area_logs
     ADD CONSTRAINT fk_task_schedules_task_area_logs
-    FOREIGN KEY (task_log_id) REFERENCES task_schedules(task_log_id);
+    FOREIGN KEY (task_schedule_id) REFERENCES task_schedules(task_schedule_id);
 
 -- task_area_photos FK
 ALTER TABLE task_area_photos
@@ -278,7 +280,7 @@ ALTER TABLE task_schedules
 -- task_sns_logs FKs
 ALTER TABLE task_sns_logs
     ADD CONSTRAINT fk_task_schedules_task_sns_logs
-    FOREIGN KEY (task_log_id) REFERENCES task_schedules(task_log_id);
+    FOREIGN KEY (task_schedule_id) REFERENCES task_schedules(task_schedule_id);
 
 ALTER TABLE task_sns_logs
     ADD CONSTRAINT fk_users_task_sns_logs

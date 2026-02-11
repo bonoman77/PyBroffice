@@ -1,6 +1,6 @@
 
 {% extends "layout.html" %}
-{% from "macros/form.html" import input, textarea %}
+{% from "macros/form.html" import input, textarea, datepicker %}
 {% block title %}업체목록{% endblock %}
 
 {% block content %}
@@ -230,7 +230,7 @@
             </div>
             <div class="col-md-6 mb-3">
               <label for="contractDate" class="form-label">계약일 <span class="text-danger">*</span></label>
-              {{ input('date', 'contractDate', '', opt='required') }}
+              {{ datepicker('contractDate', '', 'date', '계약일 선택', opt='required') }}
             </div>
           </div>
           <div class="row">
@@ -414,7 +414,13 @@ function openClientModal(data) {
     document.getElementById('managerName').value = data.managerName || '';
     document.getElementById('managerMobile').value = data.managerMobile || '';
     document.getElementById('managerPosition').value = data.managerPosition || '';
-    document.getElementById('contractDate').value = data.contractDate || '';
+    // flatpickr API로 날짜 설정
+    const contractDateEl = document.getElementById('contractDate');
+    if (contractDateEl._flatpickr) {
+        contractDateEl._flatpickr.setDate(data.contractDate || '', true);
+    } else {
+        contractDateEl.value = data.contractDate || '';
+    }
     document.getElementById('memo').value = data.memo || '';
     document.getElementById('cleaningYn').checked = data.cleaningYn == 1;
     document.getElementById('snackYn').checked = data.snackYn == 1;

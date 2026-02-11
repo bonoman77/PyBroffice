@@ -1,0 +1,71 @@
+<a href="/tasks/task_detail?task_schedule_id={{ s.task_schedule_id }}" class="text-decoration-none">
+  <div class="card mb-2 border-start border-3 
+    {% if s.schedule_status == 'completed' %}border-warning
+    {% elif s.schedule_status == 'today' %}border-primary
+    {% elif s.schedule_status == 'overdue' %}border-secondary
+    {% elif s.schedule_status == 'canceled' %}border-secondary
+    {% else %}border-info{% endif %}
+    shadow-sm hover-shadow">
+    <div class="card-body py-3 px-3">
+      <div class="d-flex align-items-center justify-content-between">
+        <div class="d-flex align-items-center gap-3">
+          <!-- 상태 아이콘 -->
+          <div class="rounded-circle d-flex align-items-center justify-content-center" 
+               style="width: 40px; height: 40px;
+               {% if s.schedule_status == 'completed' %}background-color: rgba(255,193,7,0.1);
+               {% elif s.schedule_status == 'today' %}background-color: rgba(13,110,253,0.1);
+               {% elif s.schedule_status == 'overdue' %}background-color: rgba(108,117,125,0.1);
+               {% elif s.schedule_status == 'canceled' %}background-color: rgba(108,117,125,0.1);
+               {% else %}background-color: rgba(13,202,240,0.1);{% endif %}">
+            {% if s.schedule_status == 'completed' %}
+              <i class="ph ph-check-circle fs-5 text-warning"></i>
+            {% elif s.schedule_status == 'today' %}
+              <i class="ph ph-clock fs-5 text-primary"></i>
+            {% elif s.schedule_status == 'overdue' %}
+              <i class="ph ph-warning fs-5 text-secondary"></i>
+            {% elif s.schedule_status == 'canceled' %}
+              <i class="ph ph-x-circle fs-5 text-secondary"></i>
+            {% else %}
+              <i class="ph ph-calendar fs-5 text-info"></i>
+            {% endif %}
+          </div>
+          <!-- 업무 정보 -->
+          <div>
+            <div class="fw-semibold text-dark">{{ s.client_name }}</div>
+            <div class="small text-muted">
+              <span class="badge bg-light text-dark me-1">{{ s.task_kind_name }}</span>
+              {% if s.area_count > 0 %}
+                <span class="text-muted">구역 {{ s.completed_area_count }}/{{ s.area_count }}</span>
+              {% endif %}
+            </div>
+          </div>
+        </div>
+        <!-- 우측 상태 -->
+        <div class="text-end">
+          {% if s.schedule_status == 'completed' %}
+            <span class="badge bg-warning">완료</span>
+            <div class="small text-muted mt-1">{{ s.completed_date }}</div>
+          {% elif s.schedule_status == 'today' %}
+            <span class="badge bg-primary">오늘</span>
+          {% elif s.schedule_status == 'overdue' %}
+            <span class="badge bg-secondary">미완료</span>
+          {% elif s.schedule_status == 'canceled' %}
+            <span class="badge bg-secondary">취소</span>
+          {% else %}
+            <span class="badge bg-info">예정</span>
+          {% endif %}
+          {% if s.change_scheduled_date %}
+            <div class="small text-warning mt-1">
+              <i class="ph ph-arrow-right"></i> {{ s.change_scheduled_date }}
+            </div>
+          {% endif %}
+        </div>
+      </div>
+      {% if s.memo %}
+        <div class="mt-2 small text-muted border-top pt-2">
+          <i class="ph ph-note me-1"></i>{{ s.memo }}
+        </div>
+      {% endif %}
+    </div>
+  </div>
+</a>
