@@ -1,12 +1,14 @@
 {% extends "layout.html" %}
 
-{% block title %}업무 상세{% endblock %}
+{% block title %}
+{% if task_kind_id == 4 %}청소{% elif task_kind_id == 5 %}간식{% elif task_kind_id == 6 %}비품{% endif %} 업무 상세
+{% endblock %}
 
 {% block content %}
 <!-- Page Header -->
 <div class="page-header">
   <div>
-    <h1 class="page-title">업무보고</h1>
+    <h1 class="page-title">{% if task_kind_id == 4 %}청소{% elif task_kind_id == 5 %}간식{% elif task_kind_id == 6 %}비품{% endif %} 업무보고</h1>
     <nav>
       <ol class="breadcrumb">
         <li class="breadcrumb-item"><a href="/">홈</a></li>

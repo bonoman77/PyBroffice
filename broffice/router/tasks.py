@@ -323,8 +323,19 @@ def task_area_update():
 @login_required
 def task_my_list():
     """내 업무 목록"""
+    user_kind_id = session['login_user']['user_kind_id']
     user_id = session['login_user']['user_id']
     year_month = request.args.get('year_month', datetime.now().strftime('%Y-%m'))
+    
+    # 관리자는 직원 선택 가능
+    workers = []
+    if user_kind_id == 1:
+        workers = conn.return_list('get_workers_list', []) or []
+        selected_user_id = request.args.get('user_id', 0, type=int)
+        if selected_user_id:
+            user_id = selected_user_id
+    else:
+        selected_user_id = user_id
     
     schedules = conn.return_list('get_task_my_list', [user_id, year_month])
     
@@ -342,7 +353,9 @@ def task_my_list():
         tomorrow=tomorrow,
         total_count=total_count,
         completed_count=completed_count,
-        pending_count=pending_count
+        pending_count=pending_count,
+        workers=workers,
+        selected_user_id=selected_user_id
     )
 
 
@@ -488,6 +501,48 @@ def assign():
     """직원 연결"""
     task_kind_id = request.args.get('task_kind_id', type=int)
     return render_template('tasks/assign.html', task_kind_id=task_kind_id)
+
+
+@bp.route("/task_client_list", methods=['GET'])
+@login_required
+def task_client_list():
+    """작업 보고 내역 (업체/관리자용)"""
+    user_kind_id = session['login_user']['user_kind_id']
+    
+    # 업체담당자는 본인 회사만, 관리자는 전체 (업체 필터 가능)
+    if user_kind_id == 3:
+        client_id = session['login_user'].get('client_id', 0) or 0
+    elif user_kind_id == 1:
+        client_id = request.args.get('client_id', 0, type=int)
+    else:
+        return redirect(url_for('homes.index'))
+    
+    year_month = request.args.get('year_month', datetime.now().strftime('%Y-%m'))
+    page = request.args.get('page', 1, type=int)
+    page_size = 15
+    
+    count_result = conn.execute_return('get_task_client_list_count', [client_id, year_month])
+    total_count = count_result.get('total_count', 0) if count_result else 0
+    total_pages = (total_count + page_size - 1) // page_size if total_count > 0 else 1
+    if page < 1: page = 1
+    if page > total_pages: page = total_pages
+    
+    res_list = conn.return_list('get_task_client_list', [client_id, year_month, page, page_size])
+    
+    # 관리자용 업체 목록
+    clients = []
+    if user_kind_id == 1:
+        clients = conn.return_list('get_client_list', []) or []
+    
+    return render_template('tasks/task_client_list.html',
+        res_list=res_list,
+        page=page,
+        total_pages=total_pages,
+        total_count=total_count,
+        year_month=year_month,
+        client_id=client_id,
+        clients=clients
+    )
 
 
 @bp.route("/task_client_result", methods=['GET'])

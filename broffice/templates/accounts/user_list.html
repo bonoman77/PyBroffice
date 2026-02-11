@@ -164,7 +164,7 @@
                         data-client-id="{{ user.client_id|default('') }}"
                         data-status="{{ user.status }}"><i class="bi bi-pencil"></i></button>
                 <button class="btn btn-icon btn-sm btn-light" title="삭제" data-user-id="{{ user.user_id }}" data-user-name="{{ user.user_name }}" onclick="showDeleteModal(this)"><i class="bi bi-trash"></i></button>
-                {% if user.user_kind_id != 1 %}
+                {% if user.user_kind_id != 1 and user.status == 'active' %}
                 <button class="btn btn-icon btn-sm btn-light" title="로그인" onclick="loginAsUser({{ user.user_id }}, '{{ user.user_name }}')"><i class="bi bi-box-arrow-in-right"></i></button>
                 {% endif %}
               </div>

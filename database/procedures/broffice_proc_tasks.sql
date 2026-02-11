@@ -1002,4 +1002,130 @@ BEGIN
 END$$
 
 
+-- =============================================
+-- Author:      김승균
+-- Create date: 2026-02-11
+-- Email:       bonoman77@gmail.com 
+-- Description: 업체용 작업 보고 내역 (완료된 작업만, client_id 필터)
+-- =============================================
+
+DROP PROCEDURE IF EXISTS get_task_client_list$$
+
+CREATE PROCEDURE get_task_client_list(
+    IN p_client_id INT,
+    IN p_year_month VARCHAR(7),
+    IN p_page INT,
+    IN p_page_size INT
+)
+BEGIN
+    DECLARE v_start_date DATE;
+    DECLARE v_end_date DATE;
+    DECLARE v_offset INT;
+    
+    SET v_start_date = STR_TO_DATE(CONCAT(p_year_month, '-01'), '%Y-%m-%d');
+    SET v_end_date = LAST_DAY(v_start_date);
+    SET v_offset = (p_page - 1) * p_page_size;
+    
+    SELECT 
+        ts.task_schedule_id,
+        ts.task_id,
+        DATE_FORMAT(COALESCE(ts.change_scheduled_at, ts.scheduled_at), '%Y-%m-%d') AS effective_date,
+        DATE_FORMAT(ts.completed_at, '%Y-%m-%d %H:%i') AS completed_date,
+        t.task_kind_id,
+        CASE t.task_kind_id
+            WHEN 4 THEN '청소'
+            WHEN 5 THEN '간식'
+            WHEN 6 THEN '비품'
+            ELSE '기타'
+        END AS task_kind_name,
+        c.client_id,
+        c.client_name,
+        u.user_name AS worker_name,
+        ts.memo,
+        (SELECT COUNT(*) FROM task_areas ta 
+         WHERE ta.task_id = t.task_id AND ta.use_yn = 1 AND ta.deleted_at IS NULL) AS area_count,
+        (SELECT COUNT(*) FROM task_area_logs tal 
+         INNER JOIN task_areas ta2 ON tal.task_area_id = ta2.task_area_id
+         WHERE tal.task_schedule_id = ts.task_schedule_id 
+           AND ta2.deleted_at IS NULL) AS completed_area_count
+    FROM task_schedules ts
+    INNER JOIN tasks t ON ts.task_id = t.task_id
+    INNER JOIN clients c ON t.client_id = c.client_id
+    LEFT JOIN users u ON ts.user_id = u.user_id
+    WHERE ts.completed_at IS NOT NULL
+      AND t.deleted_at IS NULL
+      AND ts.canceled_at IS NULL
+      AND (COALESCE(ts.change_scheduled_at, ts.scheduled_at) >= v_start_date 
+           AND COALESCE(ts.change_scheduled_at, ts.scheduled_at) <= v_end_date)
+      AND (p_client_id = 0 OR t.client_id = p_client_id)
+    ORDER BY ts.completed_at DESC
+    LIMIT v_offset, p_page_size;
+END$$
+
+
+DROP PROCEDURE IF EXISTS get_task_client_list_count$$
+
+CREATE PROCEDURE get_task_client_list_count(
+    IN p_client_id INT,
+    IN p_year_month VARCHAR(7)
+)
+BEGIN
+    DECLARE v_start_date DATE;
+    DECLARE v_end_date DATE;
+    
+    SET v_start_date = STR_TO_DATE(CONCAT(p_year_month, '-01'), '%Y-%m-%d');
+    SET v_end_date = LAST_DAY(v_start_date);
+    
+    SELECT COUNT(*) AS total_count
+    FROM task_schedules ts
+    INNER JOIN tasks t ON ts.task_id = t.task_id
+    WHERE ts.completed_at IS NOT NULL
+      AND t.deleted_at IS NULL
+      AND ts.canceled_at IS NULL
+      AND (COALESCE(ts.change_scheduled_at, ts.scheduled_at) >= v_start_date 
+           AND COALESCE(ts.change_scheduled_at, ts.scheduled_at) <= v_end_date)
+      AND (p_client_id = 0 OR t.client_id = p_client_id);
+END$$
+
+
+-- 대시보드용: 업체별 최근 완료 작업 (limit 지정)
+DROP PROCEDURE IF EXISTS get_task_client_recent$$
+
+CREATE PROCEDURE get_task_client_recent(
+    IN p_client_id INT,
+    IN p_limit INT
+)
+BEGIN
+    SELECT 
+        ts.task_schedule_id,
+        DATE_FORMAT(COALESCE(ts.change_scheduled_at, ts.scheduled_at), '%Y-%m-%d') AS effective_date,
+        DATE_FORMAT(ts.completed_at, '%Y-%m-%d %H:%i') AS completed_date,
+        t.task_kind_id,
+        CASE t.task_kind_id
+            WHEN 4 THEN '청소'
+            WHEN 5 THEN '간식'
+            WHEN 6 THEN '비품'
+            ELSE '기타'
+        END AS task_kind_name,
+        c.client_name,
+        u.user_name AS worker_name,
+        (SELECT COUNT(*) FROM task_areas ta 
+         WHERE ta.task_id = t.task_id AND ta.use_yn = 1 AND ta.deleted_at IS NULL) AS area_count,
+        (SELECT COUNT(*) FROM task_area_logs tal 
+         INNER JOIN task_areas ta2 ON tal.task_area_id = ta2.task_area_id
+         WHERE tal.task_schedule_id = ts.task_schedule_id 
+           AND ta2.deleted_at IS NULL) AS completed_area_count
+    FROM task_schedules ts
+    INNER JOIN tasks t ON ts.task_id = t.task_id
+    INNER JOIN clients c ON t.client_id = c.client_id
+    LEFT JOIN users u ON ts.user_id = u.user_id
+    WHERE ts.completed_at IS NOT NULL
+      AND t.deleted_at IS NULL
+      AND ts.canceled_at IS NULL
+      AND t.client_id = p_client_id
+    ORDER BY ts.completed_at DESC
+    LIMIT p_limit;
+END$$
+
+
 DELIMITER ;

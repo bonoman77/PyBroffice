@@ -2,7 +2,7 @@
 {% from "macros/form.html" import input, datepicker %}
 
 {% block title %}
-  {% if task_kind_id == 4 %}청소{% elif task_kind_id == 5 %}간식{% elif task_kind_id == 6 %}비품{% endif %} 업무일정
+  {% if task_kind_id == 4 %}청소{% elif task_kind_id == 5 %}간식{% elif task_kind_id == 6 %}비품{% endif %} 전체 스케줄
 {% endblock %}
 
 {% block content %}
@@ -10,7 +10,7 @@
 <div class="page-header">
   <div>
     <h1 class="page-title">
-      {% if task_kind_id == 4 %}청소{% elif task_kind_id == 5 %}간식{% elif task_kind_id == 6 %}비품{% endif %} 업무일정
+      {% if task_kind_id == 4 %}청소{% elif task_kind_id == 5 %}간식{% elif task_kind_id == 6 %}비품{% endif %} 전체 스케줄
     </h1>
     <nav>
       <ol class="breadcrumb">
@@ -18,7 +18,7 @@
         <li class="breadcrumb-item">
           {% if task_kind_id == 4 %}청소{% elif task_kind_id == 5 %}간식{% elif task_kind_id == 6 %}비품{% else %}작업{% endif %}
         </li>
-        <li class="breadcrumb-item active">업무일정</li>
+        <li class="breadcrumb-item active">전체 스케줄</li>
       </ol>
     </nav>
   </div>

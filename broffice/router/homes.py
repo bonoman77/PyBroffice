@@ -48,9 +48,11 @@ def index(user_kind_id=None):
         client_id = session.get('login_user', {}).get('client_id')
         client_info = conn.execute_return('get_client_detail', [client_id]) if client_id else {}
         notices = conn.return_list('get_notice_list_by_target', [3, 5]) or []
+        task_reports = conn.return_list('get_task_client_recent', [client_id, 5]) if client_id else []
         return render_template('homes/index_client.html',
             client_info=client_info,
-            notices=notices
+            notices=notices,
+            task_reports=task_reports or []
         )
     else:
         # 기본 대시보드 (예외 처리)

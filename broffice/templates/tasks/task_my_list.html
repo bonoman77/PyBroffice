@@ -1,16 +1,18 @@
 {% extends "layout.html" %}
 
-{% block title %}내 업무{% endblock %}
+{% block title %}
+{% if task_kind_id == 4 %}청소{% elif task_kind_id == 5 %}간식{% elif task_kind_id == 6 %}비품{% endif %} 내 스케줄
+{% endblock %}
 
 {% block content %}
 <!-- Page Header -->
 <div class="page-header">
   <div>
-    <h1 class="page-title">내 업무</h1>
+    <h1 class="page-title">{% if task_kind_id == 4 %}청소{% elif task_kind_id == 5 %}간식{% elif task_kind_id == 6 %}비품{% endif %} 내 스케줄</h1>
     <nav>
       <ol class="breadcrumb">
         <li class="breadcrumb-item"><a href="/">홈</a></li>
-        <li class="breadcrumb-item active">내 업무</li>
+        <li class="breadcrumb-item active">{% if task_kind_id == 4 %}청소{% elif task_kind_id == 5 %}간식{% elif task_kind_id == 6 %}비품{% endif %} 내 스케줄</li>
       </ol>
     </nav>
   </div>
@@ -22,6 +24,14 @@
     <div class="d-flex align-items-center justify-content-between flex-wrap gap-2">
       <!-- 월 선택 -->
       <div class="d-flex align-items-center gap-2">
+        {% if workers %}
+        <select class="form-select form-select-sm" id="workerFilter" style="width: 160px;" onchange="filterByWorker()">
+          <option value="0">직원 선택</option>
+          {% for w in workers %}
+          <option value="{{ w.user_id }}" {{ 'selected' if w.user_id == selected_user_id }}>{{ w.user_name }}</option>
+          {% endfor %}
+        </select>
+        {% endif %}
         <button class="btn btn-sm btn-outline-secondary" onclick="changeMonth(-1)" title="이전 달">
           <i class="ph ph-caret-left"></i>
         </button>
@@ -133,7 +143,13 @@ function changeMonth(offset) {
     const [year, month] = current.split('-').map(Number);
     const d = new Date(year, month - 1 + offset, 1);
     const ym = d.getFullYear() + '-' + String(d.getMonth() + 1).padStart(2, '0');
-    window.location.href = '/tasks/task_my_list?year_month=' + ym;
+    const userId = document.getElementById('workerFilter') ? document.getElementById('workerFilter').value : 0;
+    window.location.href = '/tasks/task_my_list?year_month=' + ym + '&user_id=' + userId;
+}
+
+function filterByWorker() {
+    const userId = document.getElementById('workerFilter').value;
+    window.location.href = '/tasks/task_my_list?year_month={{ year_month }}&user_id=' + userId;
 }
 </script>
 {% endblock %}

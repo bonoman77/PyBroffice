@@ -99,7 +99,7 @@
           {% endfor %}
         {% else %}
         <div class="text-center text-muted py-3">
-          <i class="bi bi-calendar-x" style="font-size: 48px; opacity: 0.3;"></i>
+          <i class="bi bi-bar-chart-line" style="font-size: 48px; opacity: 0.3;"></i>
           <p class="mt-3 mb-0">이번 달 스케줄이 없습니다</p>
         </div>
         {% endif %}
@@ -124,9 +124,8 @@
                 {% if notice.TopExposeYn %}
                 <span class="badge bg-danger-subtle text-danger me-1">중요</span>
                 {% endif %}
-<a href="javascript:void(0)" onclick="openNoticeModal({{ notice.notice_id }})">{{ notice.Title[:20] }}{% if notice.Title|length > 20 %}...{% endif %}</a>
+                <a href="javascript:void(0)" onclick="openNoticeModal({{ notice.notice_id }})">{{ notice.Title[:20] }}{% if notice.Title|length > 20 %}...{% endif %}</a>
               </div>
-              <small class="text-muted">{{ notice.CreateDate }}</small>
             </div>
           </div>
           {% endfor %}
