@@ -164,7 +164,9 @@
                         data-client-id="{{ user.client_id|default('') }}"
                         data-status="{{ user.status }}"><i class="bi bi-pencil"></i></button>
                 <button class="btn btn-icon btn-sm btn-light" title="삭제" data-user-id="{{ user.user_id }}" data-user-name="{{ user.user_name }}" onclick="showDeleteModal(this)"><i class="bi bi-trash"></i></button>
+                {% if user.user_kind_id != 1 %}
                 <button class="btn btn-icon btn-sm btn-light" title="로그인" onclick="loginAsUser({{ user.user_id }}, '{{ user.user_name }}')"><i class="bi bi-box-arrow-in-right"></i></button>
+                {% endif %}
               </div>
             </td>
           </tr>
@@ -458,6 +460,17 @@ function openUserModal(data) {
 // 회원 폼 제출
 function submitUser() {
   const form = document.getElementById('userForm');
+  const userKindId = document.getElementById('userKindId').value;
+  const clientId = document.getElementById('clientId').value;
+  const userStatus = document.getElementById('userStatus').value;
+  
+  // 업체담당자가 업체 미연결 상태에서 활성 전환 차단
+  if (userKindId === '3' && !clientId && userStatus === 'active') {
+    alert('업체담당자는 소속 업체가 연결되어야 활성 상태로 변경할 수 있습니다.\n먼저 소속 업체를 선택해주세요.');
+    document.getElementById('clientId').focus();
+    return;
+  }
+  
   if (form.checkValidity()) {
     form.submit();
   } else {

@@ -76,8 +76,12 @@ BEGIN
         cr.title,
         cr.content,
         cr.admin_checked_at,
-        cr.created_at
+        DATE_FORMAT(cr.created_at, '%Y-%m-%d %H:%i:%s') AS create_date,
+        u.user_name,
+        COALESCE(c.client_name, '') AS client_name
     FROM client_requests cr
+    INNER JOIN users u ON cr.user_id = u.user_id
+    LEFT JOIN clients c ON u.client_id = c.client_id
     WHERE cr.request_id = p_request_id
       AND cr.deleted_at IS NULL;
     

@@ -27,7 +27,22 @@ def index(user_kind_id=None):
         )
     elif user_kind_id == 2:
         # 직원용 대시보드
-        return render_template('homes/index_staff.html')
+        user_id = session.get('login_user', {}).get('user_id')
+        today = datetime.now().strftime('%Y-%m-%d')
+        year_month = datetime.now().strftime('%Y-%m')
+        
+        notices = conn.return_list('get_notice_list_by_target', [2, 3]) or []
+        today_tasks = conn.return_list('get_task_my_list', [user_id, year_month]) or []
+        # 오늘 날짜 기준 필터링 (최대 10개)
+        today_tasks = [t for t in today_tasks if t.get('effective_date') == today][:10]
+        schedule_progress = conn.return_list('get_staff_schedule_progress', [user_id, year_month]) or []
+        
+        return render_template('homes/index_staff.html',
+            notices=notices,
+            today_tasks=today_tasks,
+            schedule_progress=schedule_progress,
+            year_month=year_month
+        )
     elif user_kind_id == 3:
         # 업체담당자용 대시보드
         client_id = session.get('login_user', {}).get('client_id')

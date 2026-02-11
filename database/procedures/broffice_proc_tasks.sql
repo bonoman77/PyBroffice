@@ -960,4 +960,46 @@ BEGIN
 END$$
 
 
+-- =============================================
+-- Author:      김승균
+-- Create date: 2026-02-11
+-- Email:       bonoman77@gmail.com 
+-- Description: 현장직원 대시보드용 월별 스케줄 진행상황
+-- =============================================
+
+DROP PROCEDURE IF EXISTS get_staff_schedule_progress$$
+
+CREATE PROCEDURE get_staff_schedule_progress(
+    IN p_user_id INT,
+    IN p_year_month VARCHAR(7)
+)
+BEGIN
+    DECLARE v_start_date DATE;
+    DECLARE v_end_date DATE;
+    
+    SET v_start_date = STR_TO_DATE(CONCAT(p_year_month, '-01'), '%Y-%m-%d');
+    SET v_end_date = LAST_DAY(v_start_date);
+    
+    SELECT 
+        t.task_kind_id,
+        CASE t.task_kind_id
+            WHEN 4 THEN '청소'
+            WHEN 5 THEN '간식'
+            WHEN 6 THEN '비품'
+            ELSE '기타'
+        END AS task_kind_name,
+        COUNT(*) AS total_count,
+        SUM(CASE WHEN ts.completed_at IS NOT NULL THEN 1 ELSE 0 END) AS completed_count
+    FROM task_schedules ts
+    INNER JOIN tasks t ON ts.task_id = t.task_id
+    WHERE ts.user_id = p_user_id
+      AND ts.scheduled_at >= v_start_date
+      AND ts.scheduled_at <= v_end_date
+      AND t.deleted_at IS NULL
+      AND ts.canceled_at IS NULL
+    GROUP BY t.task_kind_id
+    ORDER BY t.task_kind_id;
+END$$
+
+
 DELIMITER ;

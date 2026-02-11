@@ -86,15 +86,18 @@
                 <th style="width: 120px;">업체명</th>
                 <th>제목</th>
                 <th style="width: 80px;">확인</th>
-                <th style="width: 130px;">등록일</th>
-                <th style="width: 60px;"></th>
+                <th style="width: 120px;">등록일</th>
               </tr>
             </thead>
             <tbody>
               {% for req in client_requests %}
               <tr>
-                <td><span class="badge bg-light text-dark">{{ req.ClientName or req.UserName }}</span></td>
-                <td class="text-truncate" style="max-width: 400px;">{{ req.Title }}</td>
+                <td>{{ req.ClientName or req.UserName }}</td>
+                <td>
+                  <a href="javascript:void(0)" class="text-decoration-none text-dark" onclick="openRequestModal({{ req.request_id }})">
+                    {{ req.Title[:30] }}{% if req.Title|length > 30 %}...{% endif %}
+                  </a>
+                </td>
                 <td class="text-center">
                   {% if req.AdminCheckedAt %}
                   <span class="badge badge-soft-success">확인</span>
@@ -102,12 +105,7 @@
                   <span class="badge badge-soft-warning">미확인</span>
                   {% endif %}
                 </td>
-                <td class="text-muted small">{{ req.CreateDate }}</td>
-                <td>
-                  <button class="btn btn-sm btn-outline-danger" onclick="event.stopPropagation(); deleteRequest({{ req.request_id }})" title="삭제">
-                    <i class="ph ph-trash"></i>
-                  </button>
-                </td>
+                <td class="text-muted small">{{ req.CreateDate[:10] if req.CreateDate else '-' }}</td>
               </tr>
               {% endfor %}
             </tbody>
@@ -208,6 +206,49 @@
   </div>
 </div>
 
+<!-- 요청사항 상세 모달 -->
+<div class="modal fade" id="requestDetailModal" tabindex="-1" aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title">요청사항 상세</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body">
+        <input type="hidden" id="detailRequestId">
+        <div class="mb-3">
+          <label class="form-label fw-semibold">제목</label>
+          <div id="detailTitle" class="form-control-plaintext"></div>
+        </div>
+        <div class="mb-3">
+          <label class="form-label fw-semibold">내용</label>
+          <div id="detailContent" class="form-control-plaintext border rounded p-2" style="min-height: 100px; white-space: pre-wrap;"></div>
+        </div>
+        <div class="d-flex justify-content-between">
+          <div>
+            <span class="text-muted small">업체: <strong id="detailClientName"></strong></span>
+          </div>
+          <div>
+            <span class="text-muted small">등록일: <span id="detailCreateDate"></span></span>
+          </div>
+        </div>
+        <div class="mt-2 text-end">
+          <span id="detailCheckBadge"></span>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-danger me-auto" id="detailBtnDelete" onclick="deleteRequestFromModal()">
+          <i class="ph ph-trash me-1"></i>삭제
+        </button>
+        <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">닫기</button>
+        <button type="button" class="btn btn-success" id="detailBtnCheck" onclick="checkRequest()">
+          <i class="ph ph-check me-1"></i>확인처리
+        </button>
+      </div>
+    </div>
+  </div>
+</div>
+
 {% endblock %}
 
 {% block extra_js %}
@@ -225,16 +266,103 @@ function updateDateTime() {
 updateDateTime();
 setInterval(updateDateTime, 60000);
 
-// 업체 요청사항 삭제
-function deleteRequest(requestId) {
+// 요청사항 상세 모달 열기
+function openRequestModal(requestId) {
+    fetch('/get_client_request_content?request_id=' + requestId)
+        .then(r => r.json())
+        .then(data => {
+            if (data.success && data.data) {
+                const d = data.data;
+                document.getElementById('detailRequestId').value = d.request_id;
+                document.getElementById('detailTitle').textContent = d.title || '';
+                document.getElementById('detailContent').textContent = d.content || '(내용 없음)';
+                document.getElementById('detailClientName').textContent = d.client_name || d.user_name || '-';
+                document.getElementById('detailCreateDate').textContent = d.create_date || '-';
+                
+                if (d.admin_checked_at) {
+                    document.getElementById('detailCheckBadge').innerHTML = '<span class="badge badge-soft-success">확인완료</span>';
+                    document.getElementById('detailBtnCheck').style.display = 'none';
+                } else {
+                    document.getElementById('detailCheckBadge').innerHTML = '<span class="badge badge-soft-warning">미확인</span>';
+                    document.getElementById('detailBtnCheck').style.display = '';
+                }
+                
+                const modal = new bootstrap.Modal(document.getElementById('requestDetailModal'));
+                modal.show();
+            }
+        });
+}
+
+// 모달에서 삭제
+function deleteRequestFromModal() {
+    const requestId = document.getElementById('detailRequestId').value;
+    if (!requestId) return;
+    
     const formData = new FormData();
     formData.append('requestId', requestId);
     
     fetch('/client_request_delete', { method: 'POST', body: formData })
         .then(r => r.json())
         .then(data => {
-            if (data.success) location.reload();
+            const modal = bootstrap.Modal.getInstance(document.getElementById('requestDetailModal'));
+            modal.hide();
+            if (data.success) {
+                showToast('success', '삭제되었습니다.');
+                setTimeout(() => location.reload(), 1000);
+            } else {
+                showToast('danger', '삭제에 실패했습니다.');
+            }
         });
+}
+
+// 확인 처리
+function checkRequest() {
+    const requestId = document.getElementById('detailRequestId').value;
+    if (!requestId) return;
+    
+    const formData = new FormData();
+    formData.append('requestId', requestId);
+    
+    fetch('/client_request_check', { method: 'POST', body: formData })
+        .then(r => r.json())
+        .then(data => {
+            const modal = bootstrap.Modal.getInstance(document.getElementById('requestDetailModal'));
+            modal.hide();
+            if (data.success) {
+                showToast('success', '확인 처리되었습니다.');
+                setTimeout(() => location.reload(), 1000);
+            } else {
+                showToast('danger', '처리에 실패했습니다.');
+            }
+        });
+}
+
+// Toast 알림
+function showToast(type, message) {
+    const toastContainer = document.getElementById('toastContainer') || createToastContainer();
+    const toastId = 'toast-' + Date.now();
+    const toastHtml = `
+        <div id="${toastId}" class="toast align-items-center text-white bg-${type} border-0" role="alert" aria-live="assertive" aria-atomic="true">
+            <div class="d-flex">
+                <div class="toast-body">${message}</div>
+                <button type="button" class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast" aria-label="Close"></button>
+            </div>
+        </div>
+    `;
+    toastContainer.insertAdjacentHTML('beforeend', toastHtml);
+    const toastElement = document.getElementById(toastId);
+    const toast = new bootstrap.Toast(toastElement, { delay: 3000 });
+    toast.show();
+    toastElement.addEventListener('hidden.bs.toast', () => toastElement.remove());
+}
+
+function createToastContainer() {
+    const container = document.createElement('div');
+    container.id = 'toastContainer';
+    container.className = 'toast-container position-fixed top-0 end-0 p-3';
+    container.style.zIndex = '1050';
+    document.body.appendChild(container);
+    return container;
 }
 </script>
 {% endblock %}

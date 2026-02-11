@@ -20,133 +20,130 @@
   </div>
 </div>
 
-<!-- KPI Strip -->
-<div class="dash-kpi-strip">
-  <div class="dash-kpi">
-    <div class="dash-kpi-icon primary">
-      <i class="bi bi-clipboard-check"></i>
-    </div>
-    <div class="dash-kpi-body">
-      <div class="dash-kpi-value">0</div>
-      <div class="dash-kpi-label">오늘 할당된 업무</div>
-    </div>
-    <div class="dash-kpi-trend positive">
-      <i class="bi bi-trending-up"></i>
-      <span>+0%</span>
-    </div>
-  </div>
-
-  <div class="dash-kpi">
-    <div class="dash-kpi-icon success">
-      <i class="bi bi-check-circle"></i>
-    </div>
-    <div class="dash-kpi-body">
-      <div class="dash-kpi-value">0</div>
-      <div class="dash-kpi-label">완료한 업무</div>
-    </div>
-    <div class="dash-kpi-trend positive">
-      <i class="bi bi-trending-up"></i>
-      <span>+0%</span>
-    </div>
-  </div>
-
-  <div class="dash-kpi">
-    <div class="dash-kpi-icon warning">
-      <i class="bi bi-clock"></i>
-    </div>
-    <div class="dash-kpi-body">
-      <div class="dash-kpi-value">0</div>
-      <div class="dash-kpi-label">대기 중인 업무</div>
-    </div>
-    <div class="dash-kpi-trend positive">
-      <i class="bi bi-trending-up"></i>
-      <span>+0%</span>
-    </div>
-  </div>
-
-  <div class="dash-kpi">
-    <div class="dash-kpi-icon info">
-      <i class="bi bi-calendar-event"></i>
-    </div>
-    <div class="dash-kpi-body">
-      <div class="dash-kpi-value">0</div>
-      <div class="dash-kpi-label">이번 주 업무</div>
-    </div>
-    <div class="dash-kpi-trend positive">
-      <i class="bi bi-trending-up"></i>
-      <span>+0%</span>
-    </div>
-  </div>
-</div>
-
 <!-- Main Content Grid -->
 <div class="row g-3">
   <div class="col-lg-8">
+    <!-- 오늘의 업무 -->
     <div class="card">
       <div class="card-header d-flex justify-content-between align-items-center">
-        <h5 class="card-title">오늘의 업무</h5>
-        <span class="badge bg-primary">0건</span>
+        <h5 class="card-title mb-0">오늘의 업무</h5>
+        <span class="badge bg-primary">{{ today_tasks|length }}건</span>
       </div>
-      <div class="card-body">
-        <div class="text-center text-muted py-5">
-          <i class="bi bi-calendar-check" style="font-size: 48px;"></i>
-          <p class="mt-3">할당된 업무가 없습니다</p>
+      <div class="card-body p-0">
+        {% if today_tasks %}
+        <div class="table-responsive">
+          <table class="table table-hover mb-0">
+            <thead>
+              <tr>
+                <th style="width: 70px;">구분</th>
+                <th>업체명</th>
+                <th style="width: 80px;">상태</th>
+              </tr>
+            </thead>
+            <tbody>
+              {% for task in today_tasks %}
+              <tr>
+                <td>
+                  {% if task.task_kind_id == 4 %}
+                  <span class="badge bg-primary-subtle text-primary">청소</span>
+                  {% elif task.task_kind_id == 5 %}
+                  <span class="badge bg-warning-subtle text-warning">간식</span>
+                  {% elif task.task_kind_id == 6 %}
+                  <span class="badge bg-danger-subtle text-danger">비품</span>
+                  {% endif %}
+                </td>
+                <td>{{ task.client_name }}</td>
+                <td>
+                  {% if task.schedule_status == 'completed' %}
+                  <span class="badge badge-soft-success">완료</span>
+                  {% elif task.schedule_status == 'today' %}
+                  <span class="badge badge-soft-primary">진행</span>
+                  {% elif task.schedule_status == 'overdue' %}
+                  <span class="badge badge-soft-danger">지연</span>
+                  {% else %}
+                  <span class="badge badge-soft-secondary">예정</span>
+                  {% endif %}
+                </td>
+              </tr>
+              {% endfor %}
+            </tbody>
+          </table>
         </div>
+        {% else %}
+        <div class="text-center text-muted py-5">
+          <i class="bi bi-calendar-check" style="font-size: 48px; opacity: 0.3;"></i>
+          <p class="mt-3 mb-0">오늘 할당된 업무가 없습니다</p>
+        </div>
+        {% endif %}
       </div>
     </div>
 
+    <!-- 이달의 업무 진행상황 -->
     <div class="card mt-3">
       <div class="card-header">
-        <h5 class="card-title">업무 통계</h5>
+        <h5 class="card-title mb-0">{{ year_month }} 업무 진행상황</h5>
       </div>
       <div class="card-body">
-        <div class="mb-3">
-          <div class="d-flex justify-content-between mb-2">
-            <span class="text-muted">청소</span>
-            <span class="fw-bold">0건</span>
+        {% if schedule_progress %}
+          {% for sp in schedule_progress %}
+          {% set pct = ((sp.completed_count / sp.total_count * 100)|round|int) if sp.total_count > 0 else 0 %}
+          <div class="mb-3">
+            <div class="d-flex justify-content-between mb-2">
+              <span class="text-muted">{{ sp.task_kind_name }}</span>
+              <span class="fw-bold">{{ sp.completed_count }} / {{ sp.total_count }}건 <small class="text-muted">({{ pct }}%)</small></span>
+            </div>
+            <div class="progress" style="height: 8px;">
+              <div class="progress-bar {% if sp.task_kind_id == 4 %}bg-primary{% elif sp.task_kind_id == 5 %}bg-warning{% elif sp.task_kind_id == 6 %}bg-danger{% endif %}" role="progressbar" style="width: {{ pct }}%"></div>
+            </div>
           </div>
-          <div class="progress" style="height: 8px;">
-            <div class="progress-bar bg-primary" role="progressbar" style="width: 0%"></div>
-          </div>
+          {% endfor %}
+        {% else %}
+        <div class="text-center text-muted py-3">
+          <i class="bi bi-calendar-x" style="font-size: 48px; opacity: 0.3;"></i>
+          <p class="mt-3 mb-0">이번 달 스케줄이 없습니다</p>
         </div>
-        <div class="mb-3">
-          <div class="d-flex justify-content-between mb-2">
-            <span class="text-muted">간식</span>
-            <span class="fw-bold">0건</span>
-          </div>
-          <div class="progress" style="height: 8px;">
-            <div class="progress-bar bg-success" role="progressbar" style="width: 0%"></div>
-          </div>
-        </div>
-        <div class="mb-3">
-          <div class="d-flex justify-content-between mb-2">
-            <span class="text-muted">비품</span>
-            <span class="fw-bold">0건</span>
-          </div>
-          <div class="progress" style="height: 8px;">
-            <div class="progress-bar bg-warning" role="progressbar" style="width: 0%"></div>
-          </div>
-        </div>
+        {% endif %}
       </div>
     </div>
   </div>
 
   <div class="col-lg-4">
+    <!-- 공지사항 -->
     <div class="card">
-      <div class="card-header">
-        <h5 class="card-title">공지사항</h5>
+      <div class="card-header d-flex justify-content-between align-items-center">
+        <h5 class="card-title mb-0">공지사항</h5>
+        <a href="{{ url_for('homes.notice_list') }}" class="btn btn-sm btn-outline-primary">전체보기</a>
       </div>
       <div class="card-body">
+        {% if notices %}
+        <div class="list-group list-group-flush">
+          {% for notice in notices %}
+          <div class="list-group-item px-0">
+            <div class="d-flex justify-content-between align-items-start">
+              <div>
+                {% if notice.TopExposeYn %}
+                <span class="badge bg-danger-subtle text-danger me-1">중요</span>
+                {% endif %}
+                <span class="fw-semibold">{{ notice.Title[:20] }}{% if notice.Title|length > 20 %}...{% endif %}</span>
+              </div>
+              <small class="text-muted">{{ notice.CreateDate }}</small>
+            </div>
+          </div>
+          {% endfor %}
+        </div>
+        {% else %}
         <div class="text-center text-muted py-3">
-          <i class="bi bi-megaphone" style="font-size: 32px;"></i>
+          <i class="bi bi-megaphone" style="font-size: 32px; opacity: 0.3;"></i>
           <p class="mt-2 mb-0 small">새로운 공지사항이 없습니다</p>
         </div>
+        {% endif %}
       </div>
     </div>
 
+    <!-- 빠른 메뉴 -->
     <div class="card mt-3">
       <div class="card-header">
-        <h5 class="card-title">빠른 메뉴</h5>
+        <h5 class="card-title mb-0">빠른 메뉴</h5>
       </div>
       <div class="card-body">
         <div class="d-grid gap-2">

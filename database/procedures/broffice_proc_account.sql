@@ -49,6 +49,7 @@ BEGIN
         u.client_id,
         c.client_name, 
         u.admin_authed_at,
+        u.use_yn,
         IF(u.admin_authed_at IS NOT NULL, 1, 0) AS admin_auth_yn
     FROM users u
     LEFT JOIN clients c ON u.client_id = c.client_id

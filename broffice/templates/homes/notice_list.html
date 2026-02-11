@@ -21,10 +21,6 @@
   <div class="card-header d-flex align-items-center justify-content-between">
     <div>
       <h5 class="mb-1">공지사항 목록</h5>
-      <div class="d-flex gap-2 mt-2">
-        <a href="{{ url_for('homes.notice_list') }}" class="btn btn-sm btn-primary">공지사항</a>
-        <a href="{{ url_for('homes.client_request_list') }}" class="btn btn-sm btn-outline-warning">{{ '요청사항' if user_kind == 3 else '업체 요청사항' }}</a>
-      </div>
     </div>
     {% if can_edit %}
     <button class="btn btn-primary" onclick="openModal()">

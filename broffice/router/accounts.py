@@ -29,6 +29,11 @@ def login_post():
     res = conn.execute_return('get_user_login', [user_email, user_passwd])
 
     if res:
+        # 비활성 회원 로그인 차단
+        if not bool(res.get('use_yn', 1)):
+            flash("비활성 상태의 계정입니다. 관리자에게 문의하세요.", category="danger")
+            return render_template('accounts/login.html', user_email=user_email)
+        
         if bool(res['admin_auth_yn']):
 
             session['login_user'] = {
