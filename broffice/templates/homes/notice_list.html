@@ -52,15 +52,27 @@
                 <i class="ph ph-push-pin text-warning"></i>
                 {% endif %}
               </td>
-              <td class="text-truncate" style="max-width: 400px;">{{ res.Title }}</td>
+              <td class="text-truncate" style="max-width: 400px;">
+                {% if can_edit %}
+                {{ res.Title }}
+                {% else %}
+                <a href="javascript:void(0)" onclick="openDetailModal({{ res.notice_id }})">{{ res.Title }}</a>
+                {% endif %}
+              </td>
               <td>
+                {% if res.target_user_kind_id == 2 %}
+                <span class="badge badge-soft-success">{{ res.TargetUserKindName }}</span>
+                {% elif res.target_user_kind_id == 3 %}
+                <span class="badge badge-soft-primary">{{ res.TargetUserKindName }}</span>
+                {% else %}
                 <span class="badge badge-soft-info">{{ res.TargetUserKindName }}</span>
+                {% endif %}
               </td>
               <td>{{ res.UserName }}</td>
               {% if user_kind == 1 %}
               <td class="text-center">
                 {% if res.DisplayYn %}
-                <span class="badge badge-soft-success">게시</span>
+                <span class="badge badge-soft-warning">게시</span>
                 {% else %}
                 <span class="badge badge-soft-secondary">비게시</span>
                 {% endif %}
@@ -123,9 +135,7 @@
           <div class="mb-3">
             <label class="form-label">대상</label>
             <div class="btn-group w-100" role="group">
-              <input type="radio" class="btn-check" name="target_user_kind_id" id="targetAll" value="0" autocomplete="off" checked>
-              <label class="btn btn-outline-primary" for="targetAll">전체</label>
-              <input type="radio" class="btn-check" name="target_user_kind_id" id="targetStaff" value="2" autocomplete="off">
+              <input type="radio" class="btn-check" name="target_user_kind_id" id="targetStaff" value="2" autocomplete="off" checked>
               <label class="btn btn-outline-primary" for="targetStaff">직원</label>
               <input type="radio" class="btn-check" name="target_user_kind_id" id="targetClient" value="3" autocomplete="off">
               <label class="btn btn-outline-primary" for="targetClient">업체</label>
@@ -166,6 +176,36 @@
   </div>
 </div>
 
+<!-- 공지사항 상세 모달 (읽기전용) -->
+{% if not can_edit %}
+<div class="modal fade" id="noticeDetailModal" tabindex="-1" aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title">공지사항</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body">
+        <div class="mb-3">
+          <label class="form-label fw-semibold">제목</label>
+          <div id="detailTitle" class="form-control-plaintext"></div>
+        </div>
+        <div class="mb-3">
+          <label class="form-label fw-semibold">내용</label>
+          <div id="detailContent" class="form-control-plaintext border rounded p-2" style="min-height: 100px; white-space: pre-wrap;"></div>
+        </div>
+        <div class="text-end">
+          <span class="text-muted small">등록일: <span id="detailCreateDate"></span></span>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">닫기</button>
+      </div>
+    </div>
+  </div>
+</div>
+{% endif %}
+
 {% endblock %}
 
 {% block extra_js %}
@@ -198,10 +238,14 @@ function openModal(noticeId) {
                     document.getElementById('itemContent').value = d.content || '';
                     document.getElementById('topExposeYn').checked = !!d.top_expose_yn;
                     document.getElementById('displayYn').checked = !!d.display_yn;
-                    const targetRadio = document.querySelector('input[name="target_user_kind_id"][value="' + (d.target_user_kind_id || 0) + '"]');
+                    let targetVal = d.target_user_kind_id;
+                    if (targetVal != 2 && targetVal != 3) targetVal = 2;
+                    const targetRadio = document.querySelector('input[name="target_user_kind_id"][value="' + targetVal + '"]');
                     if (targetRadio) targetRadio.checked = true;
                 }
+                modal.show();
             });
+        return;
     }
     modal.show();
 }
@@ -225,6 +269,22 @@ function saveItem() {
         })
         .then(data => {
             if (data) location.reload();
+        });
+}
+
+// 비관리자용 공지사항 상세 모달
+function openDetailModal(noticeId) {
+    fetch('/get_notice_content?notice_id=' + noticeId)
+        .then(r => r.json())
+        .then(data => {
+            if (data.success && data.data) {
+                const d = data.data;
+                document.getElementById('detailTitle').textContent = d.title || '';
+                document.getElementById('detailContent').textContent = d.content || '(내용 없음)';
+                document.getElementById('detailCreateDate').textContent = d.create_date || '-';
+                const modal = new bootstrap.Modal(document.getElementById('noticeDetailModal'));
+                modal.show();
+            }
         });
 }
 

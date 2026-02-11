@@ -43,7 +43,7 @@
                 <th style="width: 40px;"></th>
                 <th>제목</th>
                 <th style="width: 100px;">작성자</th>
-                <th style="width: 110px;">등록일</th>
+                <th style="width: 130px;">등록일</th>
               </tr>
             </thead>
             <tbody>
@@ -54,7 +54,7 @@
                   <i class="ph ph-push-pin text-warning"></i>
                   {% endif %}
                 </td>
-                <td class="text-truncate" style="max-width: 400px;">{{ notice.Title }}</td>
+                <td><a href="javascript:void(0)" onclick="openNoticeModal({{ notice.notice_id }})">{{ notice.Title }}</a></td>
                 <td>{{ notice.UserName }}</td>
                 <td class="text-muted small">{{ notice.CreateDate }}</td>
               </tr>
@@ -118,10 +118,54 @@
   </div>
 </div>
 
+<!-- 공지사항 상세 모달 -->
+<div class="modal fade" id="noticeDetailModal" tabindex="-1" aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title">공지사항</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body">
+        <div class="mb-3">
+          <label class="form-label fw-semibold">제목</label>
+          <div id="noticeTitle" class="form-control-plaintext"></div>
+        </div>
+        <div class="mb-3">
+          <label class="form-label fw-semibold">내용</label>
+          <div id="noticeContent" class="form-control-plaintext border rounded p-2" style="min-height: 100px; white-space: pre-wrap;"></div>
+        </div>
+        <div class="text-end">
+          <span class="text-muted small">등록일: <span id="noticeCreateDate"></span></span>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">닫기</button>
+      </div>
+    </div>
+  </div>
+</div>
+
 {% endblock %}
 
 {% block extra_js %}
 <script>
+// 공지사항 상세 모달
+function openNoticeModal(noticeId) {
+    fetch('/get_notice_content?notice_id=' + noticeId)
+        .then(r => r.json())
+        .then(data => {
+            if (data.success && data.data) {
+                const d = data.data;
+                document.getElementById('noticeTitle').textContent = d.title || '';
+                document.getElementById('noticeContent').textContent = d.content || '(내용 없음)';
+                document.getElementById('noticeCreateDate').textContent = d.create_date || '-';
+                const modal = new bootstrap.Modal(document.getElementById('noticeDetailModal'));
+                modal.show();
+            }
+        });
+}
+
 // 날짜 및 시간 표시
 function updateDateTime() {
   const now = new Date();

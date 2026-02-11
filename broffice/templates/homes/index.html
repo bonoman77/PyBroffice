@@ -86,7 +86,7 @@
                 <th style="width: 120px;">업체명</th>
                 <th>제목</th>
                 <th style="width: 80px;">확인</th>
-                <th style="width: 120px;">등록일</th>
+                <th style="width: 130px;">등록일</th>
               </tr>
             </thead>
             <tbody>
@@ -94,7 +94,7 @@
               <tr>
                 <td>{{ req.ClientName or req.UserName }}</td>
                 <td>
-                  <a href="javascript:void(0)" class="text-decoration-none text-dark" onclick="openRequestModal({{ req.request_id }})">
+                  <a href="javascript:void(0)" onclick="openRequestModal({{ req.request_id }})">
                     {{ req.Title[:30] }}{% if req.Title|length > 30 %}...{% endif %}
                   </a>
                 </td>

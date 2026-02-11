@@ -102,7 +102,7 @@ BEGIN
         END AS TargetUserKindName,
         n.top_expose_yn,
         n.display_yn,
-        n.created_at
+        DATE_FORMAT(n.created_at, '%Y-%m-%d %H:%i:%s') AS create_date
     FROM notices n
     WHERE n.notice_id = p_notice_id
       AND n.deleted_at IS NULL;
