@@ -240,6 +240,31 @@ CREATE TABLE users (
     INDEX idx_users_deleted_at (deleted_at)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='users 사용자';
 
+
+
+-- ============================================================
+-- TABLE: client_requests (업체 요청사항)
+-- ============================================================    
+CREATE TABLE client_requests (
+    request_id        INT NOT NULL AUTO_INCREMENT COMMENT '요청ID',
+    user_id           INT NOT NULL COMMENT '사용자ID',
+    title             VARCHAR(200) NOT NULL COMMENT '제목',
+    content           VARCHAR(3000) NOT NULL COMMENT '내용',
+    admin_checked_at  DATETIME NULL COMMENT '관리자확인일',
+    created_at        DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT '등록일',
+    updated_at        DATETIME NULL COMMENT '수정일',
+    deleted_at        DATETIME NULL COMMENT '삭제일',
+    
+    PRIMARY KEY (request_id),
+    
+    CONSTRAINT fk_client_requests_user
+        FOREIGN KEY (user_id)
+        REFERENCES users(user_id)
+        ON UPDATE CASCADE
+        ON DELETE RESTRICT
+        
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='업체요청사항';
+
 -- ============================================================
 -- FOREIGN KEY CONSTRAINTS
 -- ============================================================

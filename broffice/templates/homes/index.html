@@ -73,7 +73,7 @@
           <h5 class="card-title mb-0">업체 요청사항</h5>
           <span class="text-muted small">최근 10건만 표시됩니다</span>
         </div>
-        <a href="{{ url_for('homes.notice_list', writer_kind_id=3) }}" class="btn btn-sm btn-outline-primary">
+        <a href="{{ url_for('homes.client_request_list') }}" class="btn btn-sm btn-outline-primary">
           <i class="bi bi-list me-1"></i>전체보기
         </a>
       </div>
@@ -85,6 +85,7 @@
               <tr>
                 <th style="width: 120px;">업체명</th>
                 <th>제목</th>
+                <th style="width: 80px;">확인</th>
                 <th style="width: 130px;">등록일</th>
                 <th style="width: 60px;"></th>
               </tr>
@@ -94,9 +95,16 @@
               <tr>
                 <td><span class="badge bg-light text-dark">{{ req.ClientName or req.UserName }}</span></td>
                 <td class="text-truncate" style="max-width: 400px;">{{ req.Title }}</td>
+                <td class="text-center">
+                  {% if req.AdminCheckedAt %}
+                  <span class="badge badge-soft-success">확인</span>
+                  {% else %}
+                  <span class="badge badge-soft-warning">미확인</span>
+                  {% endif %}
+                </td>
                 <td class="text-muted small">{{ req.CreateDate }}</td>
                 <td>
-                  <button class="btn btn-sm btn-outline-danger" onclick="event.stopPropagation(); deleteNotice({{ req.notice_id }})" title="삭제">
+                  <button class="btn btn-sm btn-outline-danger" onclick="event.stopPropagation(); deleteRequest({{ req.request_id }})" title="삭제">
                     <i class="ph ph-trash"></i>
                   </button>
                 </td>
@@ -188,10 +196,10 @@
       </div>
       <div class="card-body">
         <div class="d-grid gap-2">
-          <a href="{{ url_for('homes.notice_list', writer_kind_id=1) }}" class="btn btn-outline-primary">
+          <a href="{{ url_for('homes.notice_list') }}" class="btn btn-outline-primary">
             <i class="bi bi-megaphone me-2"></i>공지사항 관리
           </a>
-          <a href="{{ url_for('homes.notice_list', writer_kind_id=3) }}" class="btn btn-outline-warning">
+          <a href="{{ url_for('homes.client_request_list') }}" class="btn btn-outline-warning">
             <i class="bi bi-chat-dots me-2"></i>업체 요청사항
           </a>
         </div>
@@ -218,15 +226,14 @@ updateDateTime();
 setInterval(updateDateTime, 60000);
 
 // 업체 요청사항 삭제
-function deleteNotice(noticeId) {
+function deleteRequest(requestId) {
     const formData = new FormData();
-    formData.append('noticeId', noticeId);
+    formData.append('requestId', requestId);
     
-    fetch('/notice_delete', { method: 'POST', body: formData })
+    fetch('/client_request_delete', { method: 'POST', body: formData })
         .then(r => r.json())
         .then(data => {
             if (data.success) location.reload();
-            else alert(data.message);
         });
 }
 </script>

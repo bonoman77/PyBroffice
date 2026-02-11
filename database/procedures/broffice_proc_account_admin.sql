@@ -637,3 +637,36 @@ BEGIN
       )
     ORDER BY c.created_at DESC;
 END$$
+
+
+-- =============================================
+-- Author:      김승균
+-- Create date: 2026-02-11
+-- Email:       bonoman77@gmail.com 
+-- Description: 업체 상세 정보 조회 (업체 대시보드용)
+-- =============================================
+
+DROP PROCEDURE IF EXISTS get_client_detail$$
+
+CREATE PROCEDURE get_client_detail(
+    IN p_client_id INT
+)
+BEGIN
+    SELECT 
+        c.client_id,
+        c.client_name,
+        c.client_phone,
+        c.client_business_number,
+        c.client_address,
+        c.manager_name,
+        c.manager_mobile,
+        c.manager_position,
+        c.cleaning_yn,
+        c.snack_yn,
+        c.office_supplies_yn,
+        DATE_FORMAT(c.contracted_at, '%Y-%m-%d') AS contract_date
+    FROM clients c
+    WHERE c.client_id = p_client_id
+      AND c.deleted_at IS NULL
+    LIMIT 1;
+END$$

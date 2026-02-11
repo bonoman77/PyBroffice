@@ -109,7 +109,10 @@ def register_error_handlers(app):
     @app.errorhandler(404)
     def not_found_error(error):
         """404 에러 핸들러"""
-        app.logger.warning(f"404 에러: {error}")
+        from flask import request as req
+        if '.well-known' in req.path:
+            return '', 404
+        app.logger.warning(f"404 에러: {req.url} - {error}")
         if app.config.get('DEBUG'):
             return str(error), 404
         return render_template('errors/404.html'), 404

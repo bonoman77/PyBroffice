@@ -13,6 +13,7 @@ DROP PROCEDURE IF EXISTS get_notice_list$$
 CREATE PROCEDURE get_notice_list(
     IN p_user_kind_id INT,
     IN p_writer_kind_id INT,
+    IN p_user_id INT,
     IN p_page INT,
     IN p_page_size INT
 )
@@ -22,6 +23,7 @@ BEGIN
     
     SELECT 
         n.notice_id,
+        n.user_id AS UserId,
         u.user_name AS UserName,
         COALESCE(c.client_name, '') AS ClientName,
         n.title AS Title,
@@ -44,6 +46,7 @@ BEGIN
       AND (p_user_kind_id = 1 OR n.display_yn = 1)
       AND (p_user_kind_id = 1 OR n.target_user_kind_id = 0 OR n.target_user_kind_id = p_user_kind_id)
       AND (p_writer_kind_id = 0 OR u.user_kind_id = p_writer_kind_id)
+      AND (p_user_id = 0 OR n.user_id = p_user_id)
     ORDER BY n.top_expose_yn DESC, n.created_at DESC
     LIMIT v_offset, p_page_size;
     
@@ -59,7 +62,8 @@ DROP PROCEDURE IF EXISTS get_notice_list_count$$
 
 CREATE PROCEDURE get_notice_list_count(
     IN p_user_kind_id INT,
-    IN p_writer_kind_id INT
+    IN p_writer_kind_id INT,
+    IN p_user_id INT
 )
 BEGIN
     SELECT COUNT(*) AS total_count
@@ -68,7 +72,8 @@ BEGIN
     WHERE n.deleted_at IS NULL
       AND (p_user_kind_id = 1 OR n.display_yn = 1)
       AND (p_user_kind_id = 1 OR n.target_user_kind_id = 0 OR n.target_user_kind_id = p_user_kind_id)
-      AND (p_writer_kind_id = 0 OR u.user_kind_id = p_writer_kind_id);
+      AND (p_writer_kind_id = 0 OR u.user_kind_id = p_writer_kind_id)
+      AND (p_user_id = 0 OR n.user_id = p_user_id);
 END$$
 
 -- =============================================
@@ -277,6 +282,38 @@ BEGIN
     WHERE DATE_FORMAT(ts.scheduled_at, '%Y-%m') = p_year_month
       AND ts.canceled_at = 0
       AND t.deleted_at IS NULL;
+END$$
+
+
+-- =============================================
+-- Author:      김승균
+-- Create date: 2026-02-11
+-- Description: 대시보드용 공지사항 (target_user_kind_id 기준)
+-- =============================================
+
+DROP PROCEDURE IF EXISTS get_notice_list_by_target$$
+
+CREATE PROCEDURE get_notice_list_by_target(
+    IN p_target_user_kind_id INT,
+    IN p_limit INT
+)
+BEGIN
+    SELECT 
+        n.notice_id,
+        u.user_name AS UserName,
+        n.title AS Title,
+        n.content AS Content,
+        n.target_user_kind_id,
+        n.top_expose_yn AS TopExposeYn,
+        n.display_yn AS DisplayYn,
+        DATE_FORMAT(n.created_at, '%Y-%m-%d') AS CreateDate
+    FROM notices n
+    INNER JOIN users u ON n.user_id = u.user_id
+    WHERE n.deleted_at IS NULL
+      AND n.display_yn = 1
+      AND (n.target_user_kind_id = 0 OR n.target_user_kind_id = p_target_user_kind_id)
+    ORDER BY n.top_expose_yn DESC, n.created_at DESC
+    LIMIT p_limit;
 END$$
 
 

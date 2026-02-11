@@ -61,7 +61,8 @@
       <ul class="panel-nav">
         {% if session.get('login_user') %}
         <li><a class="panel-link {{ 'active' if request.endpoint == 'homes.index' else '' }}" href="/"><i class="bi bi-speedometer2 me-2"></i>대시보드</a></li>
-        <li><a class="panel-link {{ 'active' if request.endpoint == 'homes.notice_list' else '' }}" href="{{ url_for('homes.notice_list', writer_kind_id=1) }}"><i class="bi bi-megaphone me-2"></i>공지사항</a></li>
+        <li><a class="panel-link {{ 'active' if request.endpoint == 'homes.notice_list' else '' }}" href="{{ url_for('homes.notice_list') }}"><i class="bi bi-megaphone me-2"></i>공지사항</a></li>
+        <li><a class="panel-link {{ 'active' if request.endpoint == 'homes.client_request_list' else '' }}" href="{{ url_for('homes.client_request_list') }}"><i class="bi bi-chat-dots me-2"></i>{{ '요청사항' if session.get('login_user', {}).get('user_kind_id') == 3 else '업체 요청사항' }}</a></li>
         {% endif %}
         <li><a class="panel-link {{ 'active' if request.endpoint == 'homes.about' else '' }}" href="/about"><i class="bi bi-building me-2"></i>회사소개</a></li>
         <li><a class="panel-link {{ 'active' if request.endpoint == 'homes.terms' else '' }}" href="{{ url_for('homes.terms') }}"><i class="bi bi-file-text me-2"></i>이용약관</a></li>

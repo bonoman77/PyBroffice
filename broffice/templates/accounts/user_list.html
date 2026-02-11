@@ -164,6 +164,7 @@
                         data-client-id="{{ user.client_id|default('') }}"
                         data-status="{{ user.status }}"><i class="bi bi-pencil"></i></button>
                 <button class="btn btn-icon btn-sm btn-light" title="삭제" data-user-id="{{ user.user_id }}" data-user-name="{{ user.user_name }}" onclick="showDeleteModal(this)"><i class="bi bi-trash"></i></button>
+                <button class="btn btn-icon btn-sm btn-light" title="로그인" onclick="loginAsUser({{ user.user_id }}, '{{ user.user_name }}')"><i class="bi bi-box-arrow-in-right"></i></button>
               </div>
             </td>
           </tr>
@@ -562,6 +563,20 @@ function confirmDeleteUser() {
     console.error('Error:', error);
     showToast('danger', '회원 삭제 중 오류가 발생했습니다.');
   });
+}
+
+// 해당 사용자로 로그인
+function loginAsUser(userId, userName) {
+  const form = document.createElement('form');
+  form.method = 'POST';
+  form.action = "{{ url_for('accounts.user_admin_login_post') }}";
+  const input = document.createElement('input');
+  input.type = 'hidden';
+  input.name = 'user_id';
+  input.value = userId;
+  form.appendChild(input);
+  document.body.appendChild(form);
+  form.submit();
 }
 
 // Toast 알림 함수
