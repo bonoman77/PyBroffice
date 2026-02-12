@@ -84,12 +84,20 @@
         </div>
       </div>
     </div>
+    <div class="contacts-view-toggle">
+      <button class="contacts-view-btn active" data-view="list" title="리스트 뷰">
+        <i class="bi bi-list-ul"></i>
+      </button>
+      <button class="contacts-view-btn" data-view="grid" title="그리드 뷰">
+        <i class="bi bi-grid-3x3-gap"></i>
+      </button>
+    </div>
     <button class="btn btn-primary" onclick="openClientModal()">
       <i class="ph ph-plus me-1"></i> 업체 등록
     </button>
   </div>
 
-  <div class="users-table-wrap">
+  <div class="users-table-wrap" id="clientListView">
     <table class="users-table">
       <thead>
         <tr>
@@ -170,7 +178,7 @@
                         data-snack-yn="{{ client.snack_yn }}"
                         data-office-supplies-yn="{{ client.office_supplies_yn }}"
                         data-status="{{ client.status }}"><i class="bi bi-pencil"></i></button>
-                <button class="btn btn-icon btn-sm btn-light" title="삭제" data-client-id="{{ client.client_id }}" data-client-name="{{ client.client_name }}" onclick="showDeleteClientModal(this)"><i class="bi bi-trash"></i></button>
+                <button class="btn btn-icon btn-sm btn-light text-danger" title="삭제" data-client-id="{{ client.client_id }}" data-client-name="{{ client.client_name }}" onclick="showDeleteClientModal(this)"><i class="bi bi-trash"></i></button>
               </div>
             </td>
           </tr>
@@ -187,6 +195,73 @@
         {% endif %}
       </tbody>
     </table>
+  </div>
+
+  <!-- Grid View -->
+  <div class="contacts-grid" id="clientGridView" style="display: none;">
+    {% if clients %}
+      {% for client in clients %}
+      <div class="contact-card">
+        <div class="contact-card-actions">
+          <div class="dropdown">
+            <button class="contact-menu" data-bs-toggle="dropdown">
+              <i class="bi bi-three-dots-vertical"></i>
+            </button>
+            <ul class="dropdown-menu dropdown-menu-end">
+              <li><a class="dropdown-item edit-contact-btn" href="#"
+                     data-client-id="{{ client.client_id }}"
+                     data-client-name="{{ client.client_name }}"
+                     data-client-phone="{{ client.client_phone }}"
+                     data-client-address="{{ client.client_address }}"
+                     data-client-business-number="{{ client.client_business_number }}"
+                     data-manager-name="{{ client.manager_name }}"
+                     data-manager-mobile="{{ client.manager_mobile }}"
+                     data-manager-position="{{ client.manager_position }}"
+                     data-contract-date="{{ client.contract_date|default('') }}"
+                     data-memo="{{ client.memo|default('') }}"
+                     data-cleaning-yn="{{ client.cleaning_yn }}"
+                     data-snack-yn="{{ client.snack_yn }}"
+                     data-office-supplies-yn="{{ client.office_supplies_yn }}"
+                     data-status="{{ client.status }}"><i class="bi bi-pencil me-2"></i>수정</a></li>
+              <li><hr class="dropdown-divider"></li>
+              <li><a class="dropdown-item text-danger" href="#" data-client-id="{{ client.client_id }}" data-client-name="{{ client.client_name }}" onclick="showDeleteClientModal(this)"><i class="bi bi-trash me-2"></i>삭제</a></li>
+            </ul>
+          </div>
+        </div>
+        <div class="contact-card-body">
+          <h5 class="contact-card-name">{{ client.client_name }}</h5>
+          <P> </P>  
+          <p class="contact-card-role">{{ client.manager_name|default('-') }}{% if client.manager_position %} ({{ client.manager_position }}){% endif %}</p>
+          <p class="contact-card-company">{{ client.client_business_number or '사업자번호 미등록' }}</p>
+          <div class="contact-card-tags">
+            {% if client.cleaning_yn %}<span class="contact-tag" style="background: rgba(25,135,84,0.1); color: #198754;">청소</span>{% endif %}
+            {% if client.snack_yn %}<span class="contact-tag" style="background: rgba(255,193,7,0.1); color: #ffc107;">간식</span>{% endif %}
+            {% if client.office_supplies_yn %}<span class="contact-tag" style="background: rgba(220,53,69,0.1); color: #dc3545;">비품</span>{% endif %}
+          </div>
+        </div>
+        <div class="contact-card-info">
+          <a href="tel:{{ client.manager_mobile }}" class="contact-info-item" title="{{ client.manager_mobile or '연락처 없음' }}">
+            <i class="bi bi-telephone"></i>
+          </a>
+          <span class="contact-info-item" title="{{ client.contracted_at|datetime_str('date')|default('미정') }}">
+            <i class="bi bi-calendar-check"></i>
+          </span>
+          <span class="contact-info-item">
+            {% if client.status == 'active' %}
+              <span class="text-success"><i class="bi bi-circle-fill" style="font-size: 8px;"></i></span>
+            {% else %}
+              <span class="text-muted"><i class="bi bi-circle-fill" style="font-size: 8px;"></i></span>
+            {% endif %}
+          </span>
+        </div>
+      </div>
+      {% endfor %}
+    {% else %}
+      <div class="text-center text-muted py-5 w-100">
+        <i class="ph ph-buildings" style="font-size: 48px; opacity: 0.3;"></i>
+        <p class="mt-3 mb-0">등록된 업체가 없습니다.</p>
+      </div>
+    {% endif %}
   </div>
 
   <!-- Pagination -->
@@ -364,6 +439,48 @@ clientPagination.customFilter = function(row, filters) {
 document.getElementById('selectAll')?.addEventListener('change', function() {
   const checkboxes = document.querySelectorAll('.users-table tbody input[type="checkbox"]');
   checkboxes.forEach(cb => cb.checked = this.checked);
+});
+
+// 뷰 전환
+const viewBtns = document.querySelectorAll('.contacts-view-btn');
+const listView = document.getElementById('clientListView');
+const gridView = document.getElementById('clientGridView');
+
+viewBtns.forEach(btn => {
+  btn.addEventListener('click', function() {
+    viewBtns.forEach(b => b.classList.remove('active'));
+    this.classList.add('active');
+    if (this.dataset.view === 'grid') {
+      listView.style.display = 'none';
+      gridView.style.display = 'grid';
+    } else {
+      listView.style.display = 'block';
+      gridView.style.display = 'none';
+    }
+  });
+});
+
+// 그리드 뷰 수정 버튼 이벤트
+document.querySelectorAll('.edit-contact-btn').forEach(button => {
+  button.addEventListener('click', function(e) {
+    e.preventDefault();
+    openClientModal({
+      clientId: this.dataset.clientId,
+      clientName: this.dataset.clientName,
+      clientPhone: this.dataset.clientPhone,
+      clientAddress: this.dataset.clientAddress,
+      clientBusinessNumber: this.dataset.clientBusinessNumber,
+      managerName: this.dataset.managerName,
+      managerMobile: this.dataset.managerMobile,
+      managerPosition: this.dataset.managerPosition,
+      contractDate: this.dataset.contractDate,
+      memo: this.dataset.memo,
+      cleaningYn: this.dataset.cleaningYn,
+      snackYn: this.dataset.snackYn,
+      officeSuppliesYn: this.dataset.officeSuppliesYn,
+      status: this.dataset.status
+    });
+  });
 });
 
 // 검색 기능

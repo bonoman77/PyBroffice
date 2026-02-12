@@ -9,12 +9,9 @@ import broffice.dbconns as conn
 bp = Blueprint('tasks', __name__)
 
 
-@bp.route("/task_list", methods=['GET'])
+@bp.route("/task_list/<int:task_kind_id>", methods=['GET'])
 @admin_required
-def task_list():
-    """스케줄 목록 (task_kind_id로 구분)"""
-    task_kind_id = request.args.get('task_kind_id', type=int)
-    
+def task_list(task_kind_id):
     # 스케줄 목록 조회 (tasks 테이블 기반)
     if task_kind_id in [4, 5, 6]:  # 청소, 간식, 비품
         tasks = conn.return_list('get_task_list', [task_kind_id])
@@ -30,12 +27,11 @@ def task_list():
     return render_template('tasks/task_list.html', tasks=tasks, clients=clients, workers=workers, task_kind_id=task_kind_id)
 
 
-@bp.route("/task_schedule_list", methods=['GET'])
+@bp.route("/task_schedule_list/<int:task_kind_id>", methods=['GET'])
 @admin_required
-def task_schedule_list():
+def task_schedule_list(task_kind_id):
     """스케줄 일정 목록 (날짜순)"""
     from datetime import datetime
-    task_kind_id = request.args.get('task_kind_id', type=int)
     year_month = request.args.get('year_month', '')
     
     # 년월 기본값: 당월
@@ -319,9 +315,9 @@ def task_area_update():
     
 
 
-@bp.route("/task_my_list", methods=['GET'])
+@bp.route("/task_my_list/<int:task_kind_id>", methods=['GET'])
 @login_required
-def task_my_list():
+def task_my_list(task_kind_id):
     """내 업무 목록"""
     user_kind_id = session['login_user']['user_kind_id']
     user_id = session['login_user']['user_id']
@@ -355,15 +351,15 @@ def task_my_list():
         completed_count=completed_count,
         pending_count=pending_count,
         workers=workers,
-        selected_user_id=selected_user_id
+        selected_user_id=selected_user_id, 
+        task_kind_id=task_kind_id
     )
 
 
-@bp.route("/task_detail", methods=['GET'])
+@bp.route("/task_detail/<int:task_schedule_id>/<int:task_kind_id>", methods=['GET'])
 @login_required
-def task_detail():
+def task_detail(task_schedule_id, task_kind_id):
     """업무 상세 (업무보고)"""
-    task_schedule_id = request.args.get('task_schedule_id', type=int)
     
     schedule = conn.execute_return('get_task_detail', [task_schedule_id])
     areas = conn.return_list('get_task_detail_areas', [task_schedule_id])
@@ -377,7 +373,8 @@ def task_detail():
     
     return render_template('tasks/task_detail.html',
         schedule=schedule,
-        areas=areas
+        areas=areas,
+        task_kind_id=task_kind_id
     )
 
 
@@ -503,9 +500,9 @@ def assign():
     return render_template('tasks/assign.html', task_kind_id=task_kind_id)
 
 
-@bp.route("/task_client_list", methods=['GET'])
+@bp.route("/task_client_list/<int:task_kind_id>", methods=['GET'])
 @login_required
-def task_client_list():
+def task_client_list(task_kind_id):
     """작업 보고 내역 (업체/관리자용)"""
     user_kind_id = session['login_user']['user_kind_id']
     
@@ -541,7 +538,8 @@ def task_client_list():
         total_count=total_count,
         year_month=year_month,
         client_id=client_id,
-        clients=clients
+        clients=clients,
+        task_kind_id=task_kind_id
     )
 
 

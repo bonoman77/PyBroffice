@@ -12,7 +12,7 @@
     <nav>
       <ol class="breadcrumb">
         <li class="breadcrumb-item"><a href="/">홈</a></li>
-        <li class="breadcrumb-item"><a href="/tasks/task_my_list">내 업무</a></li>
+        <li class="breadcrumb-item"><a href="{{ url_for('tasks.task_my_list', task_kind_id=task_kind_id) }}">내 스케줄</a></li>
         <li class="breadcrumb-item active">업무보고</li>
       </ol>
     </nav>
@@ -86,8 +86,8 @@
   <div class="card-body">
     <!-- 업무 포인트 -->
     {% if area.check_points %}
-      <div class="alert alert-light py-2 mb-3">
-        <small class="fw-semibold"><i class="ph ph-info me-1"></i>업무 포인트</small>
+      <div class="mb-3">
+        <small class="fw-semibold text-muted"><i class="ph ph-info me-1"></i>업무 포인트</small>
         <div class="small mt-1">{{ area.check_points }}</div>
       </div>
     {% endif %}
@@ -115,13 +115,16 @@
         {% endfor %}
       </div>
       {% if schedule.schedule_status != 'completed' %}
-        <div class="d-flex gap-2">
-          <input type="file" class="form-control form-control-sm" id="photo-input-{{ area.task_area_id }}" 
-                 accept="image/*" multiple style="max-width: 300px;">
-          <button type="button" class="btn btn-sm btn-outline-primary" 
-                  onclick="uploadPhotos({{ area.task_area_id }}, {{ schedule.task_schedule_id }})">
-            <i class="ph ph-upload me-1"></i>업로드
-          </button>
+        <div class="upload-dropzone upload-dropzone-image" id="dropzone-{{ area.task_area_id }}" 
+             data-area-id="{{ area.task_area_id }}" data-schedule-id="{{ schedule.task_schedule_id }}">
+          <input type="file" id="photo-input-{{ area.task_area_id }}" accept="image/*" multiple capture="camera" hidden>
+          <div class="upload-dropzone-content">
+            <div class="upload-dropzone-icon">
+              <i class="bi bi-image"></i>
+            </div>
+            <h6 class="upload-dropzone-title mb-1">사진을 드래그하거나 클릭하세요</h6>
+            <p class="upload-dropzone-text small mb-0">PNG, JPG, GIF 파일 (5MB 이하)</p>
+          </div>
         </div>
       {% endif %}
     </div>
@@ -167,7 +170,7 @@
 
 <!-- 뒤로가기 -->
 <div class="text-center mb-4">
-  <a href="/tasks/task_my_list" class="btn btn-outline-secondary">
+  <a href="{{ url_for('tasks.task_my_list', task_kind_id=task_kind_id) }}" class="btn btn-outline-secondary">
     <i class="ph ph-arrow-left me-1"></i>목록으로
   </a>
 </div>
@@ -176,7 +179,7 @@
 <div class="text-center text-muted py-5">
   <i class="ph ph-warning fs-1 d-block mb-2"></i>
   <p>업무 정보를 찾을 수 없습니다.</p>
-  <a href="/tasks/task_my_list" class="btn btn-outline-secondary btn-sm">목록으로</a>
+  <a href="{{ url_for('tasks.task_my_list', task_kind_id=task_kind_id) }}" class="btn btn-outline-secondary btn-sm">목록으로</a>
 </div>
 {% endif %}
 
@@ -247,17 +250,13 @@ function saveAreaLog(taskAreaId, taskScheduleId) {
 }
 
 // 사진 업로드 (여러 장 한번에)
-async function uploadPhotos(taskAreaId, taskScheduleId) {
-    const input = document.getElementById('photo-input-' + taskAreaId);
-    const files = input.files;
-    
+async function uploadPhotos(taskAreaId, taskScheduleId, files) {
     if (!files || files.length === 0) {
         showToast('warning', '사진을 선택해주세요.');
         return;
     }
     
     try {
-        // 로그가 없으면 먼저 생성
         const logId = await ensureAreaLog(taskAreaId, taskScheduleId);
         
         const formData = new FormData();
@@ -292,13 +291,11 @@ async function uploadPhotos(taskAreaId, taskScheduleId) {
             });
             
             showToast('success', data.message);
-            input.value = '';
             updatePhotoCount(taskAreaId);
-            // 상태 뱃지 업데이트
             const card = document.getElementById('area-card-' + taskAreaId);
-            const badge = card.querySelector('.badge.badge-soft-warning');
+            const badge = card.querySelector('.badge.bg-warning');
             if (badge) {
-                badge.className = 'badge badge-soft-success ms-2';
+                badge.className = 'badge bg-success text-dark ms-2';
                 badge.textContent = '보고완료';
             }
         } else {
@@ -309,6 +306,38 @@ async function uploadPhotos(taskAreaId, taskScheduleId) {
         showToast('danger', '업로드 중 오류가 발생했습니다.');
     }
 }
+
+// Drop Zone 초기화
+document.querySelectorAll('.upload-dropzone').forEach(zone => {
+    const areaId = zone.dataset.areaId;
+    const scheduleId = zone.dataset.scheduleId;
+    const input = document.getElementById('photo-input-' + areaId);
+    
+    zone.addEventListener('click', () => input.click());
+    
+    input.addEventListener('change', () => {
+        if (input.files.length > 0) {
+            uploadPhotos(areaId, scheduleId, input.files);
+            input.value = '';
+        }
+    });
+    
+    zone.addEventListener('dragover', (e) => {
+        e.preventDefault();
+        zone.classList.add('dragover');
+    });
+    zone.addEventListener('dragleave', () => {
+        zone.classList.remove('dragover');
+    });
+    zone.addEventListener('drop', (e) => {
+        e.preventDefault();
+        zone.classList.remove('dragover');
+        const files = e.dataTransfer.files;
+        if (files.length > 0) {
+            uploadPhotos(areaId, scheduleId, files);
+        }
+    });
+});
 
 // 사진 삭제
 function deletePhoto(photoId, taskAreaId) {

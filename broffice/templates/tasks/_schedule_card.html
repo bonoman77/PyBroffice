@@ -1,4 +1,4 @@
-<a href="/tasks/task_detail?task_schedule_id={{ s.task_schedule_id }}" class="text-decoration-none">
+<a href="{{ url_for('tasks.task_detail', task_schedule_id=s.task_schedule_id, task_kind_id=s.task_kind_id) }}" class="text-decoration-none">
   <div class="card mb-2 border-start border-3 
     {% if s.schedule_status == 'completed' %}border-warning
     {% elif s.schedule_status == 'today' %}border-primary

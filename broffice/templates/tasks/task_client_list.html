@@ -7,10 +7,16 @@
 <!-- Page Header -->
 <div class="page-header">
   <div>
-    <h1 class="page-title">{{ page_title }}</h1>
+    <h1 class="page-title">
+      {% if task_kind_id == 4 %}청소{% elif task_kind_id == 5 %}간식{% elif task_kind_id == 6 %}비품{% else %}작업{% endif %} 
+      {{ page_title }}
+    </h1>
     <nav>
       <ol class="breadcrumb">
         <li class="breadcrumb-item"><a href="/">홈</a></li>
+        <li class="breadcrumb-item">
+          {% if task_kind_id == 4 %}청소{% elif task_kind_id == 5 %}간식{% elif task_kind_id == 6 %}비품{% else %}작업{% endif %}
+        </li>
         <li class="breadcrumb-item active">{{ page_title }}</li>
       </ol>
     </nav>
@@ -141,12 +147,12 @@ function changeMonth(offset) {
     const d = new Date(year, month - 1 + offset, 1);
     const ym = d.getFullYear() + '-' + String(d.getMonth() + 1).padStart(2, '0');
     const clientId = document.getElementById('clientFilter') ? document.getElementById('clientFilter').value : 0;
-    window.location.href = '/tasks/task_client_list?year_month=' + ym + '&client_id=' + clientId;
+    window.location.href = '/tasks/task_client_list/{{ task_kind_id }}?year_month=' + ym + '&client_id=' + clientId;
 }
 
 function filterByClient() {
     const clientId = document.getElementById('clientFilter').value;
-    window.location.href = '/tasks/task_client_list?year_month={{ year_month }}&client_id=' + clientId;
+    window.location.href = '/tasks/task_client_list/{{ task_kind_id }}?year_month={{ year_month }}&client_id=' + clientId;
 }
 </script>
 {% endblock %}

@@ -1,6 +1,6 @@
 import broffice.dbconns as conn
 from datetime import datetime
-from broffice.utils.auth_handler import login_required
+from broffice.utils.auth_handler import login_required, admin_required
 from flask import Blueprint, request, session, render_template, redirect, url_for, flash, jsonify
 
 bp = Blueprint('homes', __name__)
@@ -74,8 +74,9 @@ def about():
     return render_template('homes/about.html')
 
 
+# 개발타임라인 (관리자용)
 @bp.route("/timeline")
-@login_required
+@admin_required
 def timeline():
     return render_template('homes/timeline.html')
 
@@ -135,7 +136,11 @@ def notice_list():
 def client_request_list():
     user_kind_id = session.get('login_user', {}).get('user_kind_id', 0)
     user_id = session.get('login_user', {}).get('user_id', 0)
-    
+
+    # 직원은 접근하는 페이지가 아님 
+    if user_kind_id == 2:
+        return redirect(url_for('homes.index'))
+
     if request.method == 'POST':
         title = request.form.get('title', '')
         content = request.form.get('content', '')
@@ -192,7 +197,7 @@ def get_notice_content():
 
 
 @bp.route("/notice_update", methods=['POST'])
-@login_required
+@admin_required
 def notice_update():
     notice_id = request.form.get('noticeId', type=int)
     target_user_kind_id = request.form.get('target_user_kind_id', 0, type=int)
@@ -209,7 +214,7 @@ def notice_update():
 
 
 @bp.route("/notice_delete", methods=['POST'])
-@login_required
+@admin_required
 def notice_delete():
     notice_id = request.form.get('noticeId', type=int)
     if not notice_id:

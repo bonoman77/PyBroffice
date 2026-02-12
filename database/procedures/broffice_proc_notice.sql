@@ -170,7 +170,8 @@ BEGIN
         COUNT(*) AS total_client_count,
         SUM(CASE WHEN cleaning_yn = 1 THEN 1 ELSE 0 END) AS cleaning_count,
         SUM(CASE WHEN snack_yn = 1 THEN 1 ELSE 0 END) AS snack_count,
-        SUM(CASE WHEN office_supplies_yn = 1 THEN 1 ELSE 0 END) AS supplies_count
+        SUM(CASE WHEN office_supplies_yn = 1 THEN 1 ELSE 0 END) AS supplies_count,
+        (SELECT COUNT(*) FROM users WHERE admin_authed_at IS NULL AND use_yn = 1 AND deleted_at IS NULL) AS pending_auth_count
     FROM clients
     WHERE use_yn = 1
       AND deleted_at IS NULL;

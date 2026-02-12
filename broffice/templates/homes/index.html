@@ -194,6 +194,11 @@
       </div>
       <div class="card-body">
         <div class="d-grid gap-2">
+          {% if kpi.pending_auth_count and kpi.pending_auth_count > 0 %}
+          <a href="{{ url_for('accounts.user_list') }}" class="btn btn-outline-danger">
+            <i class="bi bi-person-exclamation me-2"></i>승인대기 <strong>{{ kpi.pending_auth_count }}</strong>명
+          </a>
+          {% endif %}
           <a href="{{ url_for('homes.notice_list') }}" class="btn btn-outline-primary">
             <i class="bi bi-megaphone me-2"></i>공지사항 관리
           </a>
