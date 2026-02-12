@@ -357,9 +357,9 @@ def client_insert_post():
     client_phone = request.form.get('clientPhone')
     client_address = request.form.get('clientAddress')
     client_business_number = request.form.get('clientBusinessNumber')
-    manager_name = request.form.get('managerName')
-    manager_mobile = request.form.get('managerMobile')
-    manager_position = request.form.get('managerPosition')
+    contractor_name = request.form.get('contractorName')
+    contractor_mobile = request.form.get('contractorMobile')
+    contractor_position = request.form.get('contractorPosition')
     contracted_at = request.form.get('contractDate')
     memo = request.form.get('memo')
     
@@ -377,9 +377,9 @@ def client_insert_post():
         client_phone,
         client_business_number,  # 사업자등록번호를 3번째로
         client_address,         # 주소를 4번째로
-        manager_name,
-        manager_mobile,
-        manager_position,
+        contractor_name,
+        contractor_mobile,
+        contractor_position,
         contracted_at,
         memo,
         cleaning_yn,
@@ -404,9 +404,9 @@ def client_update_post():
     client_phone = request.form.get('clientPhone')
     client_address = request.form.get('clientAddress')
     client_business_number = request.form.get('clientBusinessNumber')
-    manager_name = request.form.get('managerName')
-    manager_mobile = request.form.get('managerMobile')
-    manager_position = request.form.get('managerPosition')
+    contractor_name = request.form.get('contractorName')
+    contractor_mobile = request.form.get('contractorMobile')
+    contractor_position = request.form.get('contractorPosition')
     contracted_at = request.form.get('contractDate')
     memo = request.form.get('memo') 
     
@@ -425,9 +425,9 @@ def client_update_post():
         client_phone,
         client_address,
         client_business_number,
-        manager_name,
-        manager_mobile,
-        manager_position,
+        contractor_name,
+        contractor_mobile,
+        contractor_position,
         contracted_at,
         memo,
         cleaning_yn,

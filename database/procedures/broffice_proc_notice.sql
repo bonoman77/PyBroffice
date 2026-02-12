@@ -31,8 +31,8 @@ BEGIN
         n.target_user_kind_id,
         CASE 
             WHEN n.target_user_kind_id = 0 THEN '전체'
-            WHEN n.target_user_kind_id = 1 THEN '관리자'
-            WHEN n.target_user_kind_id = 2 THEN '현장직원'
+            WHEN n.target_user_kind_id = 1 THEN '시스템관리자'
+            WHEN n.target_user_kind_id = 2 THEN '현장작업팀장'
             WHEN n.target_user_kind_id = 3 THEN '업체담당자'
             ELSE '전체'
         END AS TargetUserKindName,
@@ -95,8 +95,8 @@ BEGIN
         n.target_user_kind_id,
         CASE 
             WHEN n.target_user_kind_id = 0 THEN '전체'
-            WHEN n.target_user_kind_id = 1 THEN '관리자'
-            WHEN n.target_user_kind_id = 2 THEN '현장직원'
+            WHEN n.target_user_kind_id = 1 THEN '시스템관리자'
+            WHEN n.target_user_kind_id = 2 THEN '현장작업팀장'
             WHEN n.target_user_kind_id = 3 THEN '업체담당자'
             ELSE '전체'
         END AS TargetUserKindName,

@@ -29,9 +29,9 @@
     <div class="uview-badges">
       {% if user_profile %}
         {% if user_profile.user_kind_id == 1 %}
-          <span class="users-role admin"><i class="ph-fill ph-shield-chevron"></i> 관리자</span>
+          <span class="users-role admin"><i class="ph-fill ph-shield-chevron"></i> 시스템관리자</span>
         {% elif user_profile.user_kind_id == 2 %}
-          <span class="users-role" style="background: var(--success-color-light); color: var(--success-color);"><i class="ph-fill ph-user"></i> 직원</span>
+          <span class="users-role" style="background: var(--success-color-light); color: var(--success-color);"><i class="ph-fill ph-user"></i> 현장작업팀장</span>
         {% elif user_profile.user_kind_id == 3 %}
           <span class="users-role" style="background: var(--info-color-light); color: var(--info-color);"><i class="ph-fill ph-briefcase"></i> 업체담당자</span>
         {% endif %}

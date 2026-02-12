@@ -170,8 +170,8 @@ BEGIN
             ELSE 'user'
         END AS role,
         CASE 
-            WHEN u.user_kind_id = 1 THEN '관리자'
-            WHEN u.user_kind_id = 2 THEN '현장직원'
+            WHEN u.user_kind_id = 1 THEN '시스템관리자'
+            WHEN u.user_kind_id = 2 THEN '현장작업팀장'
             WHEN u.user_kind_id = 3 THEN '업체담당자'
             ELSE '일반'
         END AS user_kind_name,

@@ -150,8 +150,8 @@
               {% endif %}
             </td>
             <td>
-              {{ client.manager_name|default('-') }}
-              <div class="users-cell-email">{{ client.manager_mobile or '연락처 없음' }}</div>
+              {{ client.contractor_name|default('-') }}
+              <div class="users-cell-email">{{ client.contractor_mobile or '연락처 없음' }}</div>
             </td>
             <td>
               {% if client.status == 'active' %}
@@ -169,9 +169,9 @@
                         data-client-phone="{{ client.client_phone }}"
                         data-client-address="{{ client.client_address }}"
                         data-client-business-number="{{ client.client_business_number }}"
-                        data-manager-name="{{ client.manager_name }}"
-                        data-manager-mobile="{{ client.manager_mobile }}"
-                        data-manager-position="{{ client.manager_position }}"
+                        data-manager-name="{{ client.contractor_name }}"
+                        data-manager-mobile="{{ client.contractor_mobile }}"
+                        data-manager-position="{{ client.contractor_position }}"
                         data-contract-date="{{ client.contract_date|default('') }}"
                         data-memo="{{ client.memo|default('') }}"
                         data-cleaning-yn="{{ client.cleaning_yn }}"
@@ -214,9 +214,9 @@
                      data-client-phone="{{ client.client_phone }}"
                      data-client-address="{{ client.client_address }}"
                      data-client-business-number="{{ client.client_business_number }}"
-                     data-manager-name="{{ client.manager_name }}"
-                     data-manager-mobile="{{ client.manager_mobile }}"
-                     data-manager-position="{{ client.manager_position }}"
+                     data-contractor-name="{{ client.contractor_name }}"
+                     data-contractor-mobile="{{ client.contractor_mobile }}"
+                     data-contractor-position="{{ client.contractor_position }}"
                      data-contract-date="{{ client.contract_date|default('') }}"
                      data-memo="{{ client.memo|default('') }}"
                      data-cleaning-yn="{{ client.cleaning_yn }}"
@@ -231,7 +231,7 @@
         <div class="contact-card-body">
           <h5 class="contact-card-name">{{ client.client_name }}</h5>
           <P> </P>  
-          <p class="contact-card-role">{{ client.manager_name|default('-') }}{% if client.manager_position %} ({{ client.manager_position }}){% endif %}</p>
+          <p class="contact-card-role">{{ client.contactor_name|default('-') }}{% if client.contactor_position %} ({{ client.contactor_position }}){% endif %}</p>
           <p class="contact-card-company">{{ client.client_business_number or '사업자번호 미등록' }}</p>
           <div class="contact-card-tags">
             {% if client.cleaning_yn %}<span class="contact-tag" style="background: rgba(25,135,84,0.1); color: #198754;">청소</span>{% endif %}
@@ -240,7 +240,7 @@
           </div>
         </div>
         <div class="contact-card-info">
-          <a href="tel:{{ client.manager_mobile }}" class="contact-info-item" title="{{ client.manager_mobile or '연락처 없음' }}">
+          <a href="tel:{{ client.contractor_mobile }}" class="contact-info-item" title="{{ client.contractor_mobile or '연락처 없음' }}">
             <i class="bi bi-telephone"></i>
           </a>
           <span class="contact-info-item" title="{{ client.contracted_at|datetime_str('date')|default('미정') }}">
@@ -310,16 +310,16 @@
           </div>
           <div class="row">
             <div class="col-md-4 mb-3">
-              <label for="managerName" class="form-label">담당자명</label>
-              {{ input('text', 'managerName', '') }}
+              <label for="contractorName" class="form-label">계약자명</label>
+              {{ input('text', 'contractorName', '') }}
             </div>
             <div class="col-md-4 mb-3">
-              <label for="managerPosition" class="form-label">담당자 직급</label>
-              {{ input('text', 'managerPosition', '', placeholder='예: 과장, 팀장') }}
+              <label for="contractorPosition" class="form-label">계약자 직급</label>
+              {{ input('text', 'contractorPosition', '', placeholder='예: 과장, 팀장') }}
             </div>
             <div class="col-md-4 mb-3">
-              <label for="managerMobile" class="form-label">담당자 연락처</label>
-              {{ input('tel', 'managerMobile', '', placeholder='010-0000-0000') }}
+              <label for="contractorMobile" class="form-label">계약자 연락처</label>
+              {{ input('tel', 'contractorMobile', '', placeholder='010-0000-0000') }}
             </div>
           </div>
           <div class="row">
@@ -470,9 +470,9 @@ document.querySelectorAll('.edit-contact-btn').forEach(button => {
       clientPhone: this.dataset.clientPhone,
       clientAddress: this.dataset.clientAddress,
       clientBusinessNumber: this.dataset.clientBusinessNumber,
-      managerName: this.dataset.managerName,
-      managerMobile: this.dataset.managerMobile,
-      managerPosition: this.dataset.managerPosition,
+      contractorName: this.dataset.contractorName,
+      contractorMobile: this.dataset.contractorMobile,
+      contractorPosition: this.dataset.contractorPosition,
       contractDate: this.dataset.contractDate,
       memo: this.dataset.memo,
       cleaningYn: this.dataset.cleaningYn,
@@ -528,9 +528,9 @@ function openClientModal(data) {
     document.getElementById('clientPhone').value = data.clientPhone || '';
     document.getElementById('clientAddress').value = data.clientAddress || '';
     document.getElementById('clientBusinessNumber').value = data.clientBusinessNumber || '';
-    document.getElementById('managerName').value = data.managerName || '';
-    document.getElementById('managerMobile').value = data.managerMobile || '';
-    document.getElementById('managerPosition').value = data.managerPosition || '';
+    document.getElementById('contractorName').value = data.contractorName || '';
+    document.getElementById('contractorMobile').value = data.contractorMobile || '';
+    document.getElementById('contractorPosition').value = data.contractorPosition || '';
     // flatpickr API로 날짜 설정
     const contractDateEl = document.getElementById('contractDate');
     if (contractDateEl._flatpickr) {
@@ -574,9 +574,9 @@ document.querySelectorAll('.edit-client-btn').forEach(button => {
       clientPhone: this.dataset.clientPhone,
       clientAddress: this.dataset.clientAddress,
       clientBusinessNumber: this.dataset.clientBusinessNumber,
-      managerName: this.dataset.managerName,
-      managerMobile: this.dataset.managerMobile,
-      managerPosition: this.dataset.managerPosition,
+      contractorName: this.dataset.contractorName,
+      contractorMobile: this.dataset.contractorMobile,
+      contractorPosition: this.dataset.contractorPosition,
       contractDate: this.dataset.contractDate,
       memo: this.dataset.memo,
       cleaningYn: this.dataset.cleaningYn,

@@ -65,8 +65,8 @@
           </button>
           <ul class="dropdown-menu">
             <li><a class="dropdown-item active" href="#" data-filter="role" data-value="all">전체 역할</a></li>
-            <li><a class="dropdown-item" href="#" data-filter="role" data-value="admin">관리자</a></li>
-            <li><a class="dropdown-item" href="#" data-filter="role" data-value="staff">현장직원</a></li>
+            <li><a class="dropdown-item" href="#" data-filter="role" data-value="admin">시스템관리자</a></li>
+            <li><a class="dropdown-item" href="#" data-filter="role" data-value="staff">현장작업팀장</a></li>
             <li><a class="dropdown-item" href="#" data-filter="role" data-value="client">업체담당자</a></li>
           </ul>
         </div>
@@ -124,9 +124,9 @@
 
             <td>
               {% if user.role == 'admin' %}
-              <span class="badge bg-danger">관리자</span>
+              <span class="badge bg-danger">시스템관리자</span>
               {% elif user.role == 'staff' %}
-              <span class="badge bg-success">현장직원</span>
+              <span class="badge bg-success">현장작업팀장</span>
               {% elif user.role == 'client' %}
               <div>
                 {% if user.client_name %}
@@ -207,7 +207,7 @@
       </div>
       <div class="modal-body">
         <div class="alert alert-warning" role="alert" id="userModalAlert">
-          <strong>주의:</strong> 관리자가 직접 등록하는 회원은 이용약관 및 개인정보처리방침 동의 절차 없이 가입됩니다.
+          <strong>주의:</strong> 시스템관리자가 직접 등록하는 회원은 이용약관 및 개인정보처리방침 동의 절차 없이 가입됩니다.
         </div>
         <form id="userForm" method="post">
           <input type="hidden" id="userId" name="userId">
@@ -240,8 +240,8 @@
               <label for="userKindId" class="form-label">역할 <span class="text-danger">*</span></label>
               <select class="form-select" id="userKindId" name="userKindId" required>
                 <option value="">선택하세요</option>
-                <option value="1">관리자</option>
-                <option value="2">현장직원</option>
+                <option value="1">시스템관리자</option>
+                <option value="2">현장작업팀장</option>
                 <option value="3">업체담당자</option>
               </select>
             </div>
@@ -317,10 +317,10 @@ userPagination.customFilter = function(row, filters) {
       roleElements.forEach(element => {
         const roleText = element.textContent;
         
-        if (roleText.includes('관리자')) {
+        if (roleText.includes('시스템관리자')) {
           roleType = 'admin';
           found = true;
-        } else if (roleText.includes('현장직원')) {
+        } else if (roleText.includes('현장작업팀장')) {
           roleType = 'staff';
           found = true;
         } else if (roleText.includes('업체담당자')) {
@@ -332,7 +332,7 @@ userPagination.customFilter = function(row, filters) {
       // 업체담당자인데 업체명만 표시된 경우
       if (!found && roleElements.length === 1) {
         const roleText = roleElements[0].textContent;
-        if (!roleText.includes('관리자') && !roleText.includes('현장직원') && !roleText.includes('일반')) {
+        if (!roleText.includes('시스템관리자') && !roleText.includes('현장작업팀장') && !roleText.includes('일반')) {
           roleType = 'client';
           found = true;
         }

@@ -45,9 +45,9 @@ BEGIN
         c.client_name,
         c.client_phone,
         c.client_business_number,
-        c.manager_name,
-        c.manager_mobile,
-        c.manager_position,
+        c.contractor_name,
+        c.contractor_mobile,
+        c.contractor_position,
         c.memo,
         c.contracted_at,
         c.created_at,
@@ -964,7 +964,7 @@ END$$
 -- Author:      김승균
 -- Create date: 2026-02-11
 -- Email:       bonoman77@gmail.com 
--- Description: 현장직원 대시보드용 월별 스케줄 진행상황
+-- Description: 현장작업팀장 대시보드용 월별 스케줄 진행상황
 -- =============================================
 
 DROP PROCEDURE IF EXISTS get_staff_schedule_progress$$
