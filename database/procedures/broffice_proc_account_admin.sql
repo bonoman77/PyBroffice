@@ -404,7 +404,6 @@ CREATE PROCEDURE set_user_update(
 BEGIN
     DECLARE v_return_value INT DEFAULT 0;
     DECLARE v_user_count INT DEFAULT 0;
-    DECLARE v_current_use_yn INT DEFAULT 0;
     DECLARE v_use_yn INT DEFAULT 0;
     DECLARE v_new_admin_authed_at DATETIME DEFAULT NULL;
     
@@ -420,31 +419,17 @@ BEGIN
     IF v_user_count = 0 THEN
         SET v_return_value = 2; -- 사용자 없음
     ELSE
-        -- 현재 사용자 상태 조회
-        SELECT use_yn INTO v_current_use_yn
-        FROM users
-        WHERE user_id = p_user_id
-          AND deleted_at IS NULL;
-        
         -- 상태에 따른 use_yn 및 admin_authed_at 설정
+        -- active(승인/활성): use_yn=1, admin_authed_at=NOW()
+        -- pending(비승인/승인대기): use_yn=1, admin_authed_at=NULL
+        -- inactive(비활성): use_yn=0, admin_authed_at=NULL
         IF p_status = 'active' THEN
-            -- 활성: use_yn=1, 비활성->활성 전환 시에만 admin_authed_at 업데이트
             SET v_use_yn = 1;
-            IF v_current_use_yn = 0 THEN
-                SET v_new_admin_authed_at = NOW();
-            ELSE
-                -- 이미 활성이면 기존 값 유지
-                SELECT admin_authed_at INTO v_new_admin_authed_at
-                FROM users
-                WHERE user_id = p_user_id
-                  AND deleted_at IS NULL;
-            END IF;
+            SET v_new_admin_authed_at = NOW();
         ELSEIF p_status = 'pending' THEN
-            -- 대기: use_yn=1, admin_authed_at=NULL
             SET v_use_yn = 1;
             SET v_new_admin_authed_at = NULL;
         ELSE
-            -- 비활성: use_yn=0, admin_authed_at=NULL
             SET v_use_yn = 0;
             SET v_new_admin_authed_at = NULL;
         END IF;
@@ -456,7 +441,7 @@ BEGIN
                 user_mobile = p_user_mobile,
                 user_kind_id = p_user_kind_id,
                 user_passwd = UNHEX(SHA2(p_user_passwd, 512)),
-                client_id = CASE WHEN p_user_kind_id = 3 THEN p_client_id ELSE NULL END, -- 업체담당자가 아니면 NULL
+                client_id = CASE WHEN p_user_kind_id = 3 THEN p_client_id ELSE NULL END,
                 use_yn = v_use_yn,
                 admin_authed_at = v_new_admin_authed_at,
                 updated_at = NOW()
@@ -467,7 +452,7 @@ BEGIN
             SET user_name = p_user_name,
                 user_mobile = p_user_mobile,
                 user_kind_id = p_user_kind_id,
-                client_id = CASE WHEN p_user_kind_id = 3 THEN p_client_id ELSE NULL END, -- 업체담당자가 아니면 NULL
+                client_id = CASE WHEN p_user_kind_id = 3 THEN p_client_id ELSE NULL END,
                 use_yn = v_use_yn,
                 admin_authed_at = v_new_admin_authed_at,
                 updated_at = NOW()

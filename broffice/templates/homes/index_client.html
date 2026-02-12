@@ -69,13 +69,13 @@
       </div>
     </div>
     <!-- 작업 보고 내역 -->
-    <div class="card mt-3">
+    <!-- <div class="card mt-3">
       <div class="card-header d-flex align-items-center justify-content-between">
         <div>
           <h5 class="card-title mb-0">작업 보고 내역</h5>
           <span class="text-muted small">최근 완료된 작업 5건</span>
         </div>
-        <a href="{{ url_for('tasks.task_client_list') }}" class="btn btn-sm btn-outline-primary">
+        <a href="{{ url_for('tasks.task_client_list', task_kind_id=4) }}" class="btn btn-sm btn-outline-primary">
           <i class="bi bi-list me-1"></i>전체보기
         </a>
       </div>
@@ -120,7 +120,9 @@
         </div>
         {% endif %}
       </div>
-    </div>
+    </div> -->
+  
+  
   </div>
 
   <!-- 오른쪽: 업체정보 + 빠른메뉴 -->
