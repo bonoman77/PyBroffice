@@ -116,7 +116,7 @@
             <td>
               <div class="users-cell-user">
                 <div>
-                  <a href="{{ url_for('accounts.user_detail', user_id=user.user_id) }}" class="users-cell-name">{{ user.user_name }}</a>
+                  <a href="{{ url_for('accounts.user_detail', user_id=user.user_id) }}" class="users-cell-name">{{ user.user_name }}{% if user.manager_yn == 1 %} <span class="text-primary fw-semibold">(관리팀장)</span>{% endif %}</a>
                   <div class="users-cell-email">{{ user.user_email }}</div>
                 </div>
               </div>

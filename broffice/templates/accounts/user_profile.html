@@ -75,7 +75,7 @@
             <div class="uview-detail-title">소속 정보</div>
             <div class="uview-detail-row">
               <div class="uview-detail-label">사용자 유형</div>
-              <div class="uview-detail-value">{{ user_profile.user_kind_name if user_profile else '-' }}</div>
+              <div class="uview-detail-value">{{ user_profile.user_kind_name if user_profile else '-' }}{% if user_profile and user_profile.manager_yn == 1 %} <span class="text-primary fw-semibold">(관리팀장)</span>{% endif %}</div>
             </div>
             {% if user_profile and user_profile.user_kind_id == 3 and user_profile.client_name %}
             <div class="uview-detail-row">
@@ -182,7 +182,7 @@
           </div>
           <div class="uview-status-item">
             <span class="uview-status-label">마지막 로그인</span>
-            <span class="uview-status-value">{{ user_profile.last_logined_at if user_profile and user_profile.last_logined_at else '정보 없음' }}</span>
+            <span class="uview-status-value">{{ user_profile.last_login_at if user_profile and user_profile.last_login_at else '정보 없음' }}</span>
           </div>
         </div>
       </div>

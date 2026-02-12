@@ -26,17 +26,18 @@ DROP TABLE IF EXISTS clients;
 CREATE TABLE clients (
     client_id             INT NOT NULL AUTO_INCREMENT COMMENT '고객사ID',
     client_name           VARCHAR(100) NOT NULL COMMENT '고객사명',
-    client_phone          VARCHAR(100) NULL COMMENT '업체 연락처',
+    client_phone          VARCHAR(100) NOT NULL COMMENT '업체 연락처',
     client_address        VARCHAR(300) NOT NULL COMMENT '고객사주소',
     client_business_number VARCHAR(30) NULL COMMENT '사업자등록번호',
-    contractor_name       VARCHAR(100) NOT NULL COMMENT '계약자명',
+    contractor_name       VARCHAR(100) NULL COMMENT '계약자명',
     contractor_position   VARCHAR(30) NULL COMMENT '계약자직급',
-    contractor_mobile     VARCHAR(100) NOT NULL COMMENT '계약자연락처',
+    contractor_mobile     VARCHAR(100) NULL COMMENT '계약자연락처',
     cleaning_yn           TINYINT(1) DEFAULT 0 NOT NULL COMMENT '청소여부',
     snack_yn              TINYINT(1) DEFAULT 0 NOT NULL COMMENT '간식여부',
     office_supplies_yn    TINYINT(1) DEFAULT 0 NOT NULL COMMENT '비품여부',
-    memo                  VARCHAR(500) NOT NULL DEFAULT '' COMMENT '한글멘트',
+    memo                  VARCHAR(500) NULL COMMENT '메모',
 	use_yn				  TINYINT(1) DEFAULT 0 NOT NULL COMMENT '사용여부',
+    manage_user_id        INT NULL COMMENT '관리팀장ID',  
     contracted_at         DATETIME NULL COMMENT '계약일',
     created_at            DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT '등록일',
     updated_at            DATETIME NULL COMMENT '수정일',
@@ -330,6 +331,11 @@ ALTER TABLE user_login_logs
 ALTER TABLE users
     ADD CONSTRAINT fk_clients_users
     FOREIGN KEY (client_id) REFERENCES clients(client_id);
+
+-- clients FK
+ALTER TABLE clients
+    ADD CONSTRAINT fk_users_clients
+    FOREIGN KEY (manage_client_id) REFERENCES clients(client_id);
 
 -- ============================================================
 -- 초기 데이터: commons (공통코드)

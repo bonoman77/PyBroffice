@@ -337,13 +337,16 @@ def user_detail(user_id):
 def client_list():
     # 프로시저 1: 업체 목록 조회
     clients = conn.return_list('get_client_list')
-    print(clients)
 
     # 프로시저 2: 업무 종류별 통계
     stats = conn.execute_return('get_client_stats_by_task_kind')
     
+    # 관리팀장 목록
+    managers = conn.return_list('get_manager_list') or []
+    
     return render_template('accounts/client_list.html',
                          clients=clients,
+                         managers=managers,
                          total_clients=stats['total_clients'],
                          cleaning_clients=stats['cleaning_clients'],
                          snack_clients=stats['snack_clients'],
@@ -371,12 +374,15 @@ def client_insert_post():
     # 상태 값
     status = request.form.get('status', 'inactive')
 
+    manage_user_id = request.form.get('manageUserId')
+    manage_user_id = int(manage_user_id) if manage_user_id else None
+
     # 프로시저 호출
     res = conn.execute_return('set_client_insert', [
         client_name,
         client_phone,
-        client_business_number,  # 사업자등록번호를 3번째로
-        client_address,         # 주소를 4번째로
+        client_business_number,
+        client_address,
         contractor_name,
         contractor_mobile,
         contractor_position,
@@ -385,7 +391,8 @@ def client_insert_post():
         cleaning_yn,
         snack_yn,
         office_supplies_yn,
-        status
+        status,
+        manage_user_id
     ])
     
     if res['return_value'] == 1:
@@ -418,6 +425,9 @@ def client_update_post():
     # 상태 값
     status = request.form.get('status', 'active')
     
+    manage_user_id = request.form.get('manageUserId')
+    manage_user_id = int(manage_user_id) if manage_user_id else None
+    
     # 프로시저 호출
     res = conn.execute_return('set_client_update', [
         client_id,
@@ -433,7 +443,8 @@ def client_update_post():
         cleaning_yn,
         snack_yn,
         office_supplies_yn,
-        status
+        status,
+        manage_user_id
     ])
     
     if res['return_value'] == 1:

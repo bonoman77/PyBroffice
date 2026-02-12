@@ -64,12 +64,15 @@ BEGIN
         c.cleaning_yn,
         c.snack_yn,
         c.office_supplies_yn,
+        c.manage_user_id,
         c.contracted_at,
         c.created_at,
         CASE WHEN c.use_yn = 1 THEN 'active' ELSE 'inactive' END AS status,
         DATE_FORMAT(c.contracted_at, '%Y-%m-%d') AS contract_date,
-        DATE_FORMAT(c.created_at, '%Y-%m-%d') AS create_date
+        DATE_FORMAT(c.created_at, '%Y-%m-%d') AS create_date,
+        IFNULL(mu.user_name, '미정') AS manager_name
     FROM clients c
+    LEFT JOIN users mu ON c.manage_user_id = mu.user_id AND mu.deleted_at IS NULL
     WHERE c.deleted_at IS NULL
     ORDER BY c.created_at DESC;
 END$$
@@ -98,6 +101,29 @@ END$$
 
 -- =============================================
 -- Author:      김승균
+-- Create date: 2026-02-12
+-- Email:       bonoman77@gmail.com 
+-- Description: 관리팀장 목록 조회 (manager_yn=1, 활성)
+-- =============================================
+
+DROP PROCEDURE IF EXISTS get_manager_list$$
+
+CREATE PROCEDURE get_manager_list()
+BEGIN
+    SELECT 
+        u.user_id,
+        u.user_name,
+        u.user_mobile
+    FROM users u
+    WHERE u.deleted_at IS NULL
+      AND u.use_yn = 1
+      AND u.manager_yn = 1
+    ORDER BY u.user_name;
+END$$
+
+
+-- =============================================
+-- Author:      김승균
 -- Create date: 2026-02-04
 -- Email:       bonoman77@gmail.com 
 -- Description: 업체 등록
@@ -118,7 +144,8 @@ CREATE PROCEDURE set_client_insert(
     IN p_cleaning_yn INT,
     IN p_snack_yn INT,
     IN p_office_supplies_yn INT,
-    IN p_status VARCHAR(20)
+    IN p_status VARCHAR(20),
+    IN p_manage_user_id INT
 )
 BEGIN
     DECLARE v_return_value INT DEFAULT 0;
@@ -141,7 +168,8 @@ BEGIN
         cleaning_yn,
         snack_yn,
         office_supplies_yn,
-        use_yn, 
+        use_yn,
+        manage_user_id,
         created_at
     ) VALUES (
         p_client_name,
@@ -157,6 +185,7 @@ BEGIN
         p_snack_yn,
         p_office_supplies_yn,
         IF (p_status = 'active', 1, 0),
+        p_manage_user_id,
         NOW()
     );
     
@@ -195,7 +224,8 @@ CREATE PROCEDURE set_client_update(
     IN p_cleaning_yn INT,
     IN p_snack_yn INT,
     IN p_office_supplies_yn INT,
-    IN p_status VARCHAR(20)
+    IN p_status VARCHAR(20),
+    IN p_manage_user_id INT
 )
 BEGIN
     DECLARE v_return_value INT DEFAULT 0;
@@ -227,6 +257,7 @@ BEGIN
             snack_yn = p_snack_yn,
             office_supplies_yn = p_office_supplies_yn,
             use_yn = IF (p_status = 'active', 1, 0),
+            manage_user_id = p_manage_user_id,
             updated_at = NOW()
         WHERE client_id = p_client_id
           AND deleted_at IS NULL;
@@ -274,6 +305,7 @@ BEGIN
             ELSE 'inactive'
         END AS status,
         u.use_yn,
+        u.manager_yn,
         u.created_at
     FROM users u
     LEFT JOIN clients c ON u.client_id = c.client_id
@@ -649,8 +681,12 @@ BEGIN
         c.cleaning_yn,
         c.snack_yn,
         c.office_supplies_yn,
-        DATE_FORMAT(c.contracted_at, '%Y-%m-%d') AS contract_date
+        c.manage_user_id,
+        DATE_FORMAT(c.contracted_at, '%Y-%m-%d') AS contract_date,
+        IFNULL(mu.user_name, '미정') AS manager_name,
+        IFNULL(mu.user_mobile, '') AS manager_mobile
     FROM clients c
+    LEFT JOIN users mu ON c.manage_user_id = mu.user_id AND mu.deleted_at IS NULL
     WHERE c.client_id = p_client_id
       AND c.deleted_at IS NULL
     LIMIT 1;
