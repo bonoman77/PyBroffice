@@ -26,9 +26,27 @@
     <div class="d-flex align-items-center justify-content-between mb-3">
       <div>
         <h5 class="mb-1">{{ schedule.client_name }}</h5>
-        <div class="text-muted">
+        <div class="text-muted small">
           <span class="badge bg-light text-dark me-1">{{ schedule.task_kind_name }}</span>
-          <span>{{ schedule.effective_date }} ({{ schedule.worker_name }})</span>
+          <span>{{ schedule.effective_date }}</span>
+        </div>
+        <div class="d-flex flex-wrap gap-3 mt-1 small">
+          <div>
+            <span class="text-muted">현장작업팀장:</span>
+            <strong>{{ schedule.worker_name or '-' }}</strong>
+            {% if schedule.worker_mobile %}
+            <a href="tel:{{ schedule.worker_mobile }}" class="text-muted ms-1"><i class="ph ph-phone"></i> {{ schedule.worker_mobile }}</a>
+            {% endif %}
+          </div>
+          {% if schedule.manager_name %}
+          <div>
+            <span class="text-muted">관리팀장:</span>
+            <strong>{{ schedule.manager_name }}</strong>
+            {% if schedule.manager_mobile %}
+            <a href="tel:{{ schedule.manager_mobile }}" class="text-muted ms-1"><i class="ph ph-phone"></i> {{ schedule.manager_mobile }}</a>
+            {% endif %}
+          </div>
+          {% endif %}
         </div>
       </div>
       <div>
@@ -36,12 +54,15 @@
           <span class="badge bg-success fs-13 px-3 py-2">완료</span>
         {% elif schedule.schedule_status == 'today' %}
           <span class="badge bg-primary fs-13 px-3 py-2">오늘</span>
+          {% if has_any_work %}<span class="badge bg-danger fs-13 px-3 py-2 ms-1">작업중</span>{% endif %}
         {% elif schedule.schedule_status == 'overdue' %}
-          <span class="badge bg-danger fs-13 px-3 py-2">미완료</span>
+          <span class="badge bg-secondary fs-13 px-3 py-2">미완료</span>
+          {% if has_any_work %}<span class="badge bg-danger fs-13 px-3 py-2 ms-1">작업중</span>{% endif %}
         {% elif schedule.schedule_status == 'canceled' %}
           <span class="badge bg-secondary fs-13 px-3 py-2">취소</span>
         {% else %}
           <span class="badge bg-info fs-13 px-3 py-2">예정</span>
+          {% if has_any_work %}<span class="badge bg-danger fs-13 px-3 py-2 ms-1">작업중</span>{% endif %}
         {% endif %}
       </div>
     </div>
@@ -71,10 +92,10 @@
   <div class="card-header d-flex align-items-center justify-content-between py-2">
     <div>
       <strong>{{ area.floor }}층 - {{ area.area }}</strong>
-      {% if area.task_area_log_id %}
-        <span class="badge bg-success text-dark ms-2">보고완료</span>
+      {% if area.task_area_log_id and (area.photo_count or area.log_content) %}
+        <span class="badge bg-warning text-dark ms-2">작업완료</span>
       {% else %}
-        <span class="badge bg-warning text-dark ms-2">미보고</span>
+        <span class="badge bg-secondary ms-2">미작업</span>
       {% endif %}
     </div>
     {% if area.min_photo_cnt > 0 %}
@@ -101,9 +122,10 @@
       <div class="d-flex flex-wrap gap-2 mb-2" id="photo-list-{{ area.task_area_id }}">
         {% for photo in area.photos %}
           <div class="position-relative" id="photo-item-{{ photo.task_area_photo_id }}">
-            <img src="{{ photo.photo_file_path }}" class="rounded border" 
+            <img src="{{ photo.photo_file_path }}" class="rounded border area-photo" 
+                 data-area-id="{{ area.task_area_id }}"
                  style="width: 80px; height: 80px; object-fit: cover; cursor: pointer;"
-                 onclick="showPhotoModal('{{ photo.photo_file_path }}')">
+                 onclick="showPhotoCarousel(this)">
             {% if schedule.schedule_status != 'completed' %}
               <button type="button" class="btn btn-sm btn-danger position-absolute top-0 end-0 p-0" 
                       style="width: 20px; height: 20px; font-size: 10px; line-height: 1;"
@@ -115,9 +137,16 @@
         {% endfor %}
       </div>
       {% if schedule.schedule_status != 'completed' %}
+        <div class="d-flex align-items-center justify-content-end mb-1">
+          <div class="form-check form-switch mb-0">
+            <input class="form-check-input camera-mode-toggle" type="checkbox" id="cameraMode-{{ area.task_area_id }}" data-area-id="{{ area.task_area_id }}">
+            <label class="form-check-label small" for="cameraMode-{{ area.task_area_id }}">클릭 시 카메라 실행</label>
+          </div>
+        </div>
         <div class="upload-dropzone upload-dropzone-image" id="dropzone-{{ area.task_area_id }}" 
              data-area-id="{{ area.task_area_id }}" data-schedule-id="{{ schedule.task_schedule_id }}">
-          <input type="file" id="photo-input-{{ area.task_area_id }}" accept="image/*" multiple capture="camera" hidden>
+          <input type="file" id="photo-input-gallery-{{ area.task_area_id }}" accept="image/*" multiple hidden>
+          <input type="file" id="photo-input-camera-{{ area.task_area_id }}" accept="image/*" capture="environment" hidden>
           <div class="upload-dropzone-content">
             <div class="upload-dropzone-icon">
               <i class="bi bi-image"></i>
@@ -154,15 +183,41 @@
 {% if schedule.schedule_status != 'completed' and schedule.schedule_status != 'canceled' %}
 <div class="card mb-3 border-success">
   <div class="card-body">
-    <h6 class="mb-3"><i class="ph ph-check-circle me-1 text-success"></i>업무 완료</h6>
+    <h6 class="mb-3"><i class="ph ph-check-circle me-1 text-success"></i>전체 완료 및 보고</h6>
     <div class="mb-3">
       <label for="completeMemo" class="form-label small fw-semibold">메모 (선택)</label>
       <textarea class="form-control" rows="2" id="completeMemo" placeholder="완료 메모를 입력하세요"></textarea>
     </div>
     <div class="text-end">
-      <button type="button" class="btn btn-success" onclick="completeTask({{ schedule.task_schedule_id }})">
-        <i class="ph ph-check-circle me-1"></i>업무 완료
+      <button type="button" class="btn btn-success" data-bs-toggle="modal" data-bs-target="#completeConfirmModal">
+        <i class="ph ph-check-circle me-1"></i>전체 완료 및 보고
       </button>
+    </div>
+  </div>
+</div>
+
+<!-- 업무완료 확인 모달 -->
+<div class="modal fade" id="completeConfirmModal" tabindex="-1">
+  <div class="modal-dialog modal-dialog-centered">
+    <div class="modal-content">
+      <div class="modal-body text-center py-4">
+        <div class="mb-3">
+          <span class="bg-success-subtle text-success rounded-circle d-inline-flex align-items-center justify-content-center" style="width: 64px; height: 64px;">
+            <i class="ph ph-check-circle fs-1"></i>
+          </span>
+        </div>
+        <h5>업무를 완료 처리하시겠습니까?</h5>
+        <p class="text-muted mb-1">완료 후에는 수정할 수 없습니다.</p>
+        <p class="text-muted small mb-0">
+          <i class="ph ph-chat-circle-dots me-1"></i>관리팀장과 업체담당자에게 작업 내역이 문자(SMS)로 발송됩니다.
+        </p>
+      </div>
+      <div class="modal-footer justify-content-center border-0 pt-0">
+        <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">취소</button>
+        <button type="button" class="btn btn-success" onclick="completeTask({{ schedule.task_schedule_id }})">
+          <i class="ph ph-check-circle me-1"></i>완료 처리
+        </button>
+      </div>
     </div>
   </div>
 </div>
@@ -183,16 +238,48 @@
 </div>
 {% endif %}
 
-<!-- 사진 확대 모달 -->
+<!-- 사진 삭제 확인 모달 -->
+<div class="modal fade" id="deletePhotoModal" tabindex="-1">
+  <div class="modal-dialog modal-dialog-centered modal-sm">
+    <div class="modal-content">
+      <div class="modal-body text-center py-4">
+        <div class="mb-3">
+          <span class="bg-danger-subtle text-danger rounded-circle d-inline-flex align-items-center justify-content-center" style="width: 64px; height: 64px;">
+            <i class="ph ph-trash fs-1"></i>
+          </span>
+        </div>
+        <h6>사진을 삭제하시겠습니까?</h6>
+        <p class="text-muted small mb-0">삭제된 사진은 복구할 수 없습니다.</p>
+      </div>
+      <div class="modal-footer justify-content-center border-0 pt-0">
+        <button type="button" class="btn btn-outline-secondary btn-sm" data-bs-dismiss="modal">취소</button>
+        <button type="button" class="btn btn-danger btn-sm" id="confirmDeletePhotoBtn">
+          <i class="ph ph-trash me-1"></i>삭제
+        </button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- 사진 Carousel 모달 -->
 <div class="modal fade" id="photoModal" tabindex="-1" aria-hidden="true">
   <div class="modal-dialog modal-dialog-centered modal-lg">
-    <div class="modal-content">
-      <div class="modal-header py-2">
-        <h6 class="modal-title">사진</h6>
-        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+    <div class="modal-content bg-dark">
+      <div class="modal-header py-2 border-0">
+        <h6 class="modal-title text-white" id="photoModalTitle">사진</h6>
+        <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
       </div>
-      <div class="modal-body text-center p-2">
-        <img id="photoModalImg" src="" class="img-fluid rounded" style="max-height: 70vh;">
+      <div class="modal-body text-center p-0">
+        <div id="photoCarousel" class="carousel slide" data-bs-ride="false">
+          <div class="carousel-inner" id="carouselInner"></div>
+          <button class="carousel-control-prev" type="button" data-bs-target="#photoCarousel" data-bs-slide="prev">
+            <span class="carousel-control-prev-icon"></span>
+          </button>
+          <button class="carousel-control-next" type="button" data-bs-target="#photoCarousel" data-bs-slide="next">
+            <span class="carousel-control-next-icon"></span>
+          </button>
+        </div>
+        <div class="text-white small py-2" id="photoCounter"></div>
       </div>
     </div>
   </div>
@@ -201,11 +288,79 @@
 
 {% block extra_js %}
 <script>
-// 사진 확대
-function showPhotoModal(src) {
-    document.getElementById('photoModalImg').src = src;
+// 사진 Carousel 모달
+let detailCarouselInstance = null;
+
+function showPhotoCarousel(imgEl) {
+    const areaId = imgEl.dataset.areaId;
+    const photos = document.querySelectorAll('.area-photo[data-area-id="' + areaId + '"]');
+    const inner = document.getElementById('carouselInner');
+    inner.innerHTML = '';
+
+    let activeIdx = 0;
+    photos.forEach((photo, idx) => {
+        if (photo.src === imgEl.src) activeIdx = idx;
+        const item = document.createElement('div');
+        item.className = 'carousel-item' + (idx === activeIdx ? ' active' : '');
+        item.innerHTML = '<img src="' + photo.src + '" class="d-block w-100" style="max-height:70vh; object-fit:contain;">';
+        inner.appendChild(item);
+    });
+
+    // 좌우 버튼 표시 여부
+    const prevBtn = document.querySelector('#photoCarousel .carousel-control-prev');
+    const nextBtn = document.querySelector('#photoCarousel .carousel-control-next');
+    if (photos.length <= 1) {
+        prevBtn.style.display = 'none';
+        nextBtn.style.display = 'none';
+    } else {
+        prevBtn.style.display = '';
+        nextBtn.style.display = '';
+    }
+
+    updatePhotoCounter(activeIdx, photos.length);
+
+    // carousel slide 이벤트로 카운터 업데이트
+    const carouselEl = document.getElementById('photoCarousel');
+    carouselEl.removeEventListener('slid.bs.carousel', carouselEl._counterHandler);
+    carouselEl._counterHandler = function(e) {
+        updatePhotoCounter(e.to, photos.length);
+    };
+    carouselEl.addEventListener('slid.bs.carousel', carouselEl._counterHandler);
+
+    if (detailCarouselInstance) detailCarouselInstance.dispose();
+    detailCarouselInstance = new bootstrap.Carousel(carouselEl, { keyboard: true, wrap: true });
+    if (activeIdx > 0) detailCarouselInstance.to(activeIdx);
+
     const modal = new bootstrap.Modal(document.getElementById('photoModal'));
     modal.show();
+}
+
+function updatePhotoCounter(current, total) {
+    document.getElementById('photoCounter').textContent = (current + 1) + ' / ' + total;
+}
+
+// 하위 호환성 (기존 showPhotoModal 호출 대응)
+function showPhotoModal(src) {
+    const inner = document.getElementById('carouselInner');
+    inner.innerHTML = '<div class="carousel-item active"><img src="' + src + '" class="d-block w-100" style="max-height:70vh; object-fit:contain;"></div>';
+    document.querySelector('#photoCarousel .carousel-control-prev').style.display = 'none';
+    document.querySelector('#photoCarousel .carousel-control-next').style.display = 'none';
+    document.getElementById('photoCounter').textContent = '1 / 1';
+    const modal = new bootstrap.Modal(document.getElementById('photoModal'));
+    modal.show();
+}
+
+// 모달 열릴 때 키보드 이벤트 바인딩
+document.getElementById('photoModal').addEventListener('shown.bs.modal', function() {
+    document.addEventListener('keydown', detailPhotoKeyHandler);
+});
+document.getElementById('photoModal').addEventListener('hidden.bs.modal', function() {
+    document.removeEventListener('keydown', detailPhotoKeyHandler);
+});
+function detailPhotoKeyHandler(e) {
+    if (!detailCarouselInstance) return;
+    if (e.key === 'ArrowLeft') detailCarouselInstance.prev();
+    else if (e.key === 'ArrowRight') detailCarouselInstance.next();
 }
 
 // 구역 로그 저장 (사진 업로드 전에 로그를 먼저 생성해야 함)
@@ -221,7 +376,10 @@ function ensureAreaLog(taskAreaId, taskScheduleId) {
             method: 'POST',
             body: formData
         })
-        .then(r => r.json())
+        .then(r => {
+            if (!r.ok) throw new Error('서버 응답 오류: ' + r.status);
+            return r.json();
+        })
         .then(data => {
             if (data.success) {
                 resolve(data.task_area_log_id);
@@ -278,9 +436,10 @@ async function uploadPhotos(taskAreaId, taskScheduleId, files) {
                 div.className = 'position-relative';
                 div.id = 'photo-item-' + photo.task_area_photo_id;
                 div.innerHTML = `
-                    <img src="${photo.photo_file_path}" class="rounded border" 
+                    <img src="${photo.photo_file_path}" class="rounded border area-photo" 
                          style="width: 80px; height: 80px; object-fit: cover; cursor: pointer;"
-                         onclick="showPhotoModal('${photo.photo_file_path}')">
+                         data-area-id="${taskAreaId}"
+                         onclick="showPhotoCarousel(this)">
                     <button type="button" class="btn btn-sm btn-danger position-absolute top-0 end-0 p-0" 
                             style="width: 20px; height: 20px; font-size: 10px; line-height: 1;"
                             onclick="deletePhoto(${photo.task_area_photo_id}, ${taskAreaId})">
@@ -302,26 +461,45 @@ async function uploadPhotos(taskAreaId, taskScheduleId, files) {
             showToast('danger', data.message || '업로드에 실패했습니다.');
         }
     } catch (err) {
-        console.error(err);
-        showToast('danger', '업로드 중 오류가 발생했습니다.');
+        console.error('uploadPhotos error:', err);
+        showToast('danger', '업로드 중 오류: ' + (err.message || err));
     }
 }
 
-// Drop Zone 초기화
+// Drop Zone 초기화 (카메라 모드 토글 지원)
 document.querySelectorAll('.upload-dropzone').forEach(zone => {
     const areaId = zone.dataset.areaId;
     const scheduleId = zone.dataset.scheduleId;
-    const input = document.getElementById('photo-input-' + areaId);
-    
-    zone.addEventListener('click', () => input.click());
-    
-    input.addEventListener('change', () => {
-        if (input.files.length > 0) {
-            uploadPhotos(areaId, scheduleId, input.files);
-            input.value = '';
+    const galleryInput = document.getElementById('photo-input-gallery-' + areaId);
+    const cameraInput = document.getElementById('photo-input-camera-' + areaId);
+    const cameraModeToggle = document.getElementById('cameraMode-' + areaId);
+
+    zone.addEventListener('click', () => {
+        if (cameraModeToggle && cameraModeToggle.checked) {
+            cameraInput.click();
+        } else {
+            galleryInput.click();
         }
     });
-    
+
+    // 갤러리: 여러 장 선택
+    galleryInput.addEventListener('change', () => {
+        if (galleryInput.files.length > 0) {
+            const files = Array.from(galleryInput.files);
+            galleryInput.value = '';
+            uploadPhotos(areaId, scheduleId, files);
+        }
+    });
+
+    // 카메라: 1장 촬영 후 누적
+    cameraInput.addEventListener('change', () => {
+        if (cameraInput.files.length > 0) {
+            const files = Array.from(cameraInput.files);
+            cameraInput.value = '';
+            uploadPhotos(areaId, scheduleId, files);
+        }
+    });
+
     zone.addEventListener('dragover', (e) => {
         e.preventDefault();
         zone.classList.add('dragover');
@@ -339,12 +517,23 @@ document.querySelectorAll('.upload-dropzone').forEach(zone => {
     });
 });
 
-// 사진 삭제
+// 사진 삭제 (모달 확인)
+let pendingDeletePhotoId = null;
+let pendingDeleteAreaId = null;
+
 function deletePhoto(photoId, taskAreaId) {
-    if (!confirm('사진을 삭제하시겠습니까?')) return;
-    
+    pendingDeletePhotoId = photoId;
+    pendingDeleteAreaId = taskAreaId;
+    const modal = new bootstrap.Modal(document.getElementById('deletePhotoModal'));
+    modal.show();
+}
+
+document.getElementById('confirmDeletePhotoBtn').addEventListener('click', function() {
+    const modal = bootstrap.Modal.getInstance(document.getElementById('deletePhotoModal'));
+    if (modal) modal.hide();
+
     const formData = new FormData();
-    formData.append('taskAreaPhotoId', photoId);
+    formData.append('taskAreaPhotoId', pendingDeletePhotoId);
     
     fetch('/tasks/task_area_photo_delete', {
         method: 'POST',
@@ -353,16 +542,16 @@ function deletePhoto(photoId, taskAreaId) {
     .then(r => r.json())
     .then(data => {
         if (data.success) {
-            const item = document.getElementById('photo-item-' + photoId);
+            const item = document.getElementById('photo-item-' + pendingDeletePhotoId);
             if (item) item.remove();
             showToast('success', '삭제되었습니다.');
-            updatePhotoCount(taskAreaId);
+            updatePhotoCount(pendingDeleteAreaId);
         } else {
             showToast('danger', data.message);
         }
     })
     .catch(() => showToast('danger', '삭제 중 오류가 발생했습니다.'));
-}
+});
 
 // 사진 수 업데이트
 function updatePhotoCount(taskAreaId) {
@@ -374,8 +563,10 @@ function updatePhotoCount(taskAreaId) {
 
 // 업무 완료
 function completeTask(taskScheduleId) {
-    if (!confirm('업무를 완료 처리하시겠습니까?\n완료 후에는 수정할 수 없습니다.')) return;
-    
+    // 모달 닫기
+    const modal = bootstrap.Modal.getInstance(document.getElementById('completeConfirmModal'));
+    if (modal) modal.hide();
+
     const memo = document.getElementById('completeMemo').value;
     const formData = new FormData();
     formData.append('taskScheduleId', taskScheduleId);

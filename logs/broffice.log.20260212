@@ -1,0 +1,369 @@
+[2026-02-11 19:07:14] INFO in log_handler: 로거 초기화 완료 - 레벨: DEBUG, 파일: /Users/seungkyun/PyProjects/PyBroffice/logs/broffice.log
+[2026-02-11 19:07:14] INFO in __init__: Flask-Mail 초기화 완료
+[2026-02-11 19:07:14] INFO in __init__: 필터 등록 완료
+[2026-02-11 19:07:14] INFO in __init__: 애플리케이션 초기화 완료
+[2026-02-11 19:07:14] INFO in log_handler: 로거 초기화 완료 - 레벨: DEBUG, 파일: /Users/seungkyun/PyProjects/PyBroffice/logs/broffice.log
+[2026-02-11 19:07:14] INFO in __init__: Flask-Mail 초기화 완료
+[2026-02-11 19:07:14] INFO in __init__: 필터 등록 완료
+[2026-02-11 19:07:14] INFO in __init__: 애플리케이션 초기화 완료
+[2026-02-11 20:01:11] WARNING in __init__: 404 에러: http://127.0.0.1:5020/static/img/profile-img.webp - 404 Not Found: The requested URL was not found on the server. If you entered the URL manually please check your spelling and try again.
+[2026-02-11 20:01:30] WARNING in __init__: 404 에러: http://127.0.0.1:5020/static/img/profile-img.webp - 404 Not Found: The requested URL was not found on the server. If you entered the URL manually please check your spelling and try again.
+[2026-02-11 20:03:14] INFO in log_handler: 로거 초기화 완료 - 레벨: DEBUG, 파일: /Users/seungkyun/PyProjects/PyBroffice/logs/broffice.log
+[2026-02-11 20:03:14] INFO in __init__: Flask-Mail 초기화 완료
+[2026-02-11 20:03:14] INFO in __init__: 필터 등록 완료
+[2026-02-11 20:03:14] INFO in __init__: 애플리케이션 초기화 완료
+[2026-02-11 20:04:58] INFO in log_handler: 로거 초기화 완료 - 레벨: DEBUG, 파일: /Users/seungkyun/PyProjects/PyBroffice/logs/broffice.log
+[2026-02-11 20:04:58] INFO in __init__: Flask-Mail 초기화 완료
+[2026-02-11 20:04:58] INFO in __init__: 필터 등록 완료
+[2026-02-11 20:04:58] INFO in __init__: 애플리케이션 초기화 완료
+[2026-02-11 20:10:35] ERROR in dbconns: 데이터베이스 연결 사용 중 오류: (1305, 'PROCEDURE Broffice$brobiz.get_staff_schedule_progress does not exist')
+[2026-02-11 20:10:35] ERROR in dbconns: 프로시저 실행 중 오류: get_staff_schedule_progress, (1305, 'PROCEDURE Broffice$brobiz.get_staff_schedule_progress does not exist')
+[2026-02-11 20:10:35] ERROR in __init__: 처리되지 않은 예외: OperationalError - (1305, 'PROCEDURE Broffice$brobiz.get_staff_schedule_progress does not exist')
+Traceback (most recent call last):
+  File "/Users/seungkyun/PyProjects/PyBroffice/venv/lib/python3.14/site-packages/flask/app.py", line 1484, in full_dispatch_request
+    rv = self.dispatch_request()
+  File "/Users/seungkyun/PyProjects/PyBroffice/venv/lib/python3.14/site-packages/flask/app.py", line 1469, in dispatch_request
+    return self.ensure_sync(self.view_functions[rule.endpoint])(**view_args)
+           ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^
+  File "/Users/seungkyun/PyProjects/PyBroffice/broffice/utils/auth_handler.py", line 18, in decorated_function
+    return func(*args, **kwargs)
+  File "/Users/seungkyun/PyProjects/PyBroffice/broffice/router/homes.py", line 38, in index
+    schedule_progress = conn.return_list('get_staff_schedule_progress', [user_id, year_month]) or []
+                        ~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/seungkyun/PyProjects/PyBroffice/broffice/dbconns.py", line 291, in return_list
+    cursor.execute(call_sql, params if params else [])
+    ~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/seungkyun/PyProjects/PyBroffice/venv/lib/python3.14/site-packages/pymysql/cursors.py", line 153, in execute
+    result = self._query(query)
+  File "/Users/seungkyun/PyProjects/PyBroffice/venv/lib/python3.14/site-packages/pymysql/cursors.py", line 322, in _query
+    conn.query(q)
+    ~~~~~~~~~~^^^
+  File "/Users/seungkyun/PyProjects/PyBroffice/venv/lib/python3.14/site-packages/pymysql/connections.py", line 575, in query
+    self._affected_rows = self._read_query_result(unbuffered=unbuffered)
+                          ~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/seungkyun/PyProjects/PyBroffice/venv/lib/python3.14/site-packages/pymysql/connections.py", line 826, in _read_query_result
+    result.read()
+    ~~~~~~~~~~~^^
+  File "/Users/seungkyun/PyProjects/PyBroffice/venv/lib/python3.14/site-packages/pymysql/connections.py", line 1203, in read
+    first_packet = self.connection._read_packet()
+  File "/Users/seungkyun/PyProjects/PyBroffice/venv/lib/python3.14/site-packages/pymysql/connections.py", line 782, in _read_packet
+    packet.raise_for_error()
+    ~~~~~~~~~~~~~~~~~~~~~~^^
+  File "/Users/seungkyun/PyProjects/PyBroffice/venv/lib/python3.14/site-packages/pymysql/protocol.py", line 219, in raise_for_error
+    err.raise_mysql_exception(self._data)
+    ~~~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^
+  File "/Users/seungkyun/PyProjects/PyBroffice/venv/lib/python3.14/site-packages/pymysql/err.py", line 150, in raise_mysql_exception
+    raise errorclass(errno, errval)
+pymysql.err.OperationalError: (1305, 'PROCEDURE Broffice$brobiz.get_staff_schedule_progress does not exist')
+[2026-02-11 20:21:22] INFO in log_handler: 로거 초기화 완료 - 레벨: DEBUG, 파일: /Users/seungkyun/PyProjects/PyBroffice/logs/broffice.log
+[2026-02-11 20:21:22] INFO in __init__: Flask-Mail 초기화 완료
+[2026-02-11 20:21:22] INFO in __init__: 필터 등록 완료
+[2026-02-11 20:21:22] INFO in __init__: 애플리케이션 초기화 완료
+[2026-02-11 22:31:28] ERROR in __init__: 처리되지 않은 예외: TemplateNotFound - tasks/task_client_result.html
+Traceback (most recent call last):
+  File "/Users/seungkyun/PyProjects/PyBroffice/venv/lib/python3.14/site-packages/flask/app.py", line 1484, in full_dispatch_request
+    rv = self.dispatch_request()
+  File "/Users/seungkyun/PyProjects/PyBroffice/venv/lib/python3.14/site-packages/flask/app.py", line 1469, in dispatch_request
+    return self.ensure_sync(self.view_functions[rule.endpoint])(**view_args)
+           ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^
+  File "/Users/seungkyun/PyProjects/PyBroffice/broffice/utils/auth_handler.py", line 18, in decorated_function
+    return func(*args, **kwargs)
+  File "/Users/seungkyun/PyProjects/PyBroffice/broffice/router/tasks.py", line 498, in task_client_result
+    return render_template('tasks/task_client_result.html', task_kind_id=task_kind_id)
+  File "/Users/seungkyun/PyProjects/PyBroffice/venv/lib/python3.14/site-packages/flask/templating.py", line 150, in render_template
+    template = app.jinja_env.get_or_select_template(template_name_or_list)
+  File "/Users/seungkyun/PyProjects/PyBroffice/venv/lib/python3.14/site-packages/jinja2/environment.py", line 1087, in get_or_select_template
+    return self.get_template(template_name_or_list, parent, globals)
+           ~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/seungkyun/PyProjects/PyBroffice/venv/lib/python3.14/site-packages/jinja2/environment.py", line 1016, in get_template
+    return self._load_template(name, globals)
+           ~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^
+  File "/Users/seungkyun/PyProjects/PyBroffice/venv/lib/python3.14/site-packages/jinja2/environment.py", line 975, in _load_template
+    template = self.loader.load(self, name, self.make_globals(globals))
+  File "/Users/seungkyun/PyProjects/PyBroffice/venv/lib/python3.14/site-packages/jinja2/loaders.py", line 126, in load
+    source, filename, uptodate = self.get_source(environment, name)
+                                 ~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^
+  File "/Users/seungkyun/PyProjects/PyBroffice/venv/lib/python3.14/site-packages/flask/templating.py", line 64, in get_source
+    return self._get_source_fast(environment, template)
+           ~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/seungkyun/PyProjects/PyBroffice/venv/lib/python3.14/site-packages/flask/templating.py", line 98, in _get_source_fast
+    raise TemplateNotFound(template)
+jinja2.exceptions.TemplateNotFound: tasks/task_client_result.html
+[2026-02-11 22:31:57] ERROR in __init__: 처리되지 않은 예외: TemplateNotFound - tasks/task_client_result.html
+Traceback (most recent call last):
+  File "/Users/seungkyun/PyProjects/PyBroffice/venv/lib/python3.14/site-packages/flask/app.py", line 1484, in full_dispatch_request
+    rv = self.dispatch_request()
+  File "/Users/seungkyun/PyProjects/PyBroffice/venv/lib/python3.14/site-packages/flask/app.py", line 1469, in dispatch_request
+    return self.ensure_sync(self.view_functions[rule.endpoint])(**view_args)
+           ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^
+  File "/Users/seungkyun/PyProjects/PyBroffice/broffice/utils/auth_handler.py", line 18, in decorated_function
+    return func(*args, **kwargs)
+  File "/Users/seungkyun/PyProjects/PyBroffice/broffice/router/tasks.py", line 498, in task_client_result
+    return render_template('tasks/task_client_result.html', task_kind_id=task_kind_id)
+  File "/Users/seungkyun/PyProjects/PyBroffice/venv/lib/python3.14/site-packages/flask/templating.py", line 150, in render_template
+    template = app.jinja_env.get_or_select_template(template_name_or_list)
+  File "/Users/seungkyun/PyProjects/PyBroffice/venv/lib/python3.14/site-packages/jinja2/environment.py", line 1087, in get_or_select_template
+    return self.get_template(template_name_or_list, parent, globals)
+           ~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/seungkyun/PyProjects/PyBroffice/venv/lib/python3.14/site-packages/jinja2/environment.py", line 1016, in get_template
+    return self._load_template(name, globals)
+           ~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^
+  File "/Users/seungkyun/PyProjects/PyBroffice/venv/lib/python3.14/site-packages/jinja2/environment.py", line 975, in _load_template
+    template = self.loader.load(self, name, self.make_globals(globals))
+  File "/Users/seungkyun/PyProjects/PyBroffice/venv/lib/python3.14/site-packages/jinja2/loaders.py", line 126, in load
+    source, filename, uptodate = self.get_source(environment, name)
+                                 ~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^
+  File "/Users/seungkyun/PyProjects/PyBroffice/venv/lib/python3.14/site-packages/flask/templating.py", line 64, in get_source
+    return self._get_source_fast(environment, template)
+           ~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/seungkyun/PyProjects/PyBroffice/venv/lib/python3.14/site-packages/flask/templating.py", line 98, in _get_source_fast
+    raise TemplateNotFound(template)
+jinja2.exceptions.TemplateNotFound: tasks/task_client_result.html
+[2026-02-11 22:32:04] ERROR in __init__: 처리되지 않은 예외: TemplateNotFound - tasks/task_client_result.html
+Traceback (most recent call last):
+  File "/Users/seungkyun/PyProjects/PyBroffice/venv/lib/python3.14/site-packages/flask/app.py", line 1484, in full_dispatch_request
+    rv = self.dispatch_request()
+  File "/Users/seungkyun/PyProjects/PyBroffice/venv/lib/python3.14/site-packages/flask/app.py", line 1469, in dispatch_request
+    return self.ensure_sync(self.view_functions[rule.endpoint])(**view_args)
+           ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^
+  File "/Users/seungkyun/PyProjects/PyBroffice/broffice/utils/auth_handler.py", line 18, in decorated_function
+    return func(*args, **kwargs)
+  File "/Users/seungkyun/PyProjects/PyBroffice/broffice/router/tasks.py", line 498, in task_client_result
+    return render_template('tasks/task_client_result.html', task_kind_id=task_kind_id)
+  File "/Users/seungkyun/PyProjects/PyBroffice/venv/lib/python3.14/site-packages/flask/templating.py", line 150, in render_template
+    template = app.jinja_env.get_or_select_template(template_name_or_list)
+  File "/Users/seungkyun/PyProjects/PyBroffice/venv/lib/python3.14/site-packages/jinja2/environment.py", line 1087, in get_or_select_template
+    return self.get_template(template_name_or_list, parent, globals)
+           ~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/seungkyun/PyProjects/PyBroffice/venv/lib/python3.14/site-packages/jinja2/environment.py", line 1016, in get_template
+    return self._load_template(name, globals)
+           ~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^
+  File "/Users/seungkyun/PyProjects/PyBroffice/venv/lib/python3.14/site-packages/jinja2/environment.py", line 975, in _load_template
+    template = self.loader.load(self, name, self.make_globals(globals))
+  File "/Users/seungkyun/PyProjects/PyBroffice/venv/lib/python3.14/site-packages/jinja2/loaders.py", line 126, in load
+    source, filename, uptodate = self.get_source(environment, name)
+                                 ~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^
+  File "/Users/seungkyun/PyProjects/PyBroffice/venv/lib/python3.14/site-packages/flask/templating.py", line 64, in get_source
+    return self._get_source_fast(environment, template)
+           ~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/seungkyun/PyProjects/PyBroffice/venv/lib/python3.14/site-packages/flask/templating.py", line 98, in _get_source_fast
+    raise TemplateNotFound(template)
+jinja2.exceptions.TemplateNotFound: tasks/task_client_result.html
+[2026-02-11 22:42:26] INFO in log_handler: 로거 초기화 완료 - 레벨: DEBUG, 파일: /Users/seungkyun/PyProjects/PyBroffice/logs/broffice.log
+[2026-02-11 22:42:26] INFO in __init__: Flask-Mail 초기화 완료
+[2026-02-11 22:42:26] INFO in __init__: 필터 등록 완료
+[2026-02-11 22:42:26] INFO in __init__: 애플리케이션 초기화 완료
+[2026-02-11 22:43:22] INFO in log_handler: 로거 초기화 완료 - 레벨: DEBUG, 파일: /Users/seungkyun/PyProjects/PyBroffice/logs/broffice.log
+[2026-02-11 22:43:22] INFO in __init__: Flask-Mail 초기화 완료
+[2026-02-11 22:43:22] INFO in __init__: 필터 등록 완료
+[2026-02-11 22:43:22] INFO in __init__: 애플리케이션 초기화 완료
+[2026-02-11 22:46:37] ERROR in __init__: 처리되지 않은 예외: TemplateNotFound - tasks/task_client_result.html
+Traceback (most recent call last):
+  File "/Users/seungkyun/PyProjects/PyBroffice/venv/lib/python3.14/site-packages/flask/app.py", line 1484, in full_dispatch_request
+    rv = self.dispatch_request()
+  File "/Users/seungkyun/PyProjects/PyBroffice/venv/lib/python3.14/site-packages/flask/app.py", line 1469, in dispatch_request
+    return self.ensure_sync(self.view_functions[rule.endpoint])(**view_args)
+           ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^
+  File "/Users/seungkyun/PyProjects/PyBroffice/broffice/utils/auth_handler.py", line 18, in decorated_function
+    return func(*args, **kwargs)
+  File "/Users/seungkyun/PyProjects/PyBroffice/broffice/router/tasks.py", line 540, in task_client_result
+    return render_template('tasks/task_client_result.html', task_kind_id=task_kind_id)
+  File "/Users/seungkyun/PyProjects/PyBroffice/venv/lib/python3.14/site-packages/flask/templating.py", line 150, in render_template
+    template = app.jinja_env.get_or_select_template(template_name_or_list)
+  File "/Users/seungkyun/PyProjects/PyBroffice/venv/lib/python3.14/site-packages/jinja2/environment.py", line 1087, in get_or_select_template
+    return self.get_template(template_name_or_list, parent, globals)
+           ~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/seungkyun/PyProjects/PyBroffice/venv/lib/python3.14/site-packages/jinja2/environment.py", line 1016, in get_template
+    return self._load_template(name, globals)
+           ~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^
+  File "/Users/seungkyun/PyProjects/PyBroffice/venv/lib/python3.14/site-packages/jinja2/environment.py", line 975, in _load_template
+    template = self.loader.load(self, name, self.make_globals(globals))
+  File "/Users/seungkyun/PyProjects/PyBroffice/venv/lib/python3.14/site-packages/jinja2/loaders.py", line 126, in load
+    source, filename, uptodate = self.get_source(environment, name)
+                                 ~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^
+  File "/Users/seungkyun/PyProjects/PyBroffice/venv/lib/python3.14/site-packages/flask/templating.py", line 64, in get_source
+    return self._get_source_fast(environment, template)
+           ~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/seungkyun/PyProjects/PyBroffice/venv/lib/python3.14/site-packages/flask/templating.py", line 98, in _get_source_fast
+    raise TemplateNotFound(template)
+jinja2.exceptions.TemplateNotFound: tasks/task_client_result.html
+[2026-02-11 22:46:56] ERROR in __init__: 처리되지 않은 예외: TemplateNotFound - tasks/task_client_result.html
+Traceback (most recent call last):
+  File "/Users/seungkyun/PyProjects/PyBroffice/venv/lib/python3.14/site-packages/flask/app.py", line 1484, in full_dispatch_request
+    rv = self.dispatch_request()
+  File "/Users/seungkyun/PyProjects/PyBroffice/venv/lib/python3.14/site-packages/flask/app.py", line 1469, in dispatch_request
+    return self.ensure_sync(self.view_functions[rule.endpoint])(**view_args)
+           ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^
+  File "/Users/seungkyun/PyProjects/PyBroffice/broffice/utils/auth_handler.py", line 18, in decorated_function
+    return func(*args, **kwargs)
+  File "/Users/seungkyun/PyProjects/PyBroffice/broffice/router/tasks.py", line 540, in task_client_result
+    return render_template('tasks/task_client_result.html', task_kind_id=task_kind_id)
+  File "/Users/seungkyun/PyProjects/PyBroffice/venv/lib/python3.14/site-packages/flask/templating.py", line 150, in render_template
+    template = app.jinja_env.get_or_select_template(template_name_or_list)
+  File "/Users/seungkyun/PyProjects/PyBroffice/venv/lib/python3.14/site-packages/jinja2/environment.py", line 1087, in get_or_select_template
+    return self.get_template(template_name_or_list, parent, globals)
+           ~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/seungkyun/PyProjects/PyBroffice/venv/lib/python3.14/site-packages/jinja2/environment.py", line 1016, in get_template
+    return self._load_template(name, globals)
+           ~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^
+  File "/Users/seungkyun/PyProjects/PyBroffice/venv/lib/python3.14/site-packages/jinja2/environment.py", line 975, in _load_template
+    template = self.loader.load(self, name, self.make_globals(globals))
+  File "/Users/seungkyun/PyProjects/PyBroffice/venv/lib/python3.14/site-packages/jinja2/loaders.py", line 126, in load
+    source, filename, uptodate = self.get_source(environment, name)
+                                 ~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^
+  File "/Users/seungkyun/PyProjects/PyBroffice/venv/lib/python3.14/site-packages/flask/templating.py", line 64, in get_source
+    return self._get_source_fast(environment, template)
+           ~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/seungkyun/PyProjects/PyBroffice/venv/lib/python3.14/site-packages/flask/templating.py", line 98, in _get_source_fast
+    raise TemplateNotFound(template)
+jinja2.exceptions.TemplateNotFound: tasks/task_client_result.html
+[2026-02-11 22:58:01] WARNING in __init__: 404 에러: http://127.0.0.1:5020/static/img/profile-img.webp - 404 Not Found: The requested URL was not found on the server. If you entered the URL manually please check your spelling and try again.
+[2026-02-11 22:58:07] WARNING in __init__: 404 에러: http://127.0.0.1:5020/static/img/profile-img.webp - 404 Not Found: The requested URL was not found on the server. If you entered the URL manually please check your spelling and try again.
+[2026-02-11 22:58:08] WARNING in __init__: 404 에러: http://127.0.0.1:5020/static/img/profile-img.webp - 404 Not Found: The requested URL was not found on the server. If you entered the URL manually please check your spelling and try again.
+[2026-02-11 22:58:09] WARNING in __init__: 404 에러: http://127.0.0.1:5020/static/img/profile-img.webp - 404 Not Found: The requested URL was not found on the server. If you entered the URL manually please check your spelling and try again.
+[2026-02-11 22:58:11] WARNING in __init__: 404 에러: http://127.0.0.1:5020/static/img/profile-img.webp - 404 Not Found: The requested URL was not found on the server. If you entered the URL manually please check your spelling and try again.
+[2026-02-11 22:58:13] WARNING in __init__: 404 에러: http://127.0.0.1:5020/static/img/profile-img.webp - 404 Not Found: The requested URL was not found on the server. If you entered the URL manually please check your spelling and try again.
+[2026-02-11 22:58:14] WARNING in __init__: 404 에러: http://127.0.0.1:5020/static/img/profile-img.webp - 404 Not Found: The requested URL was not found on the server. If you entered the URL manually please check your spelling and try again.
+[2026-02-11 22:58:20] WARNING in __init__: 404 에러: http://127.0.0.1:5020/static/img/profile-img.webp - 404 Not Found: The requested URL was not found on the server. If you entered the URL manually please check your spelling and try again.
+[2026-02-11 22:58:29] WARNING in __init__: 404 에러: http://127.0.0.1:5020/static/img/profile-img.webp - 404 Not Found: The requested URL was not found on the server. If you entered the URL manually please check your spelling and try again.
+[2026-02-11 22:59:01] WARNING in __init__: 404 에러: http://127.0.0.1:5020/static/img/profile-img.webp - 404 Not Found: The requested URL was not found on the server. If you entered the URL manually please check your spelling and try again.
+[2026-02-11 22:59:03] WARNING in __init__: 404 에러: http://127.0.0.1:5020/static/img/profile-img.webp - 404 Not Found: The requested URL was not found on the server. If you entered the URL manually please check your spelling and try again.
+[2026-02-11 22:59:11] WARNING in __init__: 404 에러: http://127.0.0.1:5020/static/img/profile-img.webp - 404 Not Found: The requested URL was not found on the server. If you entered the URL manually please check your spelling and try again.
+[2026-02-11 22:59:30] WARNING in __init__: 404 에러: http://127.0.0.1:5020/static/img/profile-img.webp - 404 Not Found: The requested URL was not found on the server. If you entered the URL manually please check your spelling and try again.
+[2026-02-11 23:00:47] WARNING in __init__: 404 에러: http://127.0.0.1:5020/static/img/profile-img.webp - 404 Not Found: The requested URL was not found on the server. If you entered the URL manually please check your spelling and try again.
+[2026-02-11 23:00:48] WARNING in __init__: 404 에러: http://127.0.0.1:5020/static/img/profile-img.webp - 404 Not Found: The requested URL was not found on the server. If you entered the URL manually please check your spelling and try again.
+[2026-02-11 23:00:50] WARNING in __init__: 404 에러: http://127.0.0.1:5020/static/img/profile-img.webp - 404 Not Found: The requested URL was not found on the server. If you entered the URL manually please check your spelling and try again.
+[2026-02-11 23:03:03] WARNING in __init__: 404 에러: http://127.0.0.1:5020/static/img/profile-img.webp - 404 Not Found: The requested URL was not found on the server. If you entered the URL manually please check your spelling and try again.
+[2026-02-11 23:03:03] WARNING in __init__: 404 에러: http://127.0.0.1:5020/static/img/profile-img.webp - 404 Not Found: The requested URL was not found on the server. If you entered the URL manually please check your spelling and try again.
+[2026-02-11 23:03:04] WARNING in __init__: 404 에러: http://127.0.0.1:5020/static/img/profile-img.webp - 404 Not Found: The requested URL was not found on the server. If you entered the URL manually please check your spelling and try again.
+[2026-02-11 23:03:04] WARNING in __init__: 404 에러: http://127.0.0.1:5020/static/img/profile-img.webp - 404 Not Found: The requested URL was not found on the server. If you entered the URL manually please check your spelling and try again.
+[2026-02-11 23:03:04] WARNING in __init__: 404 에러: http://127.0.0.1:5020/static/img/profile-img.webp - 404 Not Found: The requested URL was not found on the server. If you entered the URL manually please check your spelling and try again.
+[2026-02-11 23:03:05] WARNING in __init__: 404 에러: http://127.0.0.1:5020/static/img/profile-img.webp - 404 Not Found: The requested URL was not found on the server. If you entered the URL manually please check your spelling and try again.
+[2026-02-11 23:03:07] WARNING in __init__: 404 에러: http://127.0.0.1:5020/static/img/profile-img.webp - 404 Not Found: The requested URL was not found on the server. If you entered the URL manually please check your spelling and try again.
+[2026-02-11 23:03:08] WARNING in __init__: 404 에러: http://127.0.0.1:5020/static/img/profile-img.webp - 404 Not Found: The requested URL was not found on the server. If you entered the URL manually please check your spelling and try again.
+[2026-02-11 23:03:09] WARNING in __init__: 404 에러: http://127.0.0.1:5020/static/img/profile-img.webp - 404 Not Found: The requested URL was not found on the server. If you entered the URL manually please check your spelling and try again.
+[2026-02-11 23:03:10] WARNING in __init__: 404 에러: http://127.0.0.1:5020/static/img/profile-img.webp - 404 Not Found: The requested URL was not found on the server. If you entered the URL manually please check your spelling and try again.
+[2026-02-11 23:03:13] WARNING in __init__: 404 에러: http://127.0.0.1:5020/static/img/profile-img.webp - 404 Not Found: The requested URL was not found on the server. If you entered the URL manually please check your spelling and try again.
+[2026-02-11 23:03:14] WARNING in __init__: 404 에러: http://127.0.0.1:5020/static/img/profile-img.webp - 404 Not Found: The requested URL was not found on the server. If you entered the URL manually please check your spelling and try again.
+[2026-02-11 23:03:16] WARNING in __init__: 404 에러: http://127.0.0.1:5020/static/img/profile-img.webp - 404 Not Found: The requested URL was not found on the server. If you entered the URL manually please check your spelling and try again.
+[2026-02-11 23:04:58] INFO in log_handler: 로거 초기화 완료 - 레벨: DEBUG, 파일: /Users/seungkyun/PyProjects/PyBroffice/logs/broffice.log
+[2026-02-11 23:04:58] INFO in __init__: Flask-Mail 초기화 완료
+[2026-02-11 23:04:58] INFO in __init__: 필터 등록 완료
+[2026-02-11 23:04:58] INFO in __init__: 애플리케이션 초기화 완료
+[2026-02-12 10:40:48] INFO in log_handler: 로거 초기화 완료 - 레벨: DEBUG, 파일: /Users/seungkyun/PyProjects/PyBroffice/logs/broffice.log
+[2026-02-12 10:40:48] INFO in __init__: Flask-Mail 초기화 완료
+[2026-02-12 10:40:48] INFO in __init__: 필터 등록 완료
+[2026-02-12 10:40:48] INFO in __init__: 애플리케이션 초기화 완료
+[2026-02-12 20:48:51] INFO in log_handler: 로거 초기화 완료 - 레벨: DEBUG, 파일: /Users/seungkyun/PyProjects/PyBroffice/logs/broffice.log
+[2026-02-12 20:48:51] INFO in __init__: Flask-Mail 초기화 완료
+[2026-02-12 20:48:51] INFO in __init__: 필터 등록 완료
+[2026-02-12 20:48:51] INFO in __init__: 애플리케이션 초기화 완료
+[2026-02-12 20:48:52] INFO in log_handler: 로거 초기화 완료 - 레벨: DEBUG, 파일: /Users/seungkyun/PyProjects/PyBroffice/logs/broffice.log
+[2026-02-12 20:48:52] INFO in __init__: Flask-Mail 초기화 완료
+[2026-02-12 20:48:52] INFO in __init__: 필터 등록 완료
+[2026-02-12 20:48:52] INFO in __init__: 애플리케이션 초기화 완료
+[2026-02-12 22:13:55] INFO in log_handler: 로거 초기화 완료 - 레벨: DEBUG, 파일: /Users/seungkyun/PyProjects/PyBroffice/logs/broffice.log
+[2026-02-12 22:13:55] INFO in __init__: Flask-Mail 초기화 완료
+[2026-02-12 22:13:55] INFO in __init__: 필터 등록 완료
+[2026-02-12 22:13:55] INFO in __init__: 애플리케이션 초기화 완료
+[2026-02-12 22:13:55] INFO in log_handler: 로거 초기화 완료 - 레벨: DEBUG, 파일: /Users/seungkyun/PyProjects/PyBroffice/logs/broffice.log
+[2026-02-12 22:13:55] INFO in __init__: Flask-Mail 초기화 완료
+[2026-02-12 22:13:55] INFO in __init__: 필터 등록 완료
+[2026-02-12 22:13:55] INFO in __init__: 애플리케이션 초기화 완료
+[2026-02-12 22:16:51] ERROR in dbconns: 데이터베이스 연결 생성 중 오류: (2013, 'Lost connection to MySQL server during query')
+[2026-02-12 22:16:51] ERROR in dbconns: 새 연결 생성 중 오류: (2013, 'Lost connection to MySQL server during query')
+[2026-02-12 22:16:51] ERROR in dbconns: 데이터베이스 연결 사용 중 오류: (2013, 'Lost connection to MySQL server during query')
+[2026-02-12 22:16:51] ERROR in dbconns: 프로시저 실행 중 오류 (단일 결과): get_dashboard_kpi, (2013, 'Lost connection to MySQL server during query')
+[2026-02-12 22:16:51] ERROR in __init__: 처리되지 않은 예외: OperationalError - (2013, 'Lost connection to MySQL server during query')
+Traceback (most recent call last):
+  File "/Users/seungkyun/PyProjects/PyBroffice/venv/lib/python3.14/site-packages/flask/app.py", line 1484, in full_dispatch_request
+    rv = self.dispatch_request()
+  File "/Users/seungkyun/PyProjects/PyBroffice/venv/lib/python3.14/site-packages/flask/app.py", line 1469, in dispatch_request
+    return self.ensure_sync(self.view_functions[rule.endpoint])(**view_args)
+           ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^
+  File "/Users/seungkyun/PyProjects/PyBroffice/broffice/utils/auth_handler.py", line 18, in decorated_function
+    return func(*args, **kwargs)
+  File "/Users/seungkyun/PyProjects/PyBroffice/broffice/router/homes.py", line 18, in index
+    kpi = conn.execute_return('get_dashboard_kpi', []) or {}
+          ~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/seungkyun/PyProjects/PyBroffice/broffice/dbconns.py", line 265, in execute_return
+    with get_db_connection() as conn:
+         ~~~~~~~~~~~~~~~~~^^
+  File "/opt/homebrew/Cellar/python@3.14/3.14.2_1/Frameworks/Python.framework/Versions/3.14/lib/python3.14/contextlib.py", line 141, in __enter__
+    return next(self.gen)
+  File "/Users/seungkyun/PyProjects/PyBroffice/broffice/dbconns.py", line 200, in get_db_connection
+    conn = connection_pool.get_connection()
+  File "/Users/seungkyun/PyProjects/PyBroffice/broffice/dbconns.py", line 129, in get_connection
+    conn = self._create_connection()
+  File "/Users/seungkyun/PyProjects/PyBroffice/broffice/dbconns.py", line 88, in _create_connection
+    conn = pymysql.connect(**self.db_config)
+  File "/Users/seungkyun/PyProjects/PyBroffice/venv/lib/python3.14/site-packages/pymysql/connections.py", line 365, in __init__
+    self.connect()
+    ~~~~~~~~~~~~^^
+  File "/Users/seungkyun/PyProjects/PyBroffice/venv/lib/python3.14/site-packages/pymysql/connections.py", line 680, in connect
+    self._get_server_information()
+    ~~~~~~~~~~~~~~~~~~~~~~~~~~~~^^
+  File "/Users/seungkyun/PyProjects/PyBroffice/venv/lib/python3.14/site-packages/pymysql/connections.py", line 1099, in _get_server_information
+    packet = self._read_packet()
+  File "/Users/seungkyun/PyProjects/PyBroffice/venv/lib/python3.14/site-packages/pymysql/connections.py", line 751, in _read_packet
+    packet_header = self._read_bytes(4)
+  File "/Users/seungkyun/PyProjects/PyBroffice/venv/lib/python3.14/site-packages/pymysql/connections.py", line 805, in _read_bytes
+    raise err.OperationalError(
+        CR.CR_SERVER_LOST, "Lost connection to MySQL server during query"
+    )
+pymysql.err.OperationalError: (2013, 'Lost connection to MySQL server during query')
+[2026-02-12 22:16:51] ERROR in dbconns: 데이터베이스 연결 생성 중 오류: (2003, "Can't connect to MySQL server on '127.0.0.1' ([Errno 61] Connection refused)")
+[2026-02-12 22:16:51] ERROR in dbconns: 새 연결 생성 중 오류: (2003, "Can't connect to MySQL server on '127.0.0.1' ([Errno 61] Connection refused)")
+[2026-02-12 22:16:51] ERROR in dbconns: 데이터베이스 연결 사용 중 오류: (2003, "Can't connect to MySQL server on '127.0.0.1' ([Errno 61] Connection refused)")
+[2026-02-12 22:16:51] ERROR in dbconns: 프로시저 실행 중 오류 (단일 결과): get_dashboard_kpi, (2003, "Can't connect to MySQL server on '127.0.0.1' ([Errno 61] Connection refused)")
+[2026-02-12 22:16:51] ERROR in __init__: 처리되지 않은 예외: OperationalError - (2003, "Can't connect to MySQL server on '127.0.0.1' ([Errno 61] Connection refused)")
+Traceback (most recent call last):
+  File "/Users/seungkyun/PyProjects/PyBroffice/venv/lib/python3.14/site-packages/pymysql/connections.py", line 661, in connect
+    sock = socket.create_connection(
+        (self.host, self.port), self.connect_timeout, **kwargs
+    )
+  File "/opt/homebrew/Cellar/python@3.14/3.14.2_1/Frameworks/Python.framework/Versions/3.14/lib/python3.14/socket.py", line 870, in create_connection
+    raise exceptions[0]
+  File "/opt/homebrew/Cellar/python@3.14/3.14.2_1/Frameworks/Python.framework/Versions/3.14/lib/python3.14/socket.py", line 855, in create_connection
+    sock.connect(sa)
+    ~~~~~~~~~~~~^^^^
+ConnectionRefusedError: [Errno 61] Connection refused
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "/Users/seungkyun/PyProjects/PyBroffice/venv/lib/python3.14/site-packages/flask/app.py", line 1484, in full_dispatch_request
+    rv = self.dispatch_request()
+  File "/Users/seungkyun/PyProjects/PyBroffice/venv/lib/python3.14/site-packages/flask/app.py", line 1469, in dispatch_request
+    return self.ensure_sync(self.view_functions[rule.endpoint])(**view_args)
+           ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^
+  File "/Users/seungkyun/PyProjects/PyBroffice/broffice/utils/auth_handler.py", line 18, in decorated_function
+    return func(*args, **kwargs)
+  File "/Users/seungkyun/PyProjects/PyBroffice/broffice/router/homes.py", line 18, in index
+    kpi = conn.execute_return('get_dashboard_kpi', []) or {}
+          ~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/seungkyun/PyProjects/PyBroffice/broffice/dbconns.py", line 265, in execute_return
+    with get_db_connection() as conn:
+         ~~~~~~~~~~~~~~~~~^^
+  File "/opt/homebrew/Cellar/python@3.14/3.14.2_1/Frameworks/Python.framework/Versions/3.14/lib/python3.14/contextlib.py", line 141, in __enter__
+    return next(self.gen)
+  File "/Users/seungkyun/PyProjects/PyBroffice/broffice/dbconns.py", line 200, in get_db_connection
+    conn = connection_pool.get_connection()
+  File "/Users/seungkyun/PyProjects/PyBroffice/broffice/dbconns.py", line 129, in get_connection
+    conn = self._create_connection()
+  File "/Users/seungkyun/PyProjects/PyBroffice/broffice/dbconns.py", line 88, in _create_connection
+    conn = pymysql.connect(**self.db_config)
+  File "/Users/seungkyun/PyProjects/PyBroffice/venv/lib/python3.14/site-packages/pymysql/connections.py", line 365, in __init__
+    self.connect()
+    ~~~~~~~~~~~~^^
+  File "/Users/seungkyun/PyProjects/PyBroffice/venv/lib/python3.14/site-packages/pymysql/connections.py", line 723, in connect
+    raise exc
+pymysql.err.OperationalError: (2003, "Can't connect to MySQL server on '127.0.0.1' ([Errno 61] Connection refused)")
+[2026-02-12 23:08:57] INFO in log_handler: 로거 초기화 완료 - 레벨: DEBUG, 파일: /Users/seungkyun/PyProjects/PyBroffice/logs/broffice.log
+[2026-02-12 23:08:57] INFO in __init__: Flask-Mail 초기화 완료
+[2026-02-12 23:08:57] INFO in __init__: 필터 등록 완료
+[2026-02-12 23:08:57] INFO in __init__: 애플리케이션 초기화 완료
+[2026-02-12 23:21:35] INFO in log_handler: 로거 초기화 완료 - 레벨: DEBUG, 파일: /Users/seungkyun/PyProjects/PyBroffice/logs/broffice.log
+[2026-02-12 23:21:35] INFO in __init__: Flask-Mail 초기화 완료
+[2026-02-12 23:21:35] INFO in __init__: 필터 등록 완료
+[2026-02-12 23:21:35] INFO in __init__: 애플리케이션 초기화 완료

@@ -27,19 +27,20 @@
         {% endif %}
       
         <!-- 전체 사용자 영역: 오픈 전 (메인 관리자만 확인 가능) -->
+        {% set _tkid = request.view_args.get('task_kind_id') or (request.args.get('task_kind_id', '0') | int) %}
         {% if session.get('login_user') and session.login_user.user_id == 1 %}
         <li>
-          <button class="iconbar-item {{ 'active' if request.endpoint and request.endpoint.startswith('tasks.') and request.args.get('task_kind_id') == '4' else '' }}" data-panel="cleaning" data-bs-toggle="tooltip" data-bs-placement="right" data-bs-title="청소관리">
+          <button class="iconbar-item {{ 'active' if request.endpoint and request.endpoint.startswith('tasks.') and _tkid == 4 else '' }}" data-panel="cleaning" data-bs-toggle="tooltip" data-bs-placement="right" data-bs-title="청소관리">
             <i class="ph-duotone ph-broom"></i>
           </button>
         </li>
         <li>
-          <button class="iconbar-item {{ 'active' if request.endpoint and request.endpoint.startswith('tasks.') and request.args.get('task_kind_id') == '5' else '' }}" data-panel="snack" data-bs-toggle="tooltip" data-bs-placement="right" data-bs-title="간식관리">
+          <button class="iconbar-item {{ 'active' if request.endpoint and request.endpoint.startswith('tasks.') and _tkid == 5 else '' }}" data-panel="snack" data-bs-toggle="tooltip" data-bs-placement="right" data-bs-title="간식관리">
             <i class="ph-duotone ph-hamburger"></i>
           </button>
         </li>
         <li>
-          <button class="iconbar-item {{ 'active' if request.endpoint and request.endpoint.startswith('tasks.') and request.args.get('task_kind_id') == '6' else '' }}" data-panel="supplies" data-bs-toggle="tooltip" data-bs-placement="right" data-bs-title="비품관리">
+          <button class="iconbar-item {{ 'active' if request.endpoint and request.endpoint.startswith('tasks.') and _tkid == 6 else '' }}" data-panel="supplies" data-bs-toggle="tooltip" data-bs-placement="right" data-bs-title="비품관리">
             <i class="ph-duotone ph-package"></i>
           </button>
         </li>
@@ -48,7 +49,7 @@
         <!-- 관리자 영역: 오픈 전 (메인 관리자만 확인 가능) -->
         {% if session.get('login_user') and session.login_user.user_kind_id == 1 and session.login_user.user_id == 1%}
         <li>
-          <button class="iconbar-item {{ 'active' if request.endpoint and request.endpoint.startswith('report.') else '' }}" data-panel="report" data-bs-toggle="tooltip" data-bs-placement="right" data-bs-title="리포트">
+          <button class="iconbar-item {{ 'active' if request.endpoint and request.endpoint.startswith('reports.') else '' }}" data-panel="report" data-bs-toggle="tooltip" data-bs-placement="right" data-bs-title="리포트">
             <i class="ph-duotone ph-chart-bar"></i>
           </button>
         </li>
@@ -79,6 +80,12 @@
         <li><a class="panel-link {{ 'active' if request.endpoint == 'homes.privacy' else '' }}" href="{{ url_for('homes.privacy') }}"><i class="bi bi-shield-check me-2"></i>개인정보처리방침</a></li>
         {% if session.get('login_user', {}).get('user_kind_id') == 1 %}
         <li><a class="panel-link {{ 'active' if request.endpoint == 'homes.timeline' else '' }}" href="{{ url_for('homes.timeline') }}"><i class="bi bi-clock-history me-2"></i>개발타임라인</a></li>
+        <li class="mt-2"><hr class="my-1"></li>
+        <li><a class="panel-link {{ 'active' if request.endpoint == 'homes.test_camera' else '' }}" href="{{ url_for('homes.test_camera') }}"><i class="ph-duotone ph-camera me-2"></i>사진찍기 테스트</a></li>
+        {% if session.get('login_user', {}).get('user_id') == 1 %}
+        <li><a class="panel-link {{ 'active' if request.endpoint == 'homes.test_sms' else '' }}" href="{{ url_for('homes.test_sms') }}"><i class="ph-duotone ph-chat-circle-dots me-2"></i>문자발송 테스트</a></li>
+        <li><a class="panel-link {{ 'active' if request.endpoint == 'homes.test_email' else '' }}" href="{{ url_for('homes.test_email') }}"><i class="ph-duotone ph-envelope me-2"></i>이메일 발송 테스트</a></li>
+        {% endif %}
         {% endif %}
       </ul>
     </div>
@@ -91,12 +98,11 @@
       </div>
       <ul class="panel-nav">
         <li><a class="panel-link {{ 'active' if request.endpoint == 'accounts.user_list' or request.endpoint == 'accounts.user_detail' else '' }}" href="{{ url_for('accounts.user_list') }}"><i class="bi bi-person-lines-fill me-2"></i>회원목록</a></li>
-        <li><a class="panel-link {{ 'active' if request.endpoint == 'accounts.client_list' else '' }}" href="{{ url_for('accounts.client_list') }}"><i class="bi bi-building-check me-2"></i>업체목록</a></li>
+        <li><a class="panel-link {{ 'active' if request.endpoint in ['accounts.client_list', 'accounts.client_detail'] else '' }}" href="{{ url_for('accounts.client_list') }}"><i class="bi bi-building-check me-2"></i>업체목록</a></li>
       </ul>
     </div>
 
     <!-- Panel: 청소관리 -->
-    {% set _tkid = request.view_args.get('task_kind_id') or request.args.get('task_kind_id', 0, type=int) %}
     <div class="sidebar-panel-section {{ 'active' if request.endpoint and request.endpoint.startswith('tasks.') and _tkid == 4 else '' }}" data-section="cleaning">
       <div class="sidebar-panel-header">
         <h6>청소관리</h6>
@@ -111,7 +117,7 @@
         <li><a class="panel-link {{ 'active' if (request.endpoint == 'tasks.task_my_list' or request.endpoint == 'tasks.task_detail') and _tkid == 4 else '' }}" href="{{ url_for('tasks.task_my_list', task_kind_id=4) }}"><i class="bi bi-list-check me-2"></i>내 스케줄</a></li>
         {% endif %}
         {% if session.get('login_user', {}).get('user_kind_id') != 2 %}
-        <li><a class="panel-link {{ 'active' if request.endpoint == 'tasks.task_client_list' and _tkid == 4 else '' }}" href="{{ url_for('tasks.task_client_list', task_kind_id=4) }}"><i class="bi bi-clipboard-check me-2"></i>작업 보고</a></li>
+        <li><a class="panel-link {{ 'active' if request.endpoint == 'tasks.task_client_list' and _tkid == 4 else '' }}" href="{{ url_for('tasks.task_client_list', task_kind_id=4) }}"><i class="bi bi-clipboard-check me-2"></i>작업 결과 확인</a></li>
         {% endif %}
       </ul>
     </div>
@@ -131,7 +137,7 @@
         <li><a class="panel-link {{ 'active' if (request.endpoint == 'tasks.task_my_list' or request.endpoint == 'tasks.task_detail') and _tkid == 5 else '' }}" href="{{ url_for('tasks.task_my_list', task_kind_id=5) }}"><i class="bi bi-list-check me-2"></i>내 스케줄</a></li>
         {% endif %}
         {% if session.get('login_user', {}).get('user_kind_id') != 2 %}
-        <li><a class="panel-link {{ 'active' if request.endpoint == 'tasks.task_client_list' and _tkid == 5 else '' }}" href="{{ url_for('tasks.task_client_list', task_kind_id=5) }}"><i class="bi bi-clipboard-check me-2"></i>작업 보고</a></li>
+        <li><a class="panel-link {{ 'active' if request.endpoint == 'tasks.task_client_list' and _tkid == 5 else '' }}" href="{{ url_for('tasks.task_client_list', task_kind_id=5) }}"><i class="bi bi-clipboard-check me-2"></i>작업 결과 확인</a></li>
         {% endif %}
       </ul>
     </div>
@@ -151,21 +157,25 @@
         <li><a class="panel-link {{ 'active' if (request.endpoint == 'tasks.task_my_list' or request.endpoint == 'tasks.task_detail') and _tkid == 6 else '' }}" href="{{ url_for('tasks.task_my_list', task_kind_id=6) }}"><i class="bi bi-list-check me-2"></i>내 스케줄</a></li>
         {% endif %}
         {% if session.get('login_user', {}).get('user_kind_id') != 2 %}
-        <li><a class="panel-link {{ 'active' if request.endpoint == 'tasks.task_client_list' and _tkid == 6 else '' }}" href="{{ url_for('tasks.task_client_list', task_kind_id=6) }}"><i class="bi bi-clipboard-check me-2"></i>작업 보고</a></li>
+        <li><a class="panel-link {{ 'active' if request.endpoint == 'tasks.task_client_list' and _tkid == 6 else '' }}" href="{{ url_for('tasks.task_client_list', task_kind_id=6) }}"><i class="bi bi-clipboard-check me-2"></i>작업 결과 확인</a></li>
         {% endif %}
       </ul>
     </div>
 
     <!-- Panel: 리포트 -->
-    <div class="sidebar-panel-section {{ 'active' if request.endpoint and request.endpoint.startswith('report.') else '' }}" data-section="report">
+    {% set _rpt_tkid = (request.view_args.get('task_kind_id', 0) | int) if request.view_args else 0 %}
+    <div class="sidebar-panel-section {{ 'active' if request.endpoint and request.endpoint.startswith('reports.') else '' }}" data-section="report">
       <div class="sidebar-panel-header">
         <h6>리포트</h6>
         <button class="sidebar-panel-close btn-close" aria-label="Close"></button>
       </div>
       <ul class="panel-nav">
-        <li><a class="panel-link {{ 'active' if request.endpoint == 'report.tasks' else '' }}" href="/report/tasks"><i class="bi bi-clipboard-data me-2"></i>업무목록</a></li>
-        <li><a class="panel-link {{ 'active' if request.endpoint == 'report.results' else '' }}" href="/report/results"><i class="bi bi-clipboard-check me-2"></i>업무결과확인</a></li>
-        <li><a class="panel-link {{ 'active' if request.endpoint == 'report.statistics' else '' }}" href="/report/statistics"><i class="bi bi-graph-up me-2"></i>통계분석</a></li>
+        <li><a class="panel-link {{ 'active' if request.endpoint == 'reports.dashboard' and _rpt_tkid == 0 else '' }}" href="{{ url_for('reports.dashboard') }}"><i class="bi bi-graph-up me-2"></i>월간 전체</a></li>
+        <li><a class="panel-link {{ 'active' if request.endpoint == 'reports.dashboard' and _rpt_tkid == 4 else '' }}" href="{{ url_for('reports.dashboard', task_kind_id=4) }}"><i class="ph-duotone ph-broom me-2"></i>월간 청소</a></li>
+        <li><a class="panel-link {{ 'active' if request.endpoint == 'reports.dashboard' and _rpt_tkid == 5 else '' }}" href="{{ url_for('reports.dashboard', task_kind_id=5) }}"><i class="ph-duotone ph-hamburger me-2"></i>월간 간식</a></li>
+        <li><a class="panel-link {{ 'active' if request.endpoint == 'reports.dashboard' and _rpt_tkid == 6 else '' }}" href="{{ url_for('reports.dashboard', task_kind_id=6) }}"><i class="ph-duotone ph-package me-2"></i>월간 비품</a></li>
+        <li class="mt-2"><hr class="my-1"></li>
+        <li><a class="panel-link {{ 'active' if request.endpoint == 'reports.sns_logs' else '' }}" href="{{ url_for('reports.sns_logs') }}"><i class="ph-duotone ph-chat-circle-dots me-2"></i>문자발송내역</a></li>
       </ul>
     </div>
   </div>

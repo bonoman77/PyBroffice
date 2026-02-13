@@ -51,16 +51,11 @@ def create_app(config_class=None):
 
 def init_extensions(app):
     """Flask 확장 초기화"""
-    # Flask-Mail 초기화
-    try:
-        from flask_mail import Mail
-        mail = Mail()
-        mail.init_app(app)
-        app.logger.info("Flask-Mail 초기화 완료")
-    except ImportError:
-        app.logger.warning("Flask-Mail을 찾을 수 없습니다.")
-    except Exception as e:
-        app.logger.error(f"Flask-Mail 초기화 실패: {e}")
+    # SendGrid 설정 확인
+    if app.config.get('SENDGRID_API_KEY'):
+        app.logger.info("SendGrid API 키 설정 확인 완료")
+    else:
+        app.logger.warning("SendGrid API 키가 설정되지 않았습니다. (.env에 SENDGRID_API_KEY 설정 필요)")
 
 
 def register_context_processors(app):
@@ -155,10 +150,11 @@ def register_error_handlers(app):
 
 def register_blueprints(app):
     """모든 블루프린트를 앱에 등록"""
-    from broffice.router import homes, accounts, samples, tasks
+    from broffice.router import homes, accounts, samples, tasks, reports
     
     # 각 모듈의 블루프린트 등록
     app.register_blueprint(homes.bp)
     app.register_blueprint(accounts.bp, url_prefix='/accounts')
     app.register_blueprint(samples.bp, url_prefix='/samples')
     app.register_blueprint(tasks.bp, url_prefix='/tasks')
+    app.register_blueprint(reports.bp, url_prefix='/reports')

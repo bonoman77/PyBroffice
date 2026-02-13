@@ -1,0 +1,177 @@
+{% extends "layout.html" %}
+{% block title %}문자발송 테스트{% endblock %}
+
+{% block content %}
+<div class="page-header">
+  <div>
+    <h1 class="page-title">문자발송 테스트</h1>
+    <nav>
+      <ol class="breadcrumb">
+        <li class="breadcrumb-item"><a href="/">홈</a></li>
+        <li class="breadcrumb-item active">문자발송 테스트</li>
+      </ol>
+    </nav>
+  </div>
+</div>
+
+<div class="row g-4">
+  <div class="col-lg-6">
+    <div class="card">
+      <div class="card-header">
+        <h5 class="card-title">SMS 발송 테스트</h5>
+        <p class="card-subtitle">Twilio를 통한 문자 발송 테스트</p>
+      </div>
+      <div class="card-body">
+        <div class="mb-3">
+          <label for="toMobile" class="form-label fw-semibold">수신번호</label>
+          <input type="tel" class="form-control" id="toMobile" placeholder="+821012345678" 
+                 value="{{ session.get('login_user', {}).get('user_mobile', '') }}">
+          <div class="form-text">국제번호 형식 (예: +821012345678) 또는 국내번호 (예: 01012345678)</div>
+        </div>
+        <div class="mb-3">
+          <label for="smsContent" class="form-label fw-semibold">메시지 내용</label>
+          <textarea class="form-control" id="smsContent" rows="3">[브로피스] 문자 발송 테스트입니다.</textarea>
+          <div class="form-text"><span id="charCount">0</span>/500자</div>
+        </div>
+        <div class="d-flex gap-2">
+          <button type="button" class="btn btn-primary" id="btnSend" onclick="sendTestSms()">
+            <i class="ph ph-paper-plane-tilt me-1"></i>발송 테스트
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="col-lg-6">
+    <div class="card">
+      <div class="card-header">
+        <h5 class="card-title">발송 결과</h5>
+      </div>
+      <div class="card-body">
+        <div id="resultArea" class="text-center text-muted py-5">
+          <i class="ph-duotone ph-chat-circle-dots fs-1 d-block mb-2 opacity-25"></i>
+          <p class="mb-0">발송 테스트를 실행해주세요.</p>
+        </div>
+      </div>
+    </div>
+
+    <div class="card mt-3">
+      <div class="card-header">
+        <h5 class="card-title">Twilio 설정 상태</h5>
+      </div>
+      <div class="card-body">
+        <table class="table table-sm mb-0">
+          <tbody>
+            <tr>
+              <td class="fw-medium">TWILIO_ACCOUNT_SID</td>
+              <td>
+                {% if config.get('TWILIO_ACCOUNT_SID') %}
+                <span class="badge badge-soft-success">설정됨</span>
+                {% else %}
+                <span class="badge badge-soft-danger">미설정</span>
+                {% endif %}
+              </td>
+            </tr>
+            <tr>
+              <td class="fw-medium">TWILIO_AUTH_TOKEN</td>
+              <td>
+                {% if config.get('TWILIO_AUTH_TOKEN') %}
+                <span class="badge badge-soft-success">설정됨</span>
+                {% else %}
+                <span class="badge badge-soft-danger">미설정</span>
+                {% endif %}
+              </td>
+            </tr>
+            <tr>
+              <td class="fw-medium">TWILIO_FROM_NUMBER</td>
+              <td>
+                {% if config.get('TWILIO_FROM_NUMBER') %}
+                <span class="badge badge-soft-success">{{ config.get('TWILIO_FROM_NUMBER') }}</span>
+                {% else %}
+                <span class="badge badge-soft-danger">미설정</span>
+                {% endif %}
+              </td>
+            </tr>
+          </tbody>
+        </table>
+        <div class="mt-3 small text-muted">
+          <i class="ph ph-info me-1"></i>.env 파일에 TWILIO_ACCOUNT_SID, TWILIO_AUTH_TOKEN, TWILIO_FROM_NUMBER를 설정하세요.
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+// 글자수 카운트
+const smsContent = document.getElementById('smsContent');
+const charCount = document.getElementById('charCount');
+smsContent.addEventListener('input', () => {
+    charCount.textContent = smsContent.value.length;
+});
+charCount.textContent = smsContent.value.length;
+
+function sendTestSms() {
+    const toMobile = document.getElementById('toMobile').value.trim();
+    const content = smsContent.value.trim();
+    const btn = document.getElementById('btnSend');
+    const resultArea = document.getElementById('resultArea');
+    
+    if (!toMobile) {
+        showToast('warning', '수신번호를 입력해주세요.');
+        return;
+    }
+    if (!content) {
+        showToast('warning', '메시지 내용을 입력해주세요.');
+        return;
+    }
+    
+    btn.disabled = true;
+    btn.innerHTML = '<span class="spinner-border spinner-border-sm me-1"></span>발송 중...';
+    resultArea.innerHTML = '<div class="text-center py-4"><span class="spinner-border text-primary"></span><p class="mt-2 mb-0">발송 중...</p></div>';
+    
+    const formData = new FormData();
+    formData.append('to_mobile', toMobile);
+    formData.append('content', content);
+    
+    fetch('/test_sms_send', {
+        method: 'POST',
+        body: formData
+    })
+    .then(r => r.json())
+    .then(data => {
+        btn.disabled = false;
+        btn.innerHTML = '<i class="ph ph-paper-plane-tilt me-1"></i>발송 테스트';
+        
+        if (data.success) {
+            resultArea.innerHTML = `
+                <div class="alert alert-success mb-3">
+                    <i class="ph ph-check-circle me-1"></i>${data.message}
+                </div>
+                <table class="table table-sm">
+                    <tr><td class="fw-medium">SID</td><td class="small">${data.data.sid || '-'}</td></tr>
+                    <tr><td class="fw-medium">Status</td><td>${data.data.status || '-'}</td></tr>
+                </table>
+            `;
+        } else {
+            resultArea.innerHTML = `
+                <div class="alert alert-danger mb-3">
+                    <i class="ph ph-warning me-1"></i>${data.message}
+                </div>
+                <table class="table table-sm">
+                    <tr><td class="fw-medium">Error Code</td><td>${data.data ? data.data.error_code : '-'}</td></tr>
+                    <tr><td class="fw-medium">Status</td><td>${data.data ? data.data.status : '-'}</td></tr>
+                </table>
+            `;
+        }
+    })
+    .catch(err => {
+        btn.disabled = false;
+        btn.innerHTML = '<i class="ph ph-paper-plane-tilt me-1"></i>발송 테스트';
+        resultArea.innerHTML = '<div class="alert alert-danger"><i class="ph ph-warning me-1"></i>요청 중 오류가 발생했습니다.</div>';
+    });
+}
+</script>
+{% endblock %}

@@ -146,7 +146,7 @@ CREATE TABLE task_schedules (
     scheduled_at          DATETIME NOT NULL COMMENT '생성일정',
     change_scheduled_at   DATETIME NULL COMMENT '변경일정',
     completed_at          DATETIME NULL COMMENT '작업완료일',
-    canceled_at           TINYINT(1) DEFAULT 0 NOT NULL COMMENT '작업취소일',
+    canceled_at           DATETIME NULL COMMENT '작업취소일',
     created_at            DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT '등록일',
     updated_at            DATETIME NULL COMMENT '수정일',
     PRIMARY KEY (task_schedule_id),

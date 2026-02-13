@@ -37,17 +37,16 @@ class Config:
     UPLOAD_IMAGES = ['jpg', 'jpeg', 'png', 'gif', 'webp']
     MAX_CONTENT_LENGTH = 100 * 1024 * 1024  # 100MB
 
-    # 메일 설정
-    MAIL_SERVER = os.environ.get('MAIL_SERVER', 'gw.tuntun.co.kr')
-    MAIL_PORT = int(os.environ.get('MAIL_PORT', 25))
-    MAIL_USE_TLS = os.environ.get('MAIL_USE_TLS', 'False').lower() == 'true'
-    MAIL_USE_SSL = os.environ.get('MAIL_USE_SSL', 'False').lower() == 'true'
-    MAIL_USERNAME = os.environ.get('email_user')
-    MAIL_PASSWORD = os.environ.get('email_password')
-    MAIL_DEFAULT_SENDER = (BRAND_NAME, os.environ.get('MAIL_DEFAULT_SENDER', 'noreply@broffice.kr'))
-    MAIL_ASCII_ATTACHMENTS = False
-    MAIL_DEBUG = False
-    MAIL_SUPPRESS_SEND = False
+    # Twilio SMS 설정
+    TWILIO_ACCOUNT_SID = os.environ.get('TWILIO_ACCOUNT_SID', '')
+    TWILIO_AUTH_TOKEN = os.environ.get('TWILIO_AUTH_TOKEN', '')
+    TWILIO_FROM_NUMBER = os.environ.get('TWILIO_FROM_NUMBER', '')
+    TWILIO_MESSAGING_SERVICE_SID = os.environ.get('TWILIO_MESSAGING_SERVICE_SID', '')
+
+    # SendGrid 메일 설정
+    SENDGRID_API_KEY = os.environ.get('SENDGRID_API_KEY', '')
+    MAIL_DEFAULT_SENDER_EMAIL = os.environ.get('MAIL_DEFAULT_SENDER', 'noreply@broffice.kr')
+    MAIL_DEFAULT_SENDER_NAME = os.environ.get('MAIL_DEFAULT_SENDER_NAME', BRAND_NAME)
 
     # 세션 설정
     SESSION_TYPE = 'filesystem'
@@ -98,9 +97,6 @@ class ProductionConfig(Config):
     
     # 정적 파일 캐싱
     SEND_FILE_MAX_AGE_DEFAULT = 31536000  # 1년
-    
-    # 메일 디버그 비활성화
-    MAIL_DEBUG = False
 
 
 class TestingConfig(Config):
@@ -115,9 +111,6 @@ class TestingConfig(Config):
     
     # 테스트 DB (별도 DB 사용 권장)
     DB_NAME = os.environ.get('TEST_DB_NAME', 'Broffice_test')
-    
-    # 메일 발송 억제
-    MAIL_SUPPRESS_SEND = True
     
     # 세션 설정
     SESSION_COOKIE_SECURE = False

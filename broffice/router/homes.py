@@ -1,6 +1,8 @@
 import broffice.dbconns as conn
 from datetime import datetime
 from broffice.utils.auth_handler import login_required, admin_required
+from broffice.utils.sms_handler import send_test_sms
+from broffice.utils.mail_handler import send_test_mail
 from flask import Blueprint, request, session, render_template, redirect, url_for, flash, jsonify
 
 bp = Blueprint('homes', __name__)
@@ -271,6 +273,84 @@ def client_request_check():
     
     result = conn.execute_return('set_client_request_check', [request_id])
     return jsonify({'success': True, 'message': '확인 처리되었습니다.'})
+
+
+@bp.route("/test_camera")
+@admin_required
+def test_camera():
+    """사진찍기 테스트 페이지"""
+    return render_template('homes/test_camera.html')
+
+
+@bp.route("/test_sms")
+@admin_required
+def test_sms():
+    """문자발송 테스트 페이지 (user_id=1 전용)"""
+    if session.get('login_user', {}).get('user_id') != 1:
+        return redirect(url_for('homes.index'))
+    import os
+    twilio_config = {
+        'TWILIO_ACCOUNT_SID': bool(os.environ.get('TWILIO_ACCOUNT_SID', '')),
+        'TWILIO_AUTH_TOKEN': bool(os.environ.get('TWILIO_AUTH_TOKEN', '')),
+        'TWILIO_FROM_NUMBER': os.environ.get('TWILIO_FROM_NUMBER', ''),
+    }
+    return render_template('homes/test_sms.html', config=twilio_config)
+
+
+@bp.route("/test_sms_send", methods=['POST'])
+@admin_required
+def test_sms_send():
+    """문자발송 테스트 실행 (user_id=1 전용)"""
+    if session.get('login_user', {}).get('user_id') != 1:
+        return jsonify({'success': False, 'message': '권한이 없습니다.'})
+    to_mobile = request.form.get('to_mobile', '')
+    content = request.form.get('content', '[브로피스] 문자 발송 테스트입니다.')
+    
+    if not to_mobile:
+        return jsonify({'success': False, 'message': '수신번호를 입력해주세요.'})
+    
+    result = send_test_sms(to_mobile, content)
+    
+    if result['success']:
+        return jsonify({'success': True, 'message': f'발송 성공 (SID: {result["sid"]})', 'data': result})
+    else:
+        return jsonify({'success': False, 'message': f'발송 실패: {result["error_message"]}', 'data': result})
+
+
+@bp.route("/test_email")
+@admin_required
+def test_email():
+    """이메일 발송 테스트 페이지 (user_id=1 전용)"""
+    if session.get('login_user', {}).get('user_id') != 1:
+        return redirect(url_for('homes.index'))
+    import os
+    sendgrid_config = {
+        'SENDGRID_API_KEY': bool(os.environ.get('SENDGRID_API_KEY', '')),
+        'MAIL_DEFAULT_SENDER_EMAIL': os.environ.get('MAIL_DEFAULT_SENDER', 'noreply@broffice.kr'),
+        'MAIL_DEFAULT_SENDER_NAME': os.environ.get('MAIL_DEFAULT_SENDER_NAME', '브로피스'),
+    }
+    return render_template('homes/test_email.html', config=sendgrid_config)
+
+
+@bp.route("/test_email_send", methods=['POST'])
+@admin_required
+def test_email_send():
+    """이메일 발송 테스트 실행 (user_id=1 전용)"""
+    if session.get('login_user', {}).get('user_id') != 1:
+        return jsonify({'success': False, 'message': '권한이 없습니다.'})
+    to_email = request.form.get('to_email', '')
+    subject = request.form.get('subject', '[브로피스] 이메일 발송 테스트')
+    content = request.form.get('content', '테스트 이메일입니다.')
+
+    if not to_email:
+        return jsonify({'success': False, 'message': '수신 이메일을 입력해주세요.'})
+
+    result = send_test_mail(to_email, subject, content)
+
+    if result['success']:
+        return jsonify({'success': True, 'message': f'발송 성공 (status: {result["status_code"]})', 'data': result})
+    else:
+        return jsonify({'success': False, 'message': f'발송 실패: {result["message"]}', 'data': result})
 
 
 

@@ -728,7 +728,10 @@ BEGIN
         (SELECT COUNT(*) FROM task_area_logs tal 
          INNER JOIN task_areas ta2 ON tal.task_area_id = ta2.task_area_id
          WHERE tal.task_schedule_id = ts.task_schedule_id 
-           AND ta2.deleted_at IS NULL) AS completed_area_count
+           AND ta2.deleted_at IS NULL
+           AND ((tal.content IS NOT NULL AND tal.content != '')
+                OR EXISTS (SELECT 1 FROM task_area_photos tap WHERE tap.task_area_log_id = tal.task_area_log_id))
+        ) AS completed_area_count
     FROM task_schedules ts
     INNER JOIN tasks t ON ts.task_id = t.task_id
     INNER JOIN clients c ON t.client_id = c.client_id
@@ -739,6 +742,7 @@ BEGIN
           (ts.change_scheduled_at >= v_start_date AND ts.change_scheduled_at <= v_end_date)
       )
       AND t.deleted_at IS NULL
+      AND (ts.canceled_at IS NULL OR ts.canceled_at = 0)
     ORDER BY COALESCE(ts.change_scheduled_at, ts.scheduled_at) ASC, c.client_name ASC;
 END$$
 
@@ -777,6 +781,9 @@ BEGIN
         c.client_name,
         c.client_id,
         u.user_name AS worker_name,
+        u.user_mobile AS worker_mobile,
+        mgr.user_name AS manager_name,
+        mgr.user_mobile AS manager_mobile,
         CASE
             WHEN ts.canceled_at = 1 THEN 'canceled'
             WHEN ts.completed_at IS NOT NULL THEN 'completed'
@@ -788,6 +795,7 @@ BEGIN
     INNER JOIN tasks t ON ts.task_id = t.task_id
     INNER JOIN clients c ON t.client_id = c.client_id
     INNER JOIN users u ON ts.user_id = u.user_id
+    LEFT JOIN users mgr ON mgr.user_id = c.manage_user_id
     WHERE ts.task_schedule_id = p_task_schedule_id;
 END$$
 
@@ -813,7 +821,9 @@ BEGIN
         ta.min_photo_cnt,
         tal.task_area_log_id,
         tal.content AS log_content,
-        DATE_FORMAT(tal.created_at, '%Y-%m-%d %H:%i') AS log_created_at
+        DATE_FORMAT(tal.created_at, '%Y-%m-%d %H:%i') AS log_created_at,
+        (SELECT COUNT(*) FROM task_area_photos tap 
+         WHERE tap.task_area_log_id = tal.task_area_log_id) AS photo_count
     FROM task_areas ta
     INNER JOIN task_schedules ts ON ta.task_id = ts.task_id
     LEFT JOIN task_area_logs tal ON ta.task_area_id = tal.task_area_id 
@@ -822,6 +832,31 @@ BEGIN
       AND ta.use_yn = 1
       AND ta.deleted_at IS NULL
     ORDER BY ta.floor ASC, ta.area ASC;
+END$$
+
+
+-- =============================================
+-- Author:      김승균
+-- Create date: 2026-02-11
+-- Email:       bonoman77@gmail.com 
+-- Description: 스케줄별 전체 사진 조회 (작업 결과 확인용)
+-- =============================================
+
+DROP PROCEDURE IF EXISTS get_task_schedule_photos$$
+
+CREATE PROCEDURE get_task_schedule_photos(
+    IN p_task_schedule_id INT
+)
+BEGIN
+    SELECT 
+        tap.task_area_photo_id,
+        tap.photo_file_path,
+        CONCAT(ta.floor, '층 - ', ta.area) AS area_name
+    FROM task_area_photos tap
+    INNER JOIN task_area_logs tal ON tap.task_area_log_id = tal.task_area_log_id
+    INNER JOIN task_areas ta ON tal.task_area_id = ta.task_area_id
+    WHERE tal.task_schedule_id = p_task_schedule_id
+    ORDER BY ta.floor ASC, ta.area ASC, tap.task_area_photo_id ASC;
 END$$
 
 
@@ -1015,7 +1050,8 @@ CREATE PROCEDURE get_task_client_list(
     IN p_client_id INT,
     IN p_year_month VARCHAR(7),
     IN p_page INT,
-    IN p_page_size INT
+    IN p_page_size INT,
+    IN p_task_kind_id INT
 )
 BEGIN
     DECLARE v_start_date DATE;
@@ -1041,23 +1077,31 @@ BEGIN
         c.client_id,
         c.client_name,
         u.user_name AS worker_name,
+        u.user_mobile AS worker_mobile,
+        mgr.user_name AS manager_name,
+        mgr.user_mobile AS manager_mobile,
         ts.memo,
         (SELECT COUNT(*) FROM task_areas ta 
          WHERE ta.task_id = t.task_id AND ta.use_yn = 1 AND ta.deleted_at IS NULL) AS area_count,
         (SELECT COUNT(*) FROM task_area_logs tal 
          INNER JOIN task_areas ta2 ON tal.task_area_id = ta2.task_area_id
          WHERE tal.task_schedule_id = ts.task_schedule_id 
-           AND ta2.deleted_at IS NULL) AS completed_area_count
+           AND ta2.deleted_at IS NULL) AS completed_area_count,
+        (SELECT COUNT(*) FROM task_area_photos tap
+         INNER JOIN task_area_logs tal2 ON tap.task_area_log_id = tal2.task_area_log_id
+         WHERE tal2.task_schedule_id = ts.task_schedule_id) AS photo_count
     FROM task_schedules ts
     INNER JOIN tasks t ON ts.task_id = t.task_id
     INNER JOIN clients c ON t.client_id = c.client_id
     LEFT JOIN users u ON ts.user_id = u.user_id
+    LEFT JOIN users mgr ON mgr.user_id = c.manage_user_id
     WHERE ts.completed_at IS NOT NULL
       AND t.deleted_at IS NULL
       AND ts.canceled_at IS NULL
       AND (COALESCE(ts.change_scheduled_at, ts.scheduled_at) >= v_start_date 
            AND COALESCE(ts.change_scheduled_at, ts.scheduled_at) <= v_end_date)
       AND (p_client_id = 0 OR t.client_id = p_client_id)
+      AND (p_task_kind_id = 0 OR t.task_kind_id = p_task_kind_id)
     ORDER BY ts.completed_at DESC
     LIMIT v_offset, p_page_size;
 END$$
@@ -1067,7 +1111,8 @@ DROP PROCEDURE IF EXISTS get_task_client_list_count$$
 
 CREATE PROCEDURE get_task_client_list_count(
     IN p_client_id INT,
-    IN p_year_month VARCHAR(7)
+    IN p_year_month VARCHAR(7),
+    IN p_task_kind_id INT
 )
 BEGIN
     DECLARE v_start_date DATE;
@@ -1084,7 +1129,8 @@ BEGIN
       AND ts.canceled_at IS NULL
       AND (COALESCE(ts.change_scheduled_at, ts.scheduled_at) >= v_start_date 
            AND COALESCE(ts.change_scheduled_at, ts.scheduled_at) <= v_end_date)
-      AND (p_client_id = 0 OR t.client_id = p_client_id);
+      AND (p_client_id = 0 OR t.client_id = p_client_id)
+      AND (p_task_kind_id = 0 OR t.task_kind_id = p_task_kind_id);
 END$$
 
 

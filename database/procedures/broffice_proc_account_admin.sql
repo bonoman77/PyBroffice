@@ -681,13 +681,50 @@ BEGIN
         c.cleaning_yn,
         c.snack_yn,
         c.office_supplies_yn,
+        c.memo,
+        c.use_yn,
         c.manage_user_id,
+        CASE WHEN c.use_yn = 1 THEN 'active' ELSE 'inactive' END AS status,
         DATE_FORMAT(c.contracted_at, '%Y-%m-%d') AS contract_date,
+        DATE_FORMAT(c.created_at, '%Y-%m-%d') AS create_date,
         IFNULL(mu.user_name, '미정') AS manager_name,
-        IFNULL(mu.user_mobile, '') AS manager_mobile
+        IFNULL(mu.user_mobile, '') AS manager_mobile,
+        IFNULL(mu.user_email, '') AS manager_email
     FROM clients c
     LEFT JOIN users mu ON c.manage_user_id = mu.user_id AND mu.deleted_at IS NULL
     WHERE c.client_id = p_client_id
       AND c.deleted_at IS NULL
     LIMIT 1;
+END$$
+
+
+-- =============================================
+-- Author:      김승균
+-- Create date: 2026-02-13
+-- Email:       bonoman77@gmail.com 
+-- Description: 업체에 연결된 담당자(users) 목록 조회
+-- =============================================
+
+DROP PROCEDURE IF EXISTS get_client_users$$
+
+CREATE PROCEDURE get_client_users(
+    IN p_client_id INT
+)
+BEGIN
+    SELECT 
+        u.user_id,
+        u.user_name,
+        u.user_email,
+        u.user_mobile,
+        u.use_yn,
+        CASE 
+            WHEN u.use_yn = 1 AND u.admin_authed_at IS NOT NULL THEN 'active'
+            WHEN u.use_yn = 1 AND u.admin_authed_at IS NULL THEN 'pending'
+            ELSE 'inactive'
+        END AS status,
+        DATE_FORMAT(u.created_at, '%Y-%m-%d') AS create_date
+    FROM users u
+    WHERE u.client_id = p_client_id
+      AND u.deleted_at IS NULL
+    ORDER BY u.user_name;
 END$$

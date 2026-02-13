@@ -1,0 +1,171 @@
+{% extends "layout.html" %}
+{% block title %}문자 발송 내역{% endblock %}
+
+{% block content %}
+<div class="page-header">
+  <div>
+    <h1 class="page-title">문자 발송 내역</h1>
+    <nav>
+      <ol class="breadcrumb">
+        <li class="breadcrumb-item"><a href="/">홈</a></li>
+        <li class="breadcrumb-item"><a href="{{ url_for('reports.dashboard') }}">리포트</a></li>
+        <li class="breadcrumb-item active">문자 발송 내역</li>
+      </ol>
+    </nav>
+  </div>
+  <div class="d-flex align-items-center gap-2">
+    <select class="form-select form-select-sm" style="width: auto;" onchange="changeStatus(this.value)">
+      <option value="" {{ 'selected' if send_status == '' else '' }}>전체 상태</option>
+      <option value="scheduled" {{ 'selected' if send_status == 'scheduled' else '' }}>예약됨</option>
+      <option value="sent" {{ 'selected' if send_status == 'sent' else '' }}>발송완료</option>
+      <option value="pending" {{ 'selected' if send_status == 'pending' else '' }}>대기</option>
+      <option value="error" {{ 'selected' if send_status == 'error' else '' }}>오류</option>
+    </select>
+    <button class="btn btn-sm btn-outline-secondary" onclick="changeMonth(-1)" title="이전 달">
+      <i class="ph ph-caret-left"></i>
+    </button>
+    <span class="fw-bold fs-5 px-2">{{ year_month }}</span>
+    <button class="btn btn-sm btn-outline-secondary" onclick="changeMonth(1)" title="다음 달">
+      <i class="ph ph-caret-right"></i>
+    </button>
+  </div>
+</div>
+
+<!-- 상태별 통계 카드 -->
+<div class="dashboard-grid dashboard-grid-4">
+  <div class="card widget-stat">
+    <div class="widget-stat-header">
+      <div>
+        <div class="widget-stat-value">{{ total_count }}</div>
+        <div class="widget-stat-label">전체</div>
+      </div>
+      <div class="widget-stat-icon primary">
+        <i class="ph-duotone ph-chat-circle-dots"></i>
+      </div>
+    </div>
+  </div>
+  <div class="card widget-stat">
+    <div class="widget-stat-header">
+      <div>
+        <div class="widget-stat-value">{{ scheduled_count }}</div>
+        <div class="widget-stat-label">예약됨</div>
+      </div>
+      <div class="widget-stat-icon info">
+        <i class="ph-duotone ph-clock"></i>
+      </div>
+    </div>
+  </div>
+  <div class="card widget-stat">
+    <div class="widget-stat-header">
+      <div>
+        <div class="widget-stat-value">{{ sent_count }}</div>
+        <div class="widget-stat-label">발송완료</div>
+      </div>
+      <div class="widget-stat-icon success">
+        <i class="ph-duotone ph-check-circle"></i>
+      </div>
+    </div>
+  </div>
+  <div class="card widget-stat">
+    <div class="widget-stat-header">
+      <div>
+        <div class="widget-stat-value">{{ pending_count + error_count }}</div>
+        <div class="widget-stat-label">대기/오류</div>
+      </div>
+      <div class="widget-stat-icon warning">
+        <i class="ph-duotone ph-warning"></i>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- 발송 내역 테이블 -->
+<div class="card">
+  <div class="card-header">
+    <h5 class="card-title">발송 내역</h5>
+    <div class="card-actions">
+      <span class="badge badge-soft-primary">{{ logs|length }}건</span>
+    </div>
+  </div>
+  <div class="card-body p-0">
+    <div class="table-responsive">
+      <table class="table">
+        <thead>
+          <tr>
+            <th style="width:50px;">#</th>
+            <th>수신자</th>
+            <th>수신번호</th>
+            <th>업체</th>
+            <th>종류</th>
+            <th>예약시간</th>
+            <th>발송시간</th>
+            <th style="width:80px;">상태</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for log in logs %}
+          <tr>
+            <td class="text-muted small">{{ log.task_sns_log_id }}</td>
+            <td class="fw-medium">{{ log.recipient_name }}</td>
+            <td class="small text-muted">{{ log.to_mobile }}</td>
+            <td>{{ log.client_name or '-' }}</td>
+            <td>
+              {% if log.task_kind_name == '청소' %}
+              <span class="badge badge-soft-success">청소</span>
+              {% elif log.task_kind_name == '간식' %}
+              <span class="badge badge-soft-warning">간식</span>
+              {% elif log.task_kind_name == '비품' %}
+              <span class="badge badge-soft-danger">비품</span>
+              {% else %}
+              <span class="badge badge-soft-secondary">{{ log.task_kind_name or '-' }}</span>
+              {% endif %}
+            </td>
+            <td class="small">{{ log.scheduled_send_at }}</td>
+            <td class="small">{{ log.sent_at or '-' }}</td>
+            <td>
+              {% if log.send_status == 'scheduled' %}
+              <span class="badge badge-soft-info">예약됨</span>
+              {% elif log.send_status == 'sent' %}
+              <span class="badge badge-soft-success">발송완료</span>
+              {% elif log.send_status == 'pending' %}
+              <span class="badge badge-soft-warning">대기</span>
+              {% else %}
+              <span class="badge badge-soft-danger" title="{{ log.twilio_error_message or '' }}">오류</span>
+              {% endif %}
+            </td>
+          </tr>
+          {% endfor %}
+          {% if not logs %}
+          <tr>
+            <td colspan="8" class="text-center text-muted py-5">
+              <i class="ph-duotone ph-chat-circle-dots fs-1 d-block mb-2 opacity-25"></i>
+              <p class="mb-0">발송 내역이 없습니다.</p>
+            </td>
+          </tr>
+          {% endif %}
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+function changeMonth(offset) {
+    const current = '{{ year_month }}';
+    const [year, month] = current.split('-').map(Number);
+    const d = new Date(year, month - 1 + offset, 1);
+    const ym = d.getFullYear() + '-' + String(d.getMonth() + 1).padStart(2, '0');
+    let url = '/reports/sns_logs?year_month=' + ym;
+    const status = '{{ send_status }}';
+    if (status) url += '&send_status=' + status;
+    window.location.href = url;
+}
+function changeStatus(val) {
+    let url = '/reports/sns_logs?year_month={{ year_month }}';
+    if (val) url += '&send_status=' + val;
+    window.location.href = url;
+}
+</script>
+{% endblock %}

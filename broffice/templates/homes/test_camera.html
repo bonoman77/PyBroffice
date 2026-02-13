@@ -1,0 +1,222 @@
+{% extends "layout.html" %}
+{% block title %}사진찍기 테스트{% endblock %}
+
+{% block content %}
+<div class="page-header">
+  <div>
+    <h1 class="page-title">사진찍기 테스트</h1>
+    <nav>
+      <ol class="breadcrumb">
+        <li class="breadcrumb-item"><a href="/">홈</a></li>
+        <li class="breadcrumb-item active">사진찍기 테스트</li>
+      </ol>
+    </nav>
+  </div>
+</div>
+
+<div class="row g-4">
+  <!-- 카메라 연속 촬영 -->
+  <div class="col-lg-6">
+    <div class="card">
+      <div class="card-header">
+        <h5 class="card-title"><i class="ph-duotone ph-camera me-1"></i>카메라 연속 촬영</h5>
+        <p class="card-subtitle">사진을 찍으면 아래에 누적됩니다. 계속 추가 촬영 가능합니다.</p>
+      </div>
+      <div class="card-body">
+        <input type="file" id="cameraInput" accept="image/*" capture="environment" hidden>
+        <button type="button" class="btn btn-primary w-100 mb-3" onclick="document.getElementById('cameraInput').click()">
+          <i class="ph ph-camera me-1"></i>카메라로 촬영하기
+        </button>
+        <div class="d-flex align-items-center justify-content-between mb-2" id="cameraHeader" style="display:none!important;">
+          <span class="fw-semibold small"><i class="ph ph-images me-1"></i>촬영된 사진 <span id="cameraCnt" class="badge bg-primary ms-1">0</span></span>
+          <button type="button" class="btn btn-sm btn-outline-danger" onclick="clearCameraPhotos()">
+            <i class="ph ph-trash me-1"></i>전체 삭제
+          </button>
+        </div>
+        <div id="cameraPreview" class="d-flex flex-wrap gap-2"></div>
+        <div class="form-text mt-2">
+          <i class="ph ph-info me-1"></i>모바일: 카메라가 바로 실행됩니다. 촬영 후 자동으로 추가되며, 버튼을 다시 눌러 추가 촬영할 수 있습니다.<br>
+          <i class="ph ph-info me-1"></i>PC: 파일 선택 대화상자가 열립니다.
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 파일 선택 (갤러리) -->
+  <div class="col-lg-6">
+    <div class="card">
+      <div class="card-header">
+        <h5 class="card-title"><i class="ph-duotone ph-image-square me-1"></i>갤러리에서 선택</h5>
+        <p class="card-subtitle">갤러리에서 사진을 여러 장 선택합니다</p>
+      </div>
+      <div class="card-body">
+        <div class="mb-3">
+          <label class="form-label fw-semibold">사진 선택 (복수 가능)</label>
+          <input type="file" class="form-control" id="fileInput" accept="image/*" multiple>
+        </div>
+        <div id="filePreview" class="d-flex flex-wrap gap-2 mt-3"></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 드래그 앤 드롭 / 클릭 촬영 -->
+  <div class="col-12">
+    <div class="card">
+      <div class="card-header d-flex align-items-center justify-content-between">
+        <div>
+          <h5 class="card-title mb-0"><i class="ph-duotone ph-upload-simple me-1"></i>드래그 앤 드롭 / 클릭</h5>
+        </div>
+        <div class="d-flex gap-2">
+          <div class="form-check form-switch mb-0">
+            <input class="form-check-input" type="checkbox" id="dropCameraMode">
+            <label class="form-check-label small" for="dropCameraMode">클릭 시 카메라 실행</label>
+          </div>
+        </div>
+      </div>
+      <div class="card-body">
+        <div class="upload-dropzone upload-dropzone-image" id="dropZone">
+          <div class="upload-dropzone-content">
+            <div class="upload-dropzone-icon">
+              <i class="bi bi-image"></i>
+            </div>
+            <h6 class="upload-dropzone-title mb-1">사진을 드래그하거나 클릭하세요</h6>
+            <p class="upload-dropzone-text small mb-0">PNG, JPG, GIF 파일 (클릭 시 카메라/갤러리 선택)</p>
+          </div>
+          <input type="file" id="dropInputGallery" accept="image/*" multiple hidden>
+          <input type="file" id="dropInputCamera" accept="image/*" capture="environment" hidden>
+        </div>
+        <div class="d-flex align-items-center justify-content-between mt-3 mb-2" id="dropHeader" style="display:none!important;">
+          <span class="fw-semibold small"><i class="ph ph-images me-1"></i>추가된 사진 <span id="dropCnt" class="badge bg-primary ms-1">0</span></span>
+          <button type="button" class="btn btn-sm btn-outline-danger" onclick="clearDropPhotos()">
+            <i class="ph ph-trash me-1"></i>전체 삭제
+          </button>
+        </div>
+        <div id="dropPreview" class="d-flex flex-wrap gap-2"></div>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+// ===== 카메라 연속 촬영 =====
+let cameraPhotos = [];
+
+document.getElementById('cameraInput').addEventListener('change', function(e) {
+    const file = e.target.files[0];
+    if (!file) return;
+    cameraPhotos.push(file);
+    addPhotoPreview(file, 'cameraPreview');
+    updateCameraCount();
+    // input 초기화하여 같은 파일도 다시 선택 가능
+    this.value = '';
+});
+
+function updateCameraCount() {
+    const cnt = document.querySelectorAll('#cameraPreview .photo-thumb').length;
+    document.getElementById('cameraCnt').textContent = cnt;
+    document.getElementById('cameraHeader').style.display = cnt > 0 ? '' : 'none';
+    // !important 제거
+    document.getElementById('cameraHeader').style.setProperty('display', cnt > 0 ? 'flex' : 'none', 'important');
+}
+
+function clearCameraPhotos() {
+    cameraPhotos = [];
+    document.getElementById('cameraPreview').innerHTML = '';
+    updateCameraCount();
+}
+
+// ===== 갤러리 파일 선택 =====
+document.getElementById('fileInput').addEventListener('change', function(e) {
+    const preview = document.getElementById('filePreview');
+    preview.innerHTML = '';
+    Array.from(e.target.files).forEach(file => addPhotoPreview(file, 'filePreview'));
+});
+
+// ===== 드래그 앤 드롭 / 클릭 =====
+let dropPhotos = [];
+const dropZone = document.getElementById('dropZone');
+const dropInputGallery = document.getElementById('dropInputGallery');
+const dropInputCamera = document.getElementById('dropInputCamera');
+const dropCameraMode = document.getElementById('dropCameraMode');
+
+dropZone.addEventListener('click', () => {
+    if (dropCameraMode.checked) {
+        dropInputCamera.click();
+    } else {
+        dropInputGallery.click();
+    }
+});
+
+dropInputGallery.addEventListener('change', function() {
+    Array.from(this.files).forEach(file => {
+        dropPhotos.push(file);
+        addPhotoPreview(file, 'dropPreview');
+    });
+    updateDropCount();
+    this.value = '';
+});
+
+dropInputCamera.addEventListener('change', function() {
+    const file = this.files[0];
+    if (!file) return;
+    dropPhotos.push(file);
+    addPhotoPreview(file, 'dropPreview');
+    updateDropCount();
+    this.value = '';
+});
+
+dropZone.addEventListener('dragover', (e) => { e.preventDefault(); dropZone.classList.add('dragover'); });
+dropZone.addEventListener('dragleave', () => dropZone.classList.remove('dragover'));
+dropZone.addEventListener('drop', (e) => {
+    e.preventDefault();
+    dropZone.classList.remove('dragover');
+    Array.from(e.dataTransfer.files).forEach(file => {
+        if (file.type.startsWith('image/')) {
+            dropPhotos.push(file);
+            addPhotoPreview(file, 'dropPreview');
+        }
+    });
+    updateDropCount();
+});
+
+function updateDropCount() {
+    const cnt = document.querySelectorAll('#dropPreview .photo-thumb').length;
+    document.getElementById('dropCnt').textContent = cnt;
+    document.getElementById('dropHeader').style.setProperty('display', cnt > 0 ? 'flex' : 'none', 'important');
+}
+
+function clearDropPhotos() {
+    dropPhotos = [];
+    document.getElementById('dropPreview').innerHTML = '';
+    updateDropCount();
+}
+
+// ===== 공통: 미리보기 추가 =====
+function addPhotoPreview(file, containerId) {
+    const reader = new FileReader();
+    reader.onload = function(ev) {
+        const div = document.createElement('div');
+        div.className = 'photo-thumb position-relative';
+        div.innerHTML = `
+            <img src="${ev.target.result}" class="rounded border" 
+                 style="width: 90px; height: 90px; object-fit: cover;">
+            <div class="small text-muted text-center mt-1" style="max-width:90px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">
+                ${(file.size / 1024).toFixed(0)}KB
+            </div>
+            <button type="button" class="btn btn-sm btn-danger position-absolute top-0 end-0 p-0"
+                    style="width:20px;height:20px;font-size:10px;line-height:1;"
+                    onclick="this.closest('.photo-thumb').remove(); updateCameraCount(); updateDropCount();">
+                <i class="ph ph-x"></i>
+            </button>
+        `;
+        document.getElementById(containerId).appendChild(div);
+        // 카운터 업데이트
+        if (containerId === 'cameraPreview') updateCameraCount();
+        if (containerId === 'dropPreview') updateDropCount();
+    };
+    reader.readAsDataURL(file);
+}
+</script>
+{% endblock %}

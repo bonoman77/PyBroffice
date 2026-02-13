@@ -1,0 +1,158 @@
+{% extends "layout.html" %}
+{% block title %}이메일 발송 테스트{% endblock %}
+
+{% block content %}
+<div class="page-header">
+  <div>
+    <h1 class="page-title">이메일 발송 테스트</h1>
+    <nav>
+      <ol class="breadcrumb">
+        <li class="breadcrumb-item"><a href="/">홈</a></li>
+        <li class="breadcrumb-item active">이메일 발송 테스트</li>
+      </ol>
+    </nav>
+  </div>
+</div>
+
+<div class="row g-4">
+  <div class="col-lg-6">
+    <div class="card">
+      <div class="card-header">
+        <h5 class="card-title">SendGrid 이메일 발송 테스트</h5>
+        <p class="card-subtitle">SendGrid API를 통한 이메일 발송 테스트</p>
+      </div>
+      <div class="card-body">
+        <div class="mb-3">
+          <label for="toEmail" class="form-label fw-semibold">수신 이메일</label>
+          <input type="email" class="form-control" id="toEmail" placeholder="example@email.com"
+                 value="{{ session.get('login_user', {}).get('user_email', '') }}">
+        </div>
+        <div class="mb-3">
+          <label for="emailSubject" class="form-label fw-semibold">제목</label>
+          <input type="text" class="form-control" id="emailSubject" value="[브로피스] 이메일 발송 테스트">
+        </div>
+        <div class="mb-3">
+          <label for="emailContent" class="form-label fw-semibold">내용</label>
+          <textarea class="form-control" id="emailContent" rows="4">안녕하세요, 브로피스 이메일 발송 테스트입니다.
+이 메일이 정상적으로 수신되었다면 SendGrid 연동이 완료된 것입니다.</textarea>
+        </div>
+        <div class="d-flex gap-2">
+          <button type="button" class="btn btn-primary" id="btnSend" onclick="sendTestEmail()">
+            <i class="ph ph-envelope me-1"></i>발송 테스트
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="col-lg-6">
+    <div class="card">
+      <div class="card-header">
+        <h5 class="card-title">발송 결과</h5>
+      </div>
+      <div class="card-body">
+        <div id="resultArea" class="text-center text-muted py-5">
+          <i class="ph-duotone ph-envelope fs-1 d-block mb-2 opacity-25"></i>
+          <p class="mb-0">발송 테스트를 실행해주세요.</p>
+        </div>
+      </div>
+    </div>
+
+    <div class="card mt-3">
+      <div class="card-header">
+        <h5 class="card-title">SendGrid 설정 상태</h5>
+      </div>
+      <div class="card-body">
+        <table class="table table-sm mb-0">
+          <tbody>
+            <tr>
+              <td class="fw-medium">SENDGRID_API_KEY</td>
+              <td>
+                {% if config.get('SENDGRID_API_KEY') %}
+                <span class="badge badge-soft-success">설정됨</span>
+                {% else %}
+                <span class="badge badge-soft-danger">미설정</span>
+                {% endif %}
+              </td>
+            </tr>
+            <tr>
+              <td class="fw-medium">발신 이메일</td>
+              <td>
+                <span class="badge badge-soft-info">{{ config.get('MAIL_DEFAULT_SENDER_EMAIL', '') }}</span>
+              </td>
+            </tr>
+            <tr>
+              <td class="fw-medium">발신자명</td>
+              <td>
+                <span class="badge badge-soft-info">{{ config.get('MAIL_DEFAULT_SENDER_NAME', '') }}</span>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+        <div class="mt-3 small text-muted">
+          <i class="ph ph-info me-1"></i>.env 파일에 SENDGRID_API_KEY를 설정하세요.<br>
+          <code>pip install sendgrid</code> 패키지도 필요합니다.
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+function sendTestEmail() {
+    const toEmail = document.getElementById('toEmail').value.trim();
+    const subject = document.getElementById('emailSubject').value.trim();
+    const content = document.getElementById('emailContent').value.trim();
+    const btn = document.getElementById('btnSend');
+    const resultArea = document.getElementById('resultArea');
+
+    if (!toEmail) { showToast('warning', '수신 이메일을 입력해주세요.'); return; }
+    if (!subject) { showToast('warning', '제목을 입력해주세요.'); return; }
+
+    btn.disabled = true;
+    btn.innerHTML = '<span class="spinner-border spinner-border-sm me-1"></span>발송 중...';
+    resultArea.innerHTML = '<div class="text-center py-4"><span class="spinner-border text-primary"></span><p class="mt-2 mb-0">발송 중...</p></div>';
+
+    const formData = new FormData();
+    formData.append('to_email', toEmail);
+    formData.append('subject', subject);
+    formData.append('content', content);
+
+    fetch('/test_email_send', { method: 'POST', body: formData })
+    .then(r => r.json())
+    .then(data => {
+        btn.disabled = false;
+        btn.innerHTML = '<i class="ph ph-envelope me-1"></i>발송 테스트';
+
+        if (data.success) {
+            resultArea.innerHTML = `
+                <div class="alert alert-success mb-3">
+                    <i class="ph ph-check-circle me-1"></i>${data.message}
+                </div>
+                <table class="table table-sm">
+                    <tr><td class="fw-medium">Status Code</td><td>${data.data.status_code || '-'}</td></tr>
+                    <tr><td class="fw-medium">Message</td><td>${data.data.message || '-'}</td></tr>
+                </table>
+            `;
+        } else {
+            resultArea.innerHTML = `
+                <div class="alert alert-danger mb-3">
+                    <i class="ph ph-warning me-1"></i>${data.message}
+                </div>
+                <table class="table table-sm">
+                    <tr><td class="fw-medium">Status Code</td><td>${data.data ? data.data.status_code : '-'}</td></tr>
+                    <tr><td class="fw-medium">Message</td><td>${data.data ? data.data.message : '-'}</td></tr>
+                </table>
+            `;
+        }
+    })
+    .catch(() => {
+        btn.disabled = false;
+        btn.innerHTML = '<i class="ph ph-envelope me-1"></i>발송 테스트';
+        resultArea.innerHTML = '<div class="alert alert-danger"><i class="ph ph-warning me-1"></i>요청 중 오류가 발생했습니다.</div>';
+    });
+}
+</script>
+{% endblock %}

@@ -1,0 +1,405 @@
+{% extends "layout.html" %}
+{% block title %}월간 {{ kind_info.name }} 리포트{% endblock %}
+
+{% block content %}
+<div class="page-header">
+  <div>
+    <h1 class="page-title">월간 {{ kind_info.name }} 리포트</h1>
+    <nav>
+      <ol class="breadcrumb">
+        <li class="breadcrumb-item"><a href="/">홈</a></li>
+        <li class="breadcrumb-item"><a href="{{ url_for('reports.dashboard') }}">리포트</a></li>
+        <li class="breadcrumb-item active">월간 {{ kind_info.name }}</li>
+      </ol>
+    </nav>
+  </div>
+  <div class="d-flex align-items-center gap-2">
+    <select class="form-select form-select-sm" style="width: auto;" onchange="changeManager(this.value)">
+      <option value="0">전체 관리직원</option>
+      {% for m in managers %}
+      <option value="{{ m.user_id }}" {{ 'selected' if manage_user_id == m.user_id else '' }}>{{ m.user_name }}</option>
+      {% endfor %}
+    </select>
+    <button class="btn btn-sm btn-outline-secondary" onclick="changeMonth(-1)" title="이전 달">
+      <i class="ph ph-caret-left"></i>
+    </button>
+    <span class="fw-bold fs-5 px-2">{{ year_month }}</span>
+    <button class="btn btn-sm btn-outline-secondary" onclick="changeMonth(1)" title="다음 달">
+      <i class="ph ph-caret-right"></i>
+    </button>
+  </div>
+</div>
+
+<!-- 종합 통계 카드 -->
+<div class="dashboard-grid dashboard-grid-4">
+  {% if task_kind_id == 0 %}
+  <div class="card widget-stat">
+    <div class="widget-stat-header">
+      <div>
+        <div class="widget-stat-value">{{ totals.total }}</div>
+        <div class="widget-stat-label">전체 작업</div>
+      </div>
+      <div class="widget-stat-icon primary">
+        <i class="bi bi-list-check"></i>
+      </div>
+    </div>
+    <div class="widget-stat-change {% if totals.rate >= 80 %}positive{% elif totals.rate >= 50 %}neutral{% else %}negative{% endif %}">
+      완료 {{ totals.completed }}건 · 완료율 {{ totals.rate }}%
+    </div>
+  </div>
+  {% for row in monthly_summary %}
+  <div class="card widget-stat">
+    <div class="widget-stat-header">
+      <div>
+        <div class="widget-stat-value">{{ row.total_count }}</div>
+        <div class="widget-stat-label">{{ row.task_kind_name }}</div>
+      </div>
+      <div class="widget-stat-icon {% if row.task_kind_id == 4 %}success{% elif row.task_kind_id == 5 %}warning{% else %}danger{% endif %}">
+        <i class="ph-duotone {% if row.task_kind_id == 4 %}ph-broom{% elif row.task_kind_id == 5 %}ph-hamburger{% else %}ph-package{% endif %}"></i>
+      </div>
+    </div>
+    <div class="widget-stat-change {% if (row.completion_rate or 0) >= 80 %}positive{% elif (row.completion_rate or 0) >= 50 %}neutral{% else %}negative{% endif %}">
+      완료 {{ row.completed_count }}건 · 완료율 {{ row.completion_rate or 0 }}%
+    </div>
+  </div>
+  {% endfor %}
+  {% else %}
+  <div class="card widget-stat">
+    <div class="widget-stat-header">
+      <div>
+        <div class="widget-stat-value">{{ totals.total }}</div>
+        <div class="widget-stat-label">전체 작업</div>
+      </div>
+      <div class="widget-stat-icon {{ kind_info.color }}">
+        <i class="bi {{ kind_info.icon }}"></i>
+      </div>
+    </div>
+  </div>
+  <div class="card widget-stat">
+    <div class="widget-stat-header">
+      <div>
+        <div class="widget-stat-value">{{ totals.completed }}</div>
+        <div class="widget-stat-label">완료</div>
+      </div>
+      <div class="widget-stat-icon success">
+        <i class="bi bi-check-circle"></i>
+      </div>
+    </div>
+  </div>
+  <div class="card widget-stat">
+    <div class="widget-stat-header">
+      <div>
+        <div class="widget-stat-value">{{ totals.pending }}</div>
+        <div class="widget-stat-label">대기</div>
+      </div>
+      <div class="widget-stat-icon info">
+        <i class="bi bi-clock"></i>
+      </div>
+    </div>
+  </div>
+  <div class="card widget-stat">
+    <div class="widget-stat-header">
+      <div>
+        <div class="widget-stat-value">{{ totals.rate }}%</div>
+        <div class="widget-stat-label">완료율</div>
+      </div>
+      <div class="widget-stat-icon warning">
+        <i class="bi bi-graph-up-arrow"></i>
+      </div>
+    </div>
+  </div>
+  {% endif %}
+</div>
+
+<!-- 차트 영역 -->
+{% if task_kind_id == 0 %}
+<!-- 월간 전체: 업무종류별 도넛만 (일별 추이 없음) -->
+<div class="row g-4 mb-4">
+  <div class="col-12 col-xl-5">
+    <div class="card h-100">
+      <div class="card-header">
+        <h5 class="card-title">업무종류별 현황</h5>
+      </div>
+      <div class="card-body">
+        <div id="chartKind" style="height: 220px;"></div>
+        <div class="mt-4">
+          {% for row in monthly_summary %}
+          <div class="traffic-source-item">
+            <div class="traffic-source-icon" style="background: {% if row.task_kind_id == 4 %}color-mix(in srgb, var(--success-color), transparent 85%); color: var(--success-color){% elif row.task_kind_id == 5 %}color-mix(in srgb, var(--warning-color), transparent 85%); color: var(--warning-color){% else %}color-mix(in srgb, var(--danger-color), transparent 85%); color: var(--danger-color){% endif %};">
+              <i class="ph-duotone {% if row.task_kind_id == 4 %}ph-broom{% elif row.task_kind_id == 5 %}ph-hamburger{% else %}ph-package{% endif %}"></i>
+            </div>
+            <div class="traffic-source-info">
+              <div class="traffic-source-name">{{ row.task_kind_name }}</div>
+              <div class="traffic-source-value">{{ row.completed_count }}/{{ row.total_count }}건 완료</div>
+            </div>
+            <span class="traffic-source-percent {% if (row.completion_rate or 0) >= 80 %}text-success{% elif (row.completion_rate or 0) >= 50 %}text-warning{% else %}text-danger{% endif %}">{{ row.completion_rate or 0 }}%</span>
+          </div>
+          {% endfor %}
+          {% if not monthly_summary %}
+          <div class="text-center text-muted py-3"><p class="mb-0 small">데이터가 없습니다.</p></div>
+          {% endif %}
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="col-12 col-xl-7">
+    <div class="card h-100">
+      <div class="card-header">
+        <h5 class="card-title">종류별 완료 현황</h5>
+      </div>
+      <div class="card-body">
+        <div id="chartKindBar" style="height: 320px;"></div>
+      </div>
+    </div>
+  </div>
+</div>
+{% else %}
+<!-- 개별 종류: 일별 작업 추이 (Time Tracking 스타일 bar 차트) -->
+<div class="row g-4 mb-4">
+  <div class="col-12">
+    <div class="card">
+      <div class="card-header d-flex justify-content-between align-items-center">
+        <h5 class="card-title mb-0">일별 작업 추이</h5>
+      </div>
+      <div class="card-body">
+        <div id="chartDaily" style="height: 300px;"></div>
+      </div>
+    </div>
+  </div>
+</div>
+{% endif %}
+
+<!-- 업체별 + 직원별 (동일 너비) -->
+<div class="row g-4">
+  <!-- 업체별 -->
+  <div class="col-lg-6">
+    <div class="card h-100">
+      <div class="card-header">
+        <h5 class="card-title">업체별 작업 현황</h5>
+        <div class="card-actions">
+          <span class="badge badge-soft-primary">{{ client_stats|length }}개 업체</span>
+        </div>
+      </div>
+      <div class="card-body p-0">
+        <div class="table-responsive">
+          <table class="table">
+            <thead>
+              <tr>
+                <th>업체명</th>
+                <th class="text-center" style="width:55px;">전체</th>
+                <th class="text-center" style="width:55px;">완료</th>
+                <th class="text-center" style="width:70px;">완료율</th>
+                {% if task_kind_id == 0 %}
+                <th style="width:100px;">분포</th>
+                {% endif %}
+              </tr>
+            </thead>
+            <tbody>
+              {% for c in client_stats %}
+              <tr>
+                <td><div class="fw-medium">{{ c.client_name }}</div></td>
+                <td class="text-center">{{ c.total_count }}</td>
+                <td class="text-center text-success fw-medium">{{ c.completed_count }}</td>
+                <td class="text-center">
+                  <span class="badge {% if c.completion_rate >= 80 %}badge-soft-success{% elif c.completion_rate >= 50 %}badge-soft-warning{% else %}badge-soft-danger{% endif %}">
+                    {{ c.completion_rate or 0 }}%
+                  </span>
+                </td>
+                {% if task_kind_id == 0 %}
+                <td>
+                  <div class="d-flex gap-1">
+                    {% if c.cleaning_count %}<span class="badge badge-soft-primary" title="청소">{{ c.cleaning_count }}</span>{% endif %}
+                    {% if c.snack_count %}<span class="badge badge-soft-warning" title="간식">{{ c.snack_count }}</span>{% endif %}
+                    {% if c.supplies_count %}<span class="badge badge-soft-danger" title="비품">{{ c.supplies_count }}</span>{% endif %}
+                  </div>
+                </td>
+                {% endif %}
+              </tr>
+              {% endfor %}
+              {% if not client_stats %}
+              <tr><td colspan="{{ 5 if task_kind_id == 0 else 4 }}" class="text-center text-muted py-4">데이터가 없습니다.</td></tr>
+              {% endif %}
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 직원별 -->
+  <div class="col-lg-6">
+    <div class="card h-100">
+      <div class="card-header">
+        <h5 class="card-title">직원별 작업 현황</h5>
+        <div class="card-actions">
+          <span class="badge badge-soft-primary">{{ worker_stats|length }}명</span>
+        </div>
+      </div>
+      <div class="card-body p-0">
+        <div class="table-responsive">
+          <table class="table">
+            <thead>
+              <tr>
+                <th>직원명</th>
+                <th class="text-center" style="width:55px;">전체</th>
+                <th class="text-center" style="width:55px;">완료</th>
+                <th class="text-center" style="width:70px;">완료율</th>
+                {% if task_kind_id == 0 %}
+                <th style="width:100px;">분포</th>
+                {% endif %}
+              </tr>
+            </thead>
+            <tbody>
+              {% for w in worker_stats %}
+              <tr>
+                <td><div class="fw-medium">{{ w.user_name or '미배정' }}</div></td>
+                <td class="text-center">{{ w.total_count }}</td>
+                <td class="text-center text-success fw-medium">{{ w.completed_count }}</td>
+                <td class="text-center">
+                  <span class="badge {% if w.completion_rate >= 80 %}badge-soft-success{% elif w.completion_rate >= 50 %}badge-soft-warning{% else %}badge-soft-danger{% endif %}">
+                    {{ w.completion_rate or 0 }}%
+                  </span>
+                </td>
+                {% if task_kind_id == 0 %}
+                <td>
+                  <div class="d-flex gap-1">
+                    {% if w.cleaning_count %}<span class="badge badge-soft-primary" title="청소">{{ w.cleaning_count }}</span>{% endif %}
+                    {% if w.snack_count %}<span class="badge badge-soft-warning" title="간식">{{ w.snack_count }}</span>{% endif %}
+                    {% if w.supplies_count %}<span class="badge badge-soft-danger" title="비품">{{ w.supplies_count }}</span>{% endif %}
+                  </div>
+                </td>
+                {% endif %}
+              </tr>
+              {% endfor %}
+              {% if not worker_stats %}
+              <tr><td colspan="{{ 5 if task_kind_id == 0 else 4 }}" class="text-center text-muted py-4">데이터가 없습니다.</td></tr>
+              {% endif %}
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+{% endblock %}
+
+{% block extra_js %}
+<script>
+function buildUrl(yearMonth, manageUserId) {
+    const tkid = {{ task_kind_id }};
+    let url = '/reports/dashboard' + (tkid ? '/' + tkid : '');
+    const parts = [];
+    if (yearMonth) parts.push('year_month=' + yearMonth);
+    if (manageUserId && manageUserId != 0) parts.push('manage_user_id=' + manageUserId);
+    if (parts.length) url += '?' + parts.join('&');
+    return url;
+}
+function changeMonth(offset) {
+    const current = '{{ year_month }}';
+    const [year, month] = current.split('-').map(Number);
+    const d = new Date(year, month - 1 + offset, 1);
+    const ym = d.getFullYear() + '-' + String(d.getMonth() + 1).padStart(2, '0');
+    window.location.href = buildUrl(ym, {{ manage_user_id }});
+}
+function changeManager(val) {
+    window.location.href = buildUrl('{{ year_month }}', val);
+}
+
+document.addEventListener('DOMContentLoaded', function() {
+    const style = getComputedStyle(document.documentElement);
+    const accentColor = style.getPropertyValue('--accent-color').trim() || '#0d6efd';
+    const successColor = style.getPropertyValue('--success-color').trim() || '#198754';
+    const warningColor = style.getPropertyValue('--warning-color').trim() || '#ffc107';
+    const dangerColor = style.getPropertyValue('--danger-color').trim() || '#dc3545';
+    const borderColor = style.getPropertyValue('--border-color').trim() || '#dee2e6';
+    const mutedColor = style.getPropertyValue('--muted-color').trim() || '#6c757d';
+
+    const taskKindId = {{ task_kind_id }};
+
+    {% if task_kind_id == 0 %}
+    // === 월간 전체: 업무종류별 도넛 차트 ===
+    const kindData = {{ monthly_summary | tojson }};
+    if (kindData.length > 0) {
+        const kindColorMap = { 4: successColor, 5: warningColor, 6: dangerColor };
+        new ApexCharts(document.querySelector('#chartKind'), {
+            series: kindData.map(d => d.total_count),
+            chart: { type: 'donut', height: 220, fontFamily: 'inherit' },
+            colors: kindData.map(d => kindColorMap[d.task_kind_id] || mutedColor),
+            labels: kindData.map(d => d.task_kind_name),
+            plotOptions: {
+                pie: { donut: { size: '75%', labels: { show: true, total: { show: true, label: '전체', formatter: function() { return '{{ totals.total }}건'; } } } } }
+            },
+            dataLabels: { enabled: false },
+            legend: { show: false },
+            stroke: { width: 0 }
+        }).render();
+
+        // 종류별 완료 현황 Stacked Bar
+        new ApexCharts(document.querySelector('#chartKindBar'), {
+            series: [
+                { name: '완료', data: kindData.map(d => d.completed_count) },
+                { name: '대기', data: kindData.map(d => d.pending_count || 0) },
+                { name: '지연', data: kindData.map(d => d.overdue_count || 0) }
+            ],
+            chart: { type: 'bar', height: 320, stacked: true, toolbar: { show: false } },
+            plotOptions: { bar: { horizontal: true, borderRadius: 4, barHeight: '50%' } },
+            dataLabels: { enabled: false },
+            colors: [successColor, accentColor, dangerColor],
+            xaxis: {
+                categories: kindData.map(d => d.task_kind_name),
+                axisBorder: { show: false }, axisTicks: { show: false },
+                labels: { style: { colors: mutedColor } }
+            },
+            yaxis: { labels: { style: { colors: mutedColor } } },
+            grid: { borderColor: borderColor, strokeDashArray: 4 },
+            legend: { position: 'top', horizontalAlign: 'right' },
+            tooltip: { y: { formatter: function(val) { return val + '건'; } } }
+        }).render();
+    } else {
+        document.querySelector('#chartKind').innerHTML = '<div class="text-center text-muted py-4"><p class="mb-0 small">데이터가 없습니다.</p></div>';
+        document.querySelector('#chartKindBar').innerHTML = '<div class="text-center text-muted py-5"><p>데이터가 없습니다.</p></div>';
+    }
+
+    {% else %}
+    // === 개별 종류: 일별 추이 Bar 차트 (Time Tracking 스타일) ===
+    const dailyData = {{ daily_trend | tojson }};
+    if (dailyData.length > 0) {
+        new ApexCharts(document.querySelector('#chartDaily'), {
+            series: [
+                { name: '전체', data: dailyData.map(d => d.total_count) },
+                { name: '완료', data: dailyData.map(d => d.completed_count) }
+            ],
+            chart: { type: 'bar', height: 300, toolbar: { show: false } },
+            plotOptions: { bar: { horizontal: false, columnWidth: '55%', borderRadius: 4 } },
+            dataLabels: { enabled: false },
+            colors: [borderColor, successColor],
+            xaxis: {
+                categories: dailyData.map(d => d.work_date.substring(8) + '일'),
+                axisBorder: { show: false }, axisTicks: { show: false },
+                labels: { style: { colors: mutedColor, fontSize: '11px' }, hideOverlappingLabels: true }
+            },
+            yaxis: {
+                labels: { formatter: function(val) { return val + '건'; }, style: { colors: mutedColor } },
+                min: 0, forceNiceScale: true
+            },
+            grid: { borderColor: borderColor, strokeDashArray: 4 },
+            legend: { position: 'top', horizontalAlign: 'right' },
+            tooltip: {
+                x: {
+                    formatter: function(val, opts) {
+                        var idx = opts.dataPointIndex;
+                        if (idx >= 0 && idx < dailyData.length) return dailyData[idx].work_date;
+                        return val;
+                    }
+                },
+                y: { formatter: function(val) { return val + '건'; } }
+            }
+        }).render();
+    } else {
+        document.querySelector('#chartDaily').innerHTML = '<div class="text-center text-muted py-5"><i class="bi bi-bar-chart fs-1 d-block mb-2 opacity-25"></i><p>데이터가 없습니다.</p></div>';
+    }
+    {% endif %}
+});
+</script>
+{% endblock %}

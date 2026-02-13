@@ -4,6 +4,7 @@ from datetime import datetime
 from flask import Blueprint, render_template, request, jsonify, redirect, url_for, session, current_app
 from werkzeug.utils import secure_filename
 from broffice.utils.auth_handler import login_required, admin_required
+from broffice.utils.sms_handler import schedule_completion_sms
 import broffice.dbconns as conn
 
 bp = Blueprint('tasks', __name__)
@@ -365,16 +366,21 @@ def task_detail(task_schedule_id, task_kind_id):
     areas = conn.return_list('get_task_detail_areas', [task_schedule_id])
     
     # 각 구역의 사진 목록 조회
+    has_any_work = False
     for area in areas:
         if area.get('task_area_log_id'):
             area['photos'] = conn.return_list('get_task_area_photos', [area['task_area_log_id']])
         else:
             area['photos'] = []
+        # 사진이 있거나 특이사항이 있으면 작업중
+        if area.get('photo_count') or area.get('log_content'):
+            has_any_work = True
     
     return render_template('tasks/task_detail.html',
         schedule=schedule,
         areas=areas,
-        task_kind_id=task_kind_id
+        task_kind_id=task_kind_id,
+        has_any_work=has_any_work
     )
 
 
@@ -459,12 +465,17 @@ def task_area_photo_delete():
     res = conn.execute_return('set_task_area_photo_delete', [task_area_photo_id])
     
     if res and res.get('return_value', 0) > 0:
-        # 실제 파일 삭제
+        # 실제 파일 삭제 (파일이 없어도 오류 없이 처리)
         file_path = res.get('file_path', '')
         if file_path:
-            full_path = os.path.join(current_app.root_path, file_path.lstrip('/'))
-            if os.path.exists(full_path):
-                os.remove(full_path)
+            # /static/uploads/... → static_folder/uploads/...
+            relative = file_path.replace('/static/', '', 1)
+            full_path = os.path.join(current_app.static_folder, relative)
+            try:
+                if os.path.exists(full_path):
+                    os.remove(full_path)
+            except Exception:
+                pass
         
         return jsonify({'success': True, 'message': '삭제되었습니다.'})
     else:
@@ -481,6 +492,12 @@ def task_schedule_complete():
     res = conn.execute_return('set_task_schedule_complete', [task_schedule_id, memo])
     
     if res and res.get('return_value', 0) > 0:
+        # SMS 예약 발송 (다음 오전 8시)
+        try:
+            schedule_completion_sms(task_schedule_id, conn)
+        except Exception as e:
+            current_app.logger.error(f'SMS 예약 실패: {e}')
+        
         return jsonify({'success': True, 'message': '업무가 완료 처리되었습니다.'})
     else:
         return jsonify({'success': False, 'message': '이미 완료된 업무이거나 처리에 실패했습니다.'}), 400
@@ -503,7 +520,7 @@ def assign():
 @bp.route("/task_client_list/<int:task_kind_id>", methods=['GET'])
 @login_required
 def task_client_list(task_kind_id):
-    """작업 보고 내역 (업체/관리자용)"""
+    """작업 결과 확인 (업체/관리자용)"""
     user_kind_id = session['login_user']['user_kind_id']
     
     # 업체담당자는 본인 회사만, 관리자는 전체 (업체 필터 가능)
@@ -518,18 +535,18 @@ def task_client_list(task_kind_id):
     page = request.args.get('page', 1, type=int)
     page_size = 15
     
-    count_result = conn.execute_return('get_task_client_list_count', [client_id, year_month])
+    count_result = conn.execute_return('get_task_client_list_count', [client_id, year_month, task_kind_id])
     total_count = count_result.get('total_count', 0) if count_result else 0
     total_pages = (total_count + page_size - 1) // page_size if total_count > 0 else 1
     if page < 1: page = 1
     if page > total_pages: page = total_pages
     
-    res_list = conn.return_list('get_task_client_list', [client_id, year_month, page, page_size])
+    res_list = conn.return_list('get_task_client_list', [client_id, year_month, page, page_size, task_kind_id])
     
     # 관리자용 업체 목록
     clients = []
     if user_kind_id == 1:
-        clients = conn.return_list('get_client_list', []) or []
+        clients = conn.return_list('get_client_list') or []
     
     return render_template('tasks/task_client_list.html',
         res_list=res_list,
@@ -541,6 +558,14 @@ def task_client_list(task_kind_id):
         clients=clients,
         task_kind_id=task_kind_id
     )
+
+
+@bp.route("/task_schedule_photos/<int:task_schedule_id>", methods=['GET'])
+@login_required
+def task_schedule_photos(task_schedule_id):
+    """스케줄별 전체 사진 조회 (JSON)"""
+    photos = conn.return_list('get_task_schedule_photos', [task_schedule_id]) or []
+    return jsonify({'photos': photos})
 
 
 @bp.route("/task_client_result", methods=['GET'])

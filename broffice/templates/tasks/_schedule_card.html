@@ -47,12 +47,15 @@
             <div class="small text-muted mt-1">{{ s.completed_date }}</div>
           {% elif s.schedule_status == 'today' %}
             <span class="badge bg-primary">오늘</span>
+            {% if s.completed_area_count > 0 %}<div><span class="badge bg-danger mt-1">작업중</span></div>{% endif %}
           {% elif s.schedule_status == 'overdue' %}
             <span class="badge bg-secondary">미완료</span>
+            {% if s.completed_area_count > 0 %}<div><span class="badge bg-danger mt-1">작업중</span></div>{% endif %}
           {% elif s.schedule_status == 'canceled' %}
             <span class="badge bg-secondary">취소</span>
           {% else %}
             <span class="badge bg-info">예정</span>
+            {% if s.completed_area_count > 0 %}<div><span class="badge bg-danger mt-1">작업중</span></div>{% endif %}
           {% endif %}
           {% if s.change_scheduled_date %}
             <div class="small text-warning mt-1">

@@ -182,7 +182,6 @@ def user_list():
     # 프로시저 1: 사용자 목록 조회
     users = conn.return_list('get_user_list')
 
-    print(users)
     # 프로시저 2: 사용자 통계
     stats = conn.execute_return('get_user_stats')
     
@@ -331,6 +330,23 @@ def user_detail(user_id):
 # ================
 # 업체 관리
 # ================
+
+@bp.route('/client_detail/<int:client_id>', methods=['GET'])
+@admin_required
+def client_detail(client_id):
+    """업체 상세정보 조회"""
+    client_info = conn.execute_return('get_client_detail', [client_id])
+    
+    if not client_info:
+        flash('업체를 찾을 수 없습니다.', category='danger')
+        return redirect(url_for('accounts.client_list'))
+    
+    client_users = conn.return_list('get_client_users', [client_id]) or []
+    
+    return render_template('accounts/client_detail.html',
+                         client_info=client_info,
+                         client_users=client_users)
+
 
 @bp.route("/client_list", methods=['GET'])
 @admin_required
