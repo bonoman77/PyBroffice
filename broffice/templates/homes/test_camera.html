@@ -109,13 +109,6 @@ function clearCameraPhotos() {
     updateCameraCount();
 }
 
-// ===== 갤러리 파일 선택 =====
-document.getElementById('fileInput').addEventListener('change', function(e) {
-    const preview = document.getElementById('filePreview');
-    preview.innerHTML = '';
-    Array.from(e.target.files).forEach(file => addPhotoPreview(file, 'filePreview'));
-});
-
 // ===== 드래그 앤 드롭 / 클릭 =====
 let dropPhotos = [];
 const dropZone = document.getElementById('dropZone');
@@ -189,14 +182,13 @@ function addPhotoPreview(file, containerId) {
             </div>
             <button type="button" class="btn btn-sm btn-danger position-absolute top-0 end-0 p-0"
                     style="width:20px;height:20px;font-size:10px;line-height:1;"
-                    onclick="this.closest('.photo-thumb').remove(); updateCameraCount(); updateDropCount();">
+                    onclick="this.closest('.photo-thumb').remove(); updateCameraCount();">
                 <i class="ph ph-x"></i>
             </button>
         `;
         document.getElementById(containerId).appendChild(div);
         // 카운터 업데이트
         if (containerId === 'cameraPreview') updateCameraCount();
-        if (containerId === 'dropPreview') updateDropCount();
     };
     reader.readAsDataURL(file);
 }
