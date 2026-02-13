@@ -281,7 +281,7 @@ BEGIN
     FROM task_schedules ts
     INNER JOIN tasks t ON ts.task_id = t.task_id
     WHERE DATE_FORMAT(ts.scheduled_at, '%Y-%m') = p_year_month
-      AND ts.canceled_at = 0
+      AND ts.canceled_at IS NULL
       AND t.deleted_at IS NULL;
 END$$
 

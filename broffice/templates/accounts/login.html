@@ -41,3 +41,29 @@
   계정이 없으신가요? <a href="{{ url_for('accounts.user_regist') }}" class="auth-link">회원가입</a>
 </p>
 {% endblock %}
+
+{% block extra_js %}
+<script>
+// 비밀번호 토글 기능
+document.addEventListener('DOMContentLoaded', function() {
+  const toggleButtons = document.querySelectorAll('[data-toggle-password]');
+  
+  toggleButtons.forEach(button => {
+    button.addEventListener('click', function() {
+      const input = this.previousElementSibling; // input 요소 찾기
+      const icon = this.querySelector('i');
+      
+      if (input.type === 'password') {
+        input.type = 'text';
+        icon.classList.remove('ph-eye');
+        icon.classList.add('ph-eye-slash');
+      } else {
+        input.type = 'password';
+        icon.classList.remove('ph-eye-slash');
+        icon.classList.add('ph-eye');
+      }
+    });
+  });
+});
+</script>
+{% endblock %}

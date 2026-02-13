@@ -41,6 +41,32 @@
     </div>
   </div>
 
+  <!-- 카메라 연속 촬영 모드 -->
+  <div class="col-lg-6">
+    <div class="card">
+      <div class="card-header">
+        <h5 class="card-title"><i class="ph-duotone ph-camera me-1"></i>카메라 연속 촬영 모드</h5>
+      </div>
+      <div class="card-body">
+        <input type="file" id="cameraMultiInput" accept="image/*" capture="environment" multiple hidden>
+        <button type="button" class="btn btn-success w-100 mb-3" onclick="document.getElementById('cameraMultiInput').click()">
+          <i class="ph ph-camera me-1"></i>여러 장 한꺼번에 촬영하기
+        </button>
+        <div class="d-flex align-items-center justify-content-between mb-2" id="cameraMultiHeader" style="display:none!important;">
+          <span class="fw-semibold small"><i class="ph ph-images me-1"></i>촬영된 사진 <span id="cameraMultiCnt" class="badge bg-success ms-1">0</span></span>
+          <button type="button" class="btn btn-sm btn-outline-danger" onclick="clearCameraMultiPhotos()">
+            <i class="ph ph-trash me-1"></i>전체 삭제
+          </button>
+        </div>
+        <div id="cameraMultiPreview" class="d-flex flex-wrap gap-2"></div>
+        <div class="form-text mt-2">
+          <i class="ph ph-info me-1"></i>모바일: 카메라에서 여러 장을 연속으로 찍을 수 있습니다. (안드로이드)<br>
+          <i class="ph ph-info me-1"></i>PC: 파일 선택 대화상자에서 여러 이미지를 선택하세요.
+        </div>
+      </div>
+    </div>
+  </div>
+
   <!-- 드래그 앤 드롭 / 클릭 촬영 -->
   <div class="col-12">
     <div class="card">
@@ -107,6 +133,31 @@ function clearCameraPhotos() {
     cameraPhotos = [];
     document.getElementById('cameraPreview').innerHTML = '';
     updateCameraCount();
+}
+
+// ===== 카메라 연속 촬영 모드 =====
+let cameraMultiPhotos = [];
+
+document.getElementById('cameraMultiInput').addEventListener('change', function(e) {
+    Array.from(e.target.files).forEach(file => {
+        cameraMultiPhotos.push(file);
+        addPhotoPreview(file, 'cameraMultiPreview');
+    });
+    updateCameraMultiCount();
+    // input 초기화하여 같은 파일도 다시 선택 가능
+    this.value = '';
+});
+
+function updateCameraMultiCount() {
+    const cnt = document.querySelectorAll('#cameraMultiPreview .photo-thumb').length;
+    document.getElementById('cameraMultiCnt').textContent = cnt;
+    document.getElementById('cameraMultiHeader').style.setProperty('display', cnt > 0 ? 'flex' : 'none', 'important');
+}
+
+function clearCameraMultiPhotos() {
+    cameraMultiPhotos = [];
+    document.getElementById('cameraMultiPreview').innerHTML = '';
+    updateCameraMultiCount();
 }
 
 // ===== 드래그 앤 드롭 / 클릭 =====
@@ -182,13 +233,15 @@ function addPhotoPreview(file, containerId) {
             </div>
             <button type="button" class="btn btn-sm btn-danger position-absolute top-0 end-0 p-0"
                     style="width:20px;height:20px;font-size:10px;line-height:1;"
-                    onclick="this.closest('.photo-thumb').remove(); updateCameraCount();">
+                    onclick="this.closest('.photo-thumb').remove(); updateCameraCount(); updateCameraMultiCount(); updateDropCount();">
                 <i class="ph ph-x"></i>
             </button>
         `;
         document.getElementById(containerId).appendChild(div);
         // 카운터 업데이트
         if (containerId === 'cameraPreview') updateCameraCount();
+        else if (containerId === 'cameraMultiPreview') updateCameraMultiCount();
+        else if (containerId === 'dropPreview') updateDropCount();
     };
     reader.readAsDataURL(file);
 }
