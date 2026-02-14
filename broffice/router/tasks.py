@@ -55,11 +55,11 @@ def schedule_date_update():
     """스케줄 날짜 변경"""
     from flask import session
     task_schedule_id = request.form.get('taskScheduleId', type=int)
-    change_scheduled_at = request.form.get('changeScheduledAt') or None
-    admin_user_id = session.get('user_id')
+    new_scheduled_date = request.form.get('newScheduledDate') or None
+    change_user_id = session.get('login_user', {}).get('user_id')
     
     res = conn.execute_return('set_task_schedule_update', [
-        task_schedule_id, change_scheduled_at, admin_user_id
+        task_schedule_id, new_scheduled_date, change_user_id
     ])
     
     return jsonify({
@@ -142,40 +142,46 @@ def task_update():
 @admin_required
 def task_schedule_generate():
     """스케줄 일괄 생성"""
-    task_ids = request.form.getlist('taskIds[]')
-    year_month = request.form.get('yearMonth')
-    
-    results = []
-    total_count = 0
-    skipped_messages = []
-    for task_id in task_ids:
-        res = conn.execute_return('set_task_schedule_generate', [int(task_id), year_month])
-        if res:
-            rv = res.get('return_value', 0)
-            msg = res.get('message', '')
-            if rv > 0:
-                total_count += rv
-            elif msg:
-                skipped_messages.append(msg)
-            results.append(res)
-    
-    message = f'총 {total_count}건의 스케줄이 생성되었습니다.'
-    if skipped_messages:
-        inactive_cnt = sum(1 for m in skipped_messages if '비활성' in m)
-        no_area_cnt = sum(1 for m in skipped_messages if '구역' in m)
-        skip_parts = []
-        if inactive_cnt:
-            skip_parts.append(f'비활성 {inactive_cnt}건')
-        if no_area_cnt:
-            skip_parts.append(f'구역미등록 {no_area_cnt}건')
-        if skip_parts:
-            message += ' (건너뜀: ' + ', '.join(skip_parts) + ')'
-    
-    return jsonify({
-        'success': True,
-        'message': message,
-        'data': results
-    })
+    try:
+        task_ids = request.form.getlist('taskIds[]')
+        year_month = request.form.get('yearMonth')
+        
+        results = []
+        total_count = 0
+        skipped_messages = []
+        for task_id in task_ids:
+            res = conn.execute_return('set_task_schedule_generate', [int(task_id), year_month])
+            if res:
+                rv = res.get('return_value', 0)
+                msg = res.get('message', '')
+                if rv > 0:
+                    total_count += rv
+                elif msg:
+                    skipped_messages.append(msg)
+                results.append(res)
+        
+        message = f'총 {total_count}건의 스케줄이 생성되었습니다.'
+        if skipped_messages:
+            inactive_cnt = sum(1 for m in skipped_messages if '비활성' in m)
+            no_area_cnt = sum(1 for m in skipped_messages if '구역' in m)
+            skip_parts = []
+            if inactive_cnt:
+                skip_parts.append(f'비활성 {inactive_cnt}건')
+            if no_area_cnt:
+                skip_parts.append(f'구역미등록 {no_area_cnt}건')
+            if skip_parts:
+                message += ' (건너뜀: ' + ', '.join(skip_parts) + ')'
+        
+        return jsonify({
+            'success': True,
+            'message': message,
+            'data': results
+        })
+    except Exception as e:
+        return jsonify({
+            'success': False,
+            'message': f'스케줄 생성 중 오류가 발생했습니다: {str(e)}'
+        }), 500
 
 
 @bp.route("/task_delete", methods=['POST'])

@@ -76,8 +76,6 @@
           <th>업체명</th>
           <th>작업자</th>
           <th>상태</th>
-          <th>원래날짜</th>
-          <th>변경자</th>
           <th class="users-th-actions">작업</th>
         </tr>
       </thead>
@@ -114,16 +112,6 @@
               {% else %}
                 <span class="users-status pending">예정</span>
               {% endif %}
-            </td>
-            <td class="users-cell-meta">
-              {% if s.change_scheduled_date %}
-                <div class="text-decoration-line-through text-muted small">{{ s.scheduled_date }}</div>
-              {% else %}
-                <div class="text-muted small">-</div>
-              {% endif %}
-            </td>
-            <td class="users-cell-meta">
-              <div>{{ s.admin_name or '-' }}</div>
             </td>
             <td>
               <div class="table-actions justify-content-end">
@@ -293,7 +281,7 @@ function confirmChangeDate() {
     
     const formData = new FormData();
     formData.append('taskScheduleId', taskScheduleId);
-    formData.append('changeScheduledAt', newDate);
+    formData.append('newScheduledDate', newDate);
     
     fetch('/tasks/schedule_date_update', {
         method: 'POST',

@@ -665,12 +665,13 @@ function generateSchedule(month, scope) {
             method: 'POST',
             body: formData
         })
-        .then(response => response.json())
-        .then(data => {
-            if (data.success) {
+        .then(response => response.json().then(data => ({ok: response.ok, data})))
+        .then(({ok, data}) => {
+            if (ok && data.success) {
                 showToast('success', data.message);
+                setTimeout(() => location.reload(), 1500);
             } else {
-                showToast('danger', '스케줄 생성에 실패했습니다.');
+                showToast('danger', data.message || '스케줄 생성에 실패했습니다.');
             }
         })
         .catch(error => {

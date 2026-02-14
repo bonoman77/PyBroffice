@@ -250,16 +250,16 @@ BEGIN
             SELECT COUNT(*)
             FROM task_schedules ts
             WHERE ts.task_id = t.task_id
-              AND ts.scheduled_at >= DATE_FORMAT(NOW(), '%Y-%m-01')
-              AND ts.scheduled_at <= LAST_DAY(NOW())
+              AND ts.scheduled_date >= DATE_FORMAT(NOW(), '%Y-%m-01')
+              AND ts.scheduled_date <= LAST_DAY(NOW())
         ), 0) AS current_month_schedule_count,
         -- 익월 스케줄 생성수
         IFNULL((
             SELECT COUNT(*)
             FROM task_schedules ts
             WHERE ts.task_id = t.task_id
-              AND ts.scheduled_at >= DATE_FORMAT(DATE_ADD(NOW(), INTERVAL 1 MONTH), '%Y-%m-01')
-              AND ts.scheduled_at <= LAST_DAY(DATE_ADD(NOW(), INTERVAL 1 MONTH))
+              AND ts.scheduled_date >= DATE_FORMAT(DATE_ADD(NOW(), INTERVAL 1 MONTH), '%Y-%m-01')
+              AND ts.scheduled_date <= LAST_DAY(DATE_ADD(NOW(), INTERVAL 1 MONTH))
         ), 0) AS next_month_schedule_count
     FROM tasks t
     INNER JOIN clients c ON t.client_id = c.client_id
@@ -486,11 +486,11 @@ BEGIN
             SET v_end_date = v_service_ended_at;
         END IF;
         
-        -- 기존 해당 월 스케줄 삭제 (completed_at이 NULL인 것만)
+        -- 기존 해당 월 스케줄 삭제 (완료된 것만 건너뛰고 나머지 모두 삭제)
         DELETE FROM task_schedules
         WHERE task_id = p_task_id
-          AND scheduled_at >= STR_TO_DATE(CONCAT(p_year_month, '-01'), '%Y-%m-%d')
-          AND scheduled_at <= LAST_DAY(STR_TO_DATE(CONCAT(p_year_month, '-01'), '%Y-%m-%d'))
+          AND scheduled_date >= STR_TO_DATE(CONCAT(p_year_month, '-01'), '%Y-%m-%d')
+          AND scheduled_date <= LAST_DAY(STR_TO_DATE(CONCAT(p_year_month, '-01'), '%Y-%m-%d'))
           AND completed_at IS NULL;
         
         SET v_current_date = v_start_date;
@@ -510,19 +510,27 @@ BEGIN
             
             SET v_day_of_month = DAY(v_current_date);
             
-            -- days_of_week가 '0'이면 fix_dates 기반 (월별)
-            IF v_days_of_week = '0' THEN
-                IF v_fix_dates IS NOT NULL AND FIND_IN_SET(v_day_of_month, REPLACE(v_fix_dates, ' ', '')) > 0 THEN
-                    INSERT INTO task_schedules (task_id, user_id, scheduled_at)
-                    VALUES (p_task_id, v_task_user_id, v_current_date);
-                    SET v_insert_count = v_insert_count + 1;
-                END IF;
-            ELSE
-                -- days_of_week 기반 (요일)
-                IF FIND_IN_SET(v_day_of_week, v_days_of_week) > 0 THEN
-                    INSERT INTO task_schedules (task_id, user_id, scheduled_at)
-                    VALUES (p_task_id, v_task_user_id, v_current_date);
-                    SET v_insert_count = v_insert_count + 1;
+            -- 해당 날짜에 완료된 스케줄이 이미 있으면 건너뛰기
+            IF NOT EXISTS (
+                SELECT 1 FROM task_schedules
+                WHERE task_id = p_task_id
+                  AND scheduled_date = v_current_date
+                  AND completed_at IS NOT NULL
+            ) THEN
+                -- days_of_week가 '0'이면 fix_dates 기반 (월별)
+                IF v_days_of_week = '0' THEN
+                    IF v_fix_dates IS NOT NULL AND FIND_IN_SET(v_day_of_month, REPLACE(v_fix_dates, ' ', '')) > 0 THEN
+                        INSERT INTO task_schedules (task_id, user_id, scheduled_date)
+                        VALUES (p_task_id, v_task_user_id, v_current_date);
+                        SET v_insert_count = v_insert_count + 1;
+                    END IF;
+                ELSE
+                    -- days_of_week 기반 (요일)
+                    IF FIND_IN_SET(v_day_of_week, v_days_of_week) > 0 THEN
+                        INSERT INTO task_schedules (task_id, user_id, scheduled_date)
+                        VALUES (p_task_id, v_task_user_id, v_current_date);
+                        SET v_insert_count = v_insert_count + 1;
+                    END IF;
                 END IF;
             END IF;
             
@@ -540,7 +548,7 @@ END$$
 -- Author:      김승균
 -- Create date: 2026-02-11
 -- Email:       bonoman77@gmail.com 
--- Description: 스케줄 목록 조회 (년월 기준, 날짜순 - change_scheduled_at 우선)
+-- Description: 스케줄 목록 조회 (년월 기준, 날짜순)
 -- =============================================
 
 DROP PROCEDURE IF EXISTS get_task_schedule_list$$
@@ -561,13 +569,13 @@ BEGIN
         ts.task_id,
         ts.user_id,
         ts.memo,
-        DATE_FORMAT(ts.scheduled_at, '%Y-%m-%d') AS scheduled_date,
-        DATE_FORMAT(ts.change_scheduled_at, '%Y-%m-%d') AS change_scheduled_date,
+        DATE_FORMAT(ts.scheduled_date, '%Y-%m-%d') AS scheduled_date,
+        ts.change_scheduled_yn,
         DATE_FORMAT(ts.completed_at, '%Y-%m-%d %H:%i') AS completed_date,
         ts.canceled_at,
-        ts.admin_user_id,
-        DATE_FORMAT(COALESCE(ts.change_scheduled_at, ts.scheduled_at), '%Y-%m-%d') AS effective_date,
-        CASE DAYOFWEEK(COALESCE(ts.change_scheduled_at, ts.scheduled_at))
+        ts.change_user_id,
+        DATE_FORMAT(ts.scheduled_date, '%Y-%m-%d') AS effective_date,
+        CASE DAYOFWEEK(ts.scheduled_date)
             WHEN 1 THEN '일'
             WHEN 2 THEN '월'
             WHEN 3 THEN '화'
@@ -581,27 +589,22 @@ BEGIN
         u.user_mobile AS worker_mobile,
         au.user_name AS admin_name,
         CASE
-            WHEN ts.canceled_at = 1 THEN 'canceled'
+            WHEN ts.canceled_at IS NOT NULL THEN 'canceled'
             WHEN ts.completed_at IS NOT NULL THEN 'completed'
-            WHEN COALESCE(ts.change_scheduled_at, ts.scheduled_at) < CURDATE() THEN 'overdue'
-            WHEN COALESCE(ts.change_scheduled_at, ts.scheduled_at) = CURDATE() THEN 'today'
+            WHEN ts.scheduled_date < CURDATE() THEN 'overdue'
+            WHEN ts.scheduled_date = CURDATE() THEN 'today'
             ELSE 'scheduled'
         END AS schedule_status
     FROM task_schedules ts
     INNER JOIN tasks t ON ts.task_id = t.task_id
     INNER JOIN clients c ON t.client_id = c.client_id
     INNER JOIN users u ON ts.user_id = u.user_id
-    LEFT JOIN users au ON ts.admin_user_id = au.user_id
+    LEFT JOIN users au ON ts.change_user_id = au.user_id
     WHERE t.task_kind_id = p_task_kind_id
-      AND (
-          -- 원래 날짜가 해당 월에 속하거나
-          (ts.scheduled_at >= v_start_date AND ts.scheduled_at <= v_end_date)
-          OR
-          -- 변경된 날짜가 해당 월에 속하는 경우
-          (ts.change_scheduled_at >= v_start_date AND ts.change_scheduled_at <= v_end_date)
-      )
+      AND ts.scheduled_date >= v_start_date
+      AND ts.scheduled_date <= v_end_date
       AND t.deleted_at IS NULL
-    ORDER BY COALESCE(ts.change_scheduled_at, ts.scheduled_at) ASC, c.client_name ASC;
+    ORDER BY ts.scheduled_date ASC, c.client_name ASC;
 END$$
 
 
@@ -609,15 +612,15 @@ END$$
 -- Author:      김승균
 -- Create date: 2026-02-11
 -- Email:       bonoman77@gmail.com 
--- Description: 스케줄 날짜 변경 (change_scheduled_at, admin_user_id 설정)
+-- Description: 스케줄 날짜 변경 (scheduled_date 업데이트, change_scheduled_yn=1)
 -- =============================================
 
 DROP PROCEDURE IF EXISTS set_task_schedule_update$$
 
 CREATE PROCEDURE set_task_schedule_update(
     IN p_task_schedule_id INT,
-    IN p_change_scheduled_at DATE,
-    IN p_admin_user_id INT
+    IN p_new_scheduled_date DATE,
+    IN p_change_user_id INT
 )
 BEGIN
     DECLARE v_return_value INT DEFAULT 0;
@@ -625,8 +628,9 @@ BEGIN
     START TRANSACTION;
     
     UPDATE task_schedules
-    SET change_scheduled_at = p_change_scheduled_at,
-        admin_user_id = p_admin_user_id,
+    SET scheduled_date = p_new_scheduled_date,
+        change_scheduled_yn = 1,
+        change_user_id = p_change_user_id,
         updated_at = NOW()
     WHERE task_schedule_id = p_task_schedule_id;
     
@@ -693,12 +697,12 @@ BEGIN
         ts.task_id,
         ts.user_id,
         ts.memo,
-        DATE_FORMAT(ts.scheduled_at, '%Y-%m-%d') AS scheduled_date,
-        DATE_FORMAT(ts.change_scheduled_at, '%Y-%m-%d') AS change_scheduled_date,
+        DATE_FORMAT(ts.scheduled_date, '%Y-%m-%d') AS scheduled_date,
+        ts.change_scheduled_yn,
         DATE_FORMAT(ts.completed_at, '%Y-%m-%d %H:%i') AS completed_date,
         ts.canceled_at,
-        DATE_FORMAT(COALESCE(ts.change_scheduled_at, ts.scheduled_at), '%Y-%m-%d') AS effective_date,
-        CASE DAYOFWEEK(COALESCE(ts.change_scheduled_at, ts.scheduled_at))
+        DATE_FORMAT(ts.scheduled_date, '%Y-%m-%d') AS effective_date,
+        CASE DAYOFWEEK(ts.scheduled_date)
             WHEN 1 THEN '일'
             WHEN 2 THEN '월'
             WHEN 3 THEN '화'
@@ -717,10 +721,10 @@ BEGIN
         c.client_name,
         c.client_id,
         CASE
-            WHEN ts.canceled_at = 1 THEN 'canceled'
+            WHEN ts.canceled_at IS NOT NULL THEN 'canceled'
             WHEN ts.completed_at IS NOT NULL THEN 'completed'
-            WHEN COALESCE(ts.change_scheduled_at, ts.scheduled_at) < CURDATE() THEN 'overdue'
-            WHEN COALESCE(ts.change_scheduled_at, ts.scheduled_at) = CURDATE() THEN 'today'
+            WHEN ts.scheduled_date < CURDATE() THEN 'overdue'
+            WHEN ts.scheduled_date = CURDATE() THEN 'today'
             ELSE 'scheduled'
         END AS schedule_status,
         (SELECT COUNT(*) FROM task_areas ta 
@@ -736,14 +740,11 @@ BEGIN
     INNER JOIN tasks t ON ts.task_id = t.task_id
     INNER JOIN clients c ON t.client_id = c.client_id
     WHERE ts.user_id = p_user_id
-      AND (
-          (ts.scheduled_at >= v_start_date AND ts.scheduled_at <= v_end_date)
-          OR
-          (ts.change_scheduled_at >= v_start_date AND ts.change_scheduled_at <= v_end_date)
-      )
+      AND ts.scheduled_date >= v_start_date
+      AND ts.scheduled_date <= v_end_date
       AND t.deleted_at IS NULL
-      AND (ts.canceled_at IS NULL OR ts.canceled_at = 0)
-    ORDER BY COALESCE(ts.change_scheduled_at, ts.scheduled_at) ASC, c.client_name ASC;
+      AND ts.canceled_at IS NULL
+    ORDER BY ts.scheduled_date ASC, c.client_name ASC;
 END$$
 
 
@@ -766,11 +767,11 @@ BEGIN
         ts.task_id,
         ts.user_id,
         ts.memo,
-        DATE_FORMAT(ts.scheduled_at, '%Y-%m-%d') AS scheduled_date,
-        DATE_FORMAT(ts.change_scheduled_at, '%Y-%m-%d') AS change_scheduled_date,
+        DATE_FORMAT(ts.scheduled_date, '%Y-%m-%d') AS scheduled_date,
+        ts.change_scheduled_yn,
         DATE_FORMAT(ts.completed_at, '%Y-%m-%d %H:%i') AS completed_date,
         ts.canceled_at,
-        DATE_FORMAT(COALESCE(ts.change_scheduled_at, ts.scheduled_at), '%Y-%m-%d') AS effective_date,
+        DATE_FORMAT(ts.scheduled_date, '%Y-%m-%d') AS effective_date,
         t.task_kind_id,
         CASE t.task_kind_id
             WHEN 4 THEN '청소'
@@ -785,10 +786,10 @@ BEGIN
         mgr.user_name AS manager_name,
         mgr.user_mobile AS manager_mobile,
         CASE
-            WHEN ts.canceled_at = 1 THEN 'canceled'
+            WHEN ts.canceled_at IS NOT NULL THEN 'canceled'
             WHEN ts.completed_at IS NOT NULL THEN 'completed'
-            WHEN COALESCE(ts.change_scheduled_at, ts.scheduled_at) < CURDATE() THEN 'overdue'
-            WHEN COALESCE(ts.change_scheduled_at, ts.scheduled_at) = CURDATE() THEN 'today'
+            WHEN ts.scheduled_date < CURDATE() THEN 'overdue'
+            WHEN ts.scheduled_date = CURDATE() THEN 'today'
             ELSE 'scheduled'
         END AS schedule_status
     FROM task_schedules ts
@@ -1028,8 +1029,8 @@ BEGIN
     FROM task_schedules ts
     INNER JOIN tasks t ON ts.task_id = t.task_id
     WHERE ts.user_id = p_user_id
-      AND ts.scheduled_at >= v_start_date
-      AND ts.scheduled_at <= v_end_date
+      AND ts.scheduled_date >= v_start_date
+      AND ts.scheduled_date <= v_end_date
       AND t.deleted_at IS NULL
       AND ts.canceled_at IS NULL
     GROUP BY t.task_kind_id
@@ -1065,7 +1066,7 @@ BEGIN
     SELECT 
         ts.task_schedule_id,
         ts.task_id,
-        DATE_FORMAT(COALESCE(ts.change_scheduled_at, ts.scheduled_at), '%Y-%m-%d') AS effective_date,
+        DATE_FORMAT(ts.scheduled_date, '%Y-%m-%d') AS effective_date,
         DATE_FORMAT(ts.completed_at, '%Y-%m-%d %H:%i') AS completed_date,
         t.task_kind_id,
         CASE t.task_kind_id
@@ -1098,8 +1099,8 @@ BEGIN
     WHERE ts.completed_at IS NOT NULL
       AND t.deleted_at IS NULL
       AND ts.canceled_at IS NULL
-      AND (COALESCE(ts.change_scheduled_at, ts.scheduled_at) >= v_start_date 
-           AND COALESCE(ts.change_scheduled_at, ts.scheduled_at) <= v_end_date)
+      AND ts.scheduled_date >= v_start_date
+      AND ts.scheduled_date <= v_end_date
       AND (p_client_id = 0 OR t.client_id = p_client_id)
       AND (p_task_kind_id = 0 OR t.task_kind_id = p_task_kind_id)
     ORDER BY ts.completed_at DESC
@@ -1127,8 +1128,8 @@ BEGIN
     WHERE ts.completed_at IS NOT NULL
       AND t.deleted_at IS NULL
       AND ts.canceled_at IS NULL
-      AND (COALESCE(ts.change_scheduled_at, ts.scheduled_at) >= v_start_date 
-           AND COALESCE(ts.change_scheduled_at, ts.scheduled_at) <= v_end_date)
+      AND ts.scheduled_date >= v_start_date
+      AND ts.scheduled_date <= v_end_date
       AND (p_client_id = 0 OR t.client_id = p_client_id)
       AND (p_task_kind_id = 0 OR t.task_kind_id = p_task_kind_id);
 END$$
@@ -1144,7 +1145,7 @@ CREATE PROCEDURE get_task_client_recent(
 BEGIN
     SELECT 
         ts.task_schedule_id,
-        DATE_FORMAT(COALESCE(ts.change_scheduled_at, ts.scheduled_at), '%Y-%m-%d') AS effective_date,
+        DATE_FORMAT(ts.scheduled_date, '%Y-%m-%d') AS effective_date,
         DATE_FORMAT(ts.completed_at, '%Y-%m-%d %H:%i') AS completed_date,
         t.task_kind_id,
         CASE t.task_kind_id

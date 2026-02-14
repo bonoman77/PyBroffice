@@ -280,7 +280,7 @@ BEGIN
         SUM(CASE WHEN t.task_kind_id = 6 AND ts.completed_at IS NOT NULL THEN 1 ELSE 0 END) AS supplies_completed
     FROM task_schedules ts
     INNER JOIN tasks t ON ts.task_id = t.task_id
-    WHERE DATE_FORMAT(ts.scheduled_at, '%Y-%m') = p_year_month
+    WHERE DATE_FORMAT(ts.scheduled_date, '%Y-%m') = p_year_month
       AND ts.canceled_at IS NULL
       AND t.deleted_at IS NULL;
 END$$

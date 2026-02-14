@@ -57,9 +57,9 @@
             <span class="badge bg-info">예정</span>
             {% if s.completed_area_count > 0 %}<div><span class="badge bg-danger mt-1">작업중</span></div>{% endif %}
           {% endif %}
-          {% if s.change_scheduled_date %}
+          {% if s.change_scheduled_yn %}
             <div class="small text-warning mt-1">
-              <i class="ph ph-arrow-right"></i> {{ s.change_scheduled_date }}
+              <i class="ph ph-arrow-right"></i> 날짜변경
             </div>
           {% endif %}
         </div>

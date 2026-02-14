@@ -31,9 +31,9 @@ BEGIN
         COUNT(*) AS total_count,
         SUM(CASE WHEN ts.completed_at IS NOT NULL THEN 1 ELSE 0 END) AS completed_count,
         SUM(CASE WHEN ts.completed_at IS NULL AND ts.canceled_at IS NULL 
-                  AND COALESCE(ts.change_scheduled_at, ts.scheduled_at) < NOW() THEN 1 ELSE 0 END) AS overdue_count,
+                  AND ts.scheduled_date < CURDATE() THEN 1 ELSE 0 END) AS overdue_count,
         SUM(CASE WHEN ts.completed_at IS NULL AND ts.canceled_at IS NULL 
-                  AND COALESCE(ts.change_scheduled_at, ts.scheduled_at) >= NOW() THEN 1 ELSE 0 END) AS pending_count,
+                  AND ts.scheduled_date >= CURDATE() THEN 1 ELSE 0 END) AS pending_count,
         SUM(CASE WHEN ts.canceled_at IS NOT NULL THEN 1 ELSE 0 END) AS canceled_count,
         ROUND(SUM(CASE WHEN ts.completed_at IS NOT NULL THEN 1 ELSE 0 END) / COUNT(*) * 100, 1) AS completion_rate
     FROM task_schedules ts
@@ -41,8 +41,8 @@ BEGIN
     INNER JOIN clients c ON t.client_id = c.client_id
     WHERE t.deleted_at IS NULL
       AND (p_manage_user_id = 0 OR c.manage_user_id = p_manage_user_id)
-      AND (COALESCE(ts.change_scheduled_at, ts.scheduled_at) >= v_start_date 
-           AND COALESCE(ts.change_scheduled_at, ts.scheduled_at) <= v_end_date)
+      AND ts.scheduled_date >= v_start_date
+      AND ts.scheduled_date <= v_end_date
     GROUP BY t.task_kind_id
     ORDER BY t.task_kind_id;
 END$$
@@ -86,8 +86,8 @@ BEGIN
       AND c.deleted_at IS NULL
       AND (p_task_kind_id = 0 OR t.task_kind_id = p_task_kind_id)
       AND (p_manage_user_id = 0 OR c.manage_user_id = p_manage_user_id)
-      AND (COALESCE(ts.change_scheduled_at, ts.scheduled_at) >= v_start_date 
-           AND COALESCE(ts.change_scheduled_at, ts.scheduled_at) <= v_end_date)
+      AND ts.scheduled_date >= v_start_date
+      AND ts.scheduled_date <= v_end_date
     GROUP BY c.client_id, c.client_name
     ORDER BY total_count DESC;
 END$$
@@ -131,8 +131,8 @@ BEGIN
     WHERE t.deleted_at IS NULL
       AND (p_task_kind_id = 0 OR t.task_kind_id = p_task_kind_id)
       AND (p_manage_user_id = 0 OR c.manage_user_id = p_manage_user_id)
-      AND (COALESCE(ts.change_scheduled_at, ts.scheduled_at) >= v_start_date 
-           AND COALESCE(ts.change_scheduled_at, ts.scheduled_at) <= v_end_date)
+      AND ts.scheduled_date >= v_start_date
+      AND ts.scheduled_date <= v_end_date
     GROUP BY u.user_id, u.user_name
     ORDER BY total_count DESC;
 END$$
@@ -160,7 +160,7 @@ BEGIN
     SET v_end_date = LAST_DAY(v_start_date);
     
     SELECT 
-        DATE_FORMAT(COALESCE(ts.change_scheduled_at, ts.scheduled_at), '%Y-%m-%d') AS work_date,
+        DATE_FORMAT(ts.scheduled_date, '%Y-%m-%d') AS work_date,
         COUNT(*) AS total_count,
         SUM(CASE WHEN ts.completed_at IS NOT NULL THEN 1 ELSE 0 END) AS completed_count
     FROM task_schedules ts
@@ -170,8 +170,8 @@ BEGIN
       AND ts.canceled_at IS NULL
       AND (p_task_kind_id = 0 OR t.task_kind_id = p_task_kind_id)
       AND (p_manage_user_id = 0 OR c.manage_user_id = p_manage_user_id)
-      AND (COALESCE(ts.change_scheduled_at, ts.scheduled_at) >= v_start_date 
-           AND COALESCE(ts.change_scheduled_at, ts.scheduled_at) <= v_end_date)
+      AND ts.scheduled_date >= v_start_date
+      AND ts.scheduled_date <= v_end_date
     GROUP BY work_date
     ORDER BY work_date;
 END$$

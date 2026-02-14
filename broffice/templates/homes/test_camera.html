@@ -45,7 +45,7 @@
   <div class="col-lg-6">
     <div class="card">
       <div class="card-header">
-        <h5 class="card-title"><i class="ph-duotone ph-camera me-1"></i>카메라 연속 촬영 모드</h5>
+        <h5 class="card-title"><i class="ph-duotone ph-camera me-1"></i>카메라 연속 촬영</h5>
       </div>
       <div class="card-body">
         <input type="file" id="cameraMultiInput" accept="image/*" capture="environment" multiple hidden>
@@ -100,6 +100,43 @@
           </button>
         </div>
         <div id="dropPreview" class="d-flex flex-wrap gap-2"></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 드래그 앤 드롭 연속 촬영 모드 -->
+  <div class="col-12">
+    <div class="card">
+      <div class="card-header d-flex align-items-center justify-content-between">
+        <div>
+          <h5 class="card-title mb-0"><i class="ph-duotone ph-camera me-1"></i>드래그 앤 드롭 연속 촬영</h5>
+        </div>
+        <div class="d-flex gap-2">
+          <div class="form-check form-switch mb-0">
+            <input class="form-check-input" type="checkbox" id="dropMultiCameraMode">
+            <label class="form-check-label small" for="dropMultiCameraMode">클릭 시 카메라 실행</label>
+          </div>
+        </div>
+      </div>
+      <div class="card-body">
+        <div class="upload-dropzone upload-dropzone-image" id="dropMultiZone">
+          <div class="upload-dropzone-content">
+            <div class="upload-dropzone-icon">
+              <i class="bi bi-images"></i>
+            </div>
+            <h6 class="upload-dropzone-title mb-1">여러 사진을 드래그하거나 클릭하세요</h6>
+            <p class="upload-dropzone-text small mb-0">PNG, JPG, GIF 파일 (클릭 시 카메라/갤러리 선택, 여러 장 가능)</p>
+          </div>
+          <input type="file" id="dropMultiInputGallery" accept="image/*" multiple hidden>
+          <input type="file" id="dropMultiInputCamera" accept="image/*" capture="environment" multiple hidden>
+        </div>
+        <div class="d-flex align-items-center justify-content-between mt-3 mb-2" id="dropMultiHeader" style="display:none!important;">
+          <span class="fw-semibold small"><i class="ph ph-images me-1"></i>추가된 사진 <span id="dropMultiCnt" class="badge bg-success ms-1">0</span></span>
+          <button type="button" class="btn btn-sm btn-outline-danger" onclick="clearDropMultiPhotos()">
+            <i class="ph ph-trash me-1"></i>전체 삭제
+          </button>
+        </div>
+        <div id="dropMultiPreview" class="d-flex flex-wrap gap-2"></div>
       </div>
     </div>
   </div>
@@ -219,6 +256,65 @@ function clearDropPhotos() {
     updateDropCount();
 }
 
+// ===== 드래그 앤 드롭 연속 촬영 모드 =====
+let dropMultiPhotos = [];
+const dropMultiZone = document.getElementById('dropMultiZone');
+const dropMultiInputGallery = document.getElementById('dropMultiInputGallery');
+const dropMultiInputCamera = document.getElementById('dropMultiInputCamera');
+const dropMultiCameraMode = document.getElementById('dropMultiCameraMode');
+
+dropMultiZone.addEventListener('click', () => {
+    if (dropMultiCameraMode.checked) {
+        dropMultiInputCamera.click();
+    } else {
+        dropMultiInputGallery.click();
+    }
+});
+
+dropMultiInputGallery.addEventListener('change', function() {
+    Array.from(this.files).forEach(file => {
+        dropMultiPhotos.push(file);
+        addPhotoPreview(file, 'dropMultiPreview');
+    });
+    updateDropMultiCount();
+    this.value = '';
+});
+
+dropMultiInputCamera.addEventListener('change', function() {
+    Array.from(this.files).forEach(file => {
+        dropMultiPhotos.push(file);
+        addPhotoPreview(file, 'dropMultiPreview');
+    });
+    updateDropMultiCount();
+    this.value = '';
+});
+
+dropMultiZone.addEventListener('dragover', (e) => { e.preventDefault(); dropMultiZone.classList.add('dragover'); });
+dropMultiZone.addEventListener('dragleave', () => dropMultiZone.classList.remove('dragover'));
+dropMultiZone.addEventListener('drop', (e) => {
+    e.preventDefault();
+    dropMultiZone.classList.remove('dragover');
+    Array.from(e.dataTransfer.files).forEach(file => {
+        if (file.type.startsWith('image/')) {
+            dropMultiPhotos.push(file);
+            addPhotoPreview(file, 'dropMultiPreview');
+        }
+    });
+    updateDropMultiCount();
+});
+
+function updateDropMultiCount() {
+    const cnt = document.querySelectorAll('#dropMultiPreview .photo-thumb').length;
+    document.getElementById('dropMultiCnt').textContent = cnt;
+    document.getElementById('dropMultiHeader').style.setProperty('display', cnt > 0 ? 'flex' : 'none', 'important');
+}
+
+function clearDropMultiPhotos() {
+    dropMultiPhotos = [];
+    document.getElementById('dropMultiPreview').innerHTML = '';
+    updateDropMultiCount();
+}
+
 // ===== 공통: 미리보기 추가 =====
 function addPhotoPreview(file, containerId) {
     const reader = new FileReader();
@@ -233,7 +329,7 @@ function addPhotoPreview(file, containerId) {
             </div>
             <button type="button" class="btn btn-sm btn-danger position-absolute top-0 end-0 p-0"
                     style="width:20px;height:20px;font-size:10px;line-height:1;"
-                    onclick="this.closest('.photo-thumb').remove(); updateCameraCount(); updateCameraMultiCount(); updateDropCount();">
+                    onclick="this.closest('.photo-thumb').remove(); updateCameraCount(); updateCameraMultiCount(); updateDropCount(); updateDropMultiCount();">
                 <i class="ph ph-x"></i>
             </button>
         `;
@@ -242,6 +338,7 @@ function addPhotoPreview(file, containerId) {
         if (containerId === 'cameraPreview') updateCameraCount();
         else if (containerId === 'cameraMultiPreview') updateCameraMultiCount();
         else if (containerId === 'dropPreview') updateDropCount();
+        else if (containerId === 'dropMultiPreview') updateDropMultiCount();
     };
     reader.readAsDataURL(file);
 }

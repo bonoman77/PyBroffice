@@ -1,0 +1,578 @@
+[2026-02-13 07:56:18] INFO in log_handler: 로거 초기화 완료 - 레벨: DEBUG, 파일: /Users/seungkyun/PyProjects/PyBroffice/logs/broffice.log
+[2026-02-13 07:56:18] INFO in __init__: Flask-Mail 초기화 완료
+[2026-02-13 07:56:18] INFO in __init__: 필터 등록 완료
+[2026-02-13 07:56:18] INFO in __init__: 애플리케이션 초기화 완료
+[2026-02-13 07:56:18] INFO in log_handler: 로거 초기화 완료 - 레벨: DEBUG, 파일: /Users/seungkyun/PyProjects/PyBroffice/logs/broffice.log
+[2026-02-13 07:56:18] INFO in __init__: Flask-Mail 초기화 완료
+[2026-02-13 07:56:18] INFO in __init__: 필터 등록 완료
+[2026-02-13 07:56:18] INFO in __init__: 애플리케이션 초기화 완료
+[2026-02-13 08:42:30] INFO in log_handler: 로거 초기화 완료 - 레벨: DEBUG, 파일: /Users/seungkyun/PyProjects/PyBroffice/logs/broffice.log
+[2026-02-13 08:42:30] INFO in __init__: Flask-Mail 초기화 완료
+[2026-02-13 08:42:30] INFO in __init__: 필터 등록 완료
+[2026-02-13 08:42:30] INFO in __init__: 애플리케이션 초기화 완료
+[2026-02-13 09:33:15] INFO in log_handler: 로거 초기화 완료 - 레벨: DEBUG, 파일: /Users/seungkyun/PyProjects/PyBroffice/logs/broffice.log
+[2026-02-13 09:33:15] INFO in __init__: Flask-Mail 초기화 완료
+[2026-02-13 09:33:15] INFO in __init__: 필터 등록 완료
+[2026-02-13 09:33:15] INFO in __init__: 애플리케이션 초기화 완료
+[2026-02-13 09:36:24] INFO in log_handler: 로거 초기화 완료 - 레벨: DEBUG, 파일: /Users/seungkyun/PyProjects/PyBroffice/logs/broffice.log
+[2026-02-13 09:36:24] INFO in __init__: Flask-Mail 초기화 완료
+[2026-02-13 09:36:24] INFO in __init__: 필터 등록 완료
+[2026-02-13 09:36:24] INFO in __init__: 애플리케이션 초기화 완료
+[2026-02-13 09:38:06] INFO in log_handler: 로거 초기화 완료 - 레벨: DEBUG, 파일: /Users/seungkyun/PyProjects/PyBroffice/logs/broffice.log
+[2026-02-13 09:38:06] INFO in __init__: Flask-Mail 초기화 완료
+[2026-02-13 09:38:06] INFO in __init__: 필터 등록 완료
+[2026-02-13 09:38:06] INFO in __init__: 애플리케이션 초기화 완료
+[2026-02-13 09:49:41] WARNING in __init__: 404 에러: http://127.0.0.1:5020/report/tasks - 404 Not Found: The requested URL was not found on the server. If you entered the URL manually please check your spelling and try again.
+[2026-02-13 09:49:41] WARNING in __init__: 404 에러: http://127.0.0.1:5020/favicon.ico - 404 Not Found: The requested URL was not found on the server. If you entered the URL manually please check your spelling and try again.
+[2026-02-13 09:54:54] INFO in log_handler: 로거 초기화 완료 - 레벨: DEBUG, 파일: /Users/seungkyun/PyProjects/PyBroffice/logs/broffice.log
+[2026-02-13 09:54:54] INFO in __init__: Flask-Mail 초기화 완료
+[2026-02-13 09:54:54] INFO in __init__: 필터 등록 완료
+[2026-02-13 09:54:54] INFO in __init__: 애플리케이션 초기화 완료
+[2026-02-13 09:58:55] ERROR in dbconns: 데이터베이스 연결 사용 중 오류: (1305, 'PROCEDURE Broffice$brobiz.get_report_monthly_summary does not exist')
+[2026-02-13 09:58:56] ERROR in dbconns: 프로시저 실행 중 오류: get_report_monthly_summary, (1305, 'PROCEDURE Broffice$brobiz.get_report_monthly_summary does not exist')
+[2026-02-13 09:58:56] ERROR in __init__: 처리되지 않은 예외: OperationalError - (1305, 'PROCEDURE Broffice$brobiz.get_report_monthly_summary does not exist')
+Traceback (most recent call last):
+  File "/Users/seungkyun/PyProjects/PyBroffice/venv/lib/python3.14/site-packages/flask/app.py", line 1484, in full_dispatch_request
+    rv = self.dispatch_request()
+  File "/Users/seungkyun/PyProjects/PyBroffice/venv/lib/python3.14/site-packages/flask/app.py", line 1469, in dispatch_request
+    return self.ensure_sync(self.view_functions[rule.endpoint])(**view_args)
+           ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^
+  File "/Users/seungkyun/PyProjects/PyBroffice/broffice/utils/auth_handler.py", line 47, in decorated_function
+    return func(*args, **kwargs)
+  File "/Users/seungkyun/PyProjects/PyBroffice/broffice/router/reports.py", line 16, in dashboard
+    monthly_summary = conn.return_list('get_report_monthly_summary', [year_month]) or []
+                      ~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/seungkyun/PyProjects/PyBroffice/broffice/dbconns.py", line 291, in return_list
+    cursor.execute(call_sql, params if params else [])
+    ~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/seungkyun/PyProjects/PyBroffice/venv/lib/python3.14/site-packages/pymysql/cursors.py", line 153, in execute
+    result = self._query(query)
+  File "/Users/seungkyun/PyProjects/PyBroffice/venv/lib/python3.14/site-packages/pymysql/cursors.py", line 322, in _query
+    conn.query(q)
+    ~~~~~~~~~~^^^
+  File "/Users/seungkyun/PyProjects/PyBroffice/venv/lib/python3.14/site-packages/pymysql/connections.py", line 575, in query
+    self._affected_rows = self._read_query_result(unbuffered=unbuffered)
+                          ~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/seungkyun/PyProjects/PyBroffice/venv/lib/python3.14/site-packages/pymysql/connections.py", line 826, in _read_query_result
+    result.read()
+    ~~~~~~~~~~~^^
+  File "/Users/seungkyun/PyProjects/PyBroffice/venv/lib/python3.14/site-packages/pymysql/connections.py", line 1203, in read
+    first_packet = self.connection._read_packet()
+  File "/Users/seungkyun/PyProjects/PyBroffice/venv/lib/python3.14/site-packages/pymysql/connections.py", line 782, in _read_packet
+    packet.raise_for_error()
+    ~~~~~~~~~~~~~~~~~~~~~~^^
+  File "/Users/seungkyun/PyProjects/PyBroffice/venv/lib/python3.14/site-packages/pymysql/protocol.py", line 219, in raise_for_error
+    err.raise_mysql_exception(self._data)
+    ~~~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^
+  File "/Users/seungkyun/PyProjects/PyBroffice/venv/lib/python3.14/site-packages/pymysql/err.py", line 150, in raise_mysql_exception
+    raise errorclass(errno, errval)
+pymysql.err.OperationalError: (1305, 'PROCEDURE Broffice$brobiz.get_report_monthly_summary does not exist')
+[2026-02-13 10:15:05] ERROR in dbconns: 데이터베이스 연결 사용 중 오류: (1412, 'Table definition has changed, please retry transaction')
+[2026-02-13 10:15:05] ERROR in dbconns: 프로시저 실행 중 오류: get_report_by_client, (1412, 'Table definition has changed, please retry transaction')
+[2026-02-13 10:15:05] ERROR in __init__: 처리되지 않은 예외: OperationalError - (1412, 'Table definition has changed, please retry transaction')
+Traceback (most recent call last):
+  File "/Users/seungkyun/PyProjects/PyBroffice/venv/lib/python3.14/site-packages/flask/app.py", line 1484, in full_dispatch_request
+    rv = self.dispatch_request()
+  File "/Users/seungkyun/PyProjects/PyBroffice/venv/lib/python3.14/site-packages/flask/app.py", line 1469, in dispatch_request
+    return self.ensure_sync(self.view_functions[rule.endpoint])(**view_args)
+           ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^
+  File "/Users/seungkyun/PyProjects/PyBroffice/broffice/utils/auth_handler.py", line 47, in decorated_function
+    return func(*args, **kwargs)
+  File "/Users/seungkyun/PyProjects/PyBroffice/broffice/router/reports.py", line 19, in dashboard
+    client_stats = conn.return_list('get_report_by_client', [year_month]) or []
+                   ~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/seungkyun/PyProjects/PyBroffice/broffice/dbconns.py", line 291, in return_list
+    cursor.execute(call_sql, params if params else [])
+    ~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/seungkyun/PyProjects/PyBroffice/venv/lib/python3.14/site-packages/pymysql/cursors.py", line 153, in execute
+    result = self._query(query)
+  File "/Users/seungkyun/PyProjects/PyBroffice/venv/lib/python3.14/site-packages/pymysql/cursors.py", line 322, in _query
+    conn.query(q)
+    ~~~~~~~~~~^^^
+  File "/Users/seungkyun/PyProjects/PyBroffice/venv/lib/python3.14/site-packages/pymysql/connections.py", line 575, in query
+    self._affected_rows = self._read_query_result(unbuffered=unbuffered)
+                          ~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/seungkyun/PyProjects/PyBroffice/venv/lib/python3.14/site-packages/pymysql/connections.py", line 826, in _read_query_result
+    result.read()
+    ~~~~~~~~~~~^^
+  File "/Users/seungkyun/PyProjects/PyBroffice/venv/lib/python3.14/site-packages/pymysql/connections.py", line 1210, in read
+    self._read_result_packet(first_packet)
+    ~~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^
+  File "/Users/seungkyun/PyProjects/PyBroffice/venv/lib/python3.14/site-packages/pymysql/connections.py", line 1287, in _read_result_packet
+    self._read_rowdata_packet()
+    ~~~~~~~~~~~~~~~~~~~~~~~~~^^
+  File "/Users/seungkyun/PyProjects/PyBroffice/venv/lib/python3.14/site-packages/pymysql/connections.py", line 1334, in _read_rowdata_packet
+    packet = self.connection._read_packet()
+  File "/Users/seungkyun/PyProjects/PyBroffice/venv/lib/python3.14/site-packages/pymysql/connections.py", line 782, in _read_packet
+    packet.raise_for_error()
+    ~~~~~~~~~~~~~~~~~~~~~~^^
+  File "/Users/seungkyun/PyProjects/PyBroffice/venv/lib/python3.14/site-packages/pymysql/protocol.py", line 219, in raise_for_error
+    err.raise_mysql_exception(self._data)
+    ~~~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^
+  File "/Users/seungkyun/PyProjects/PyBroffice/venv/lib/python3.14/site-packages/pymysql/err.py", line 150, in raise_mysql_exception
+    raise errorclass(errno, errval)
+pymysql.err.OperationalError: (1412, 'Table definition has changed, please retry transaction')
+[2026-02-13 10:56:37] INFO in log_handler: 로거 초기화 완료 - 레벨: DEBUG, 파일: /Users/seungkyun/PyProjects/PyBroffice/logs/broffice.log
+[2026-02-13 10:56:37] INFO in __init__: Flask-Mail 초기화 완료
+[2026-02-13 10:56:37] INFO in __init__: 필터 등록 완료
+[2026-02-13 10:56:37] INFO in __init__: 애플리케이션 초기화 완료
+[2026-02-13 11:00:22] ERROR in __init__: 처리되지 않은 예외: UndefinedError - 'int' is undefined
+Traceback (most recent call last):
+  File "/Users/seungkyun/PyProjects/PyBroffice/venv/lib/python3.14/site-packages/flask/app.py", line 1484, in full_dispatch_request
+    rv = self.dispatch_request()
+  File "/Users/seungkyun/PyProjects/PyBroffice/venv/lib/python3.14/site-packages/flask/app.py", line 1469, in dispatch_request
+    return self.ensure_sync(self.view_functions[rule.endpoint])(**view_args)
+           ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^
+  File "/Users/seungkyun/PyProjects/PyBroffice/broffice/utils/auth_handler.py", line 47, in decorated_function
+    return func(*args, **kwargs)
+  File "/Users/seungkyun/PyProjects/PyBroffice/broffice/router/reports.py", line 59, in dashboard
+    return render_template('reports/dashboard.html',
+        year_month=year_month,
+    ...<6 lines>...
+        totals=totals
+    )
+  File "/Users/seungkyun/PyProjects/PyBroffice/venv/lib/python3.14/site-packages/flask/templating.py", line 151, in render_template
+    return _render(app, template, context)
+  File "/Users/seungkyun/PyProjects/PyBroffice/venv/lib/python3.14/site-packages/flask/templating.py", line 132, in _render
+    rv = template.render(context)
+  File "/Users/seungkyun/PyProjects/PyBroffice/venv/lib/python3.14/site-packages/jinja2/environment.py", line 1295, in render
+    self.environment.handle_exception()
+    ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^^
+  File "/Users/seungkyun/PyProjects/PyBroffice/venv/lib/python3.14/site-packages/jinja2/environment.py", line 942, in handle_exception
+    raise rewrite_traceback_stack(source=source)
+  File "/Users/seungkyun/PyProjects/PyBroffice/broffice/templates/reports/dashboard.html", line 1, in top-level template code
+    {% extends "layout.html" %}
+    ^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/seungkyun/PyProjects/PyBroffice/broffice/templates/layout.html", line 61, in top-level template code
+    {% include 'includes/sidebar.html' ignore missing %}
+    ^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/seungkyun/PyProjects/PyBroffice/broffice/templates/includes/sidebar.html", line 30, in top-level template code
+    {% set _tkid = request.view_args.get('task_kind_id') or request.args.get('task_kind_id', 0, type=int) %}
+    ^^^^^^^^^^^^^^^^^
+  File "/Users/seungkyun/PyProjects/PyBroffice/venv/lib/python3.14/site-packages/werkzeug/datastructures/structures.py", line 82, in get
+    rv = type(rv)
+jinja2.exceptions.UndefinedError: 'int' is undefined
+[2026-02-13 11:00:48] WARNING in __init__: 404 에러: http://127.0.0.1:5020/reports/dashboard/4 - 404 Not Found: The requested URL was not found on the server. If you entered the URL manually please check your spelling and try again.
+[2026-02-13 11:00:56] ERROR in __init__: 처리되지 않은 예외: UndefinedError - 'int' is undefined
+Traceback (most recent call last):
+  File "/Users/seungkyun/PyProjects/PyBroffice/venv/lib/python3.14/site-packages/flask/app.py", line 1484, in full_dispatch_request
+    rv = self.dispatch_request()
+  File "/Users/seungkyun/PyProjects/PyBroffice/venv/lib/python3.14/site-packages/flask/app.py", line 1469, in dispatch_request
+    return self.ensure_sync(self.view_functions[rule.endpoint])(**view_args)
+           ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^
+  File "/Users/seungkyun/PyProjects/PyBroffice/broffice/utils/auth_handler.py", line 47, in decorated_function
+    return func(*args, **kwargs)
+  File "/Users/seungkyun/PyProjects/PyBroffice/broffice/router/reports.py", line 59, in dashboard
+    return render_template('reports/dashboard.html',
+        year_month=year_month,
+    ...<6 lines>...
+        totals=totals
+    )
+  File "/Users/seungkyun/PyProjects/PyBroffice/venv/lib/python3.14/site-packages/flask/templating.py", line 151, in render_template
+    return _render(app, template, context)
+  File "/Users/seungkyun/PyProjects/PyBroffice/venv/lib/python3.14/site-packages/flask/templating.py", line 132, in _render
+    rv = template.render(context)
+  File "/Users/seungkyun/PyProjects/PyBroffice/venv/lib/python3.14/site-packages/jinja2/environment.py", line 1295, in render
+    self.environment.handle_exception()
+    ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^^
+  File "/Users/seungkyun/PyProjects/PyBroffice/venv/lib/python3.14/site-packages/jinja2/environment.py", line 942, in handle_exception
+    raise rewrite_traceback_stack(source=source)
+  File "/Users/seungkyun/PyProjects/PyBroffice/broffice/templates/reports/dashboard.html", line 1, in top-level template code
+    {% extends "layout.html" %}
+    ^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/seungkyun/PyProjects/PyBroffice/broffice/templates/layout.html", line 61, in top-level template code
+    {% include 'includes/sidebar.html' ignore missing %}
+    ^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/seungkyun/PyProjects/PyBroffice/broffice/templates/includes/sidebar.html", line 30, in top-level template code
+    {% set _tkid = request.view_args.get('task_kind_id') or request.args.get('task_kind_id', 0, type=int) %}
+    ^^^^^^^^^^^^^^^^^
+  File "/Users/seungkyun/PyProjects/PyBroffice/venv/lib/python3.14/site-packages/werkzeug/datastructures/structures.py", line 82, in get
+    rv = type(rv)
+jinja2.exceptions.UndefinedError: 'int' is undefined
+[2026-02-13 11:01:26] ERROR in __init__: 처리되지 않은 예외: UndefinedError - 'int' is undefined
+Traceback (most recent call last):
+  File "/Users/seungkyun/PyProjects/PyBroffice/venv/lib/python3.14/site-packages/flask/app.py", line 1484, in full_dispatch_request
+    rv = self.dispatch_request()
+  File "/Users/seungkyun/PyProjects/PyBroffice/venv/lib/python3.14/site-packages/flask/app.py", line 1469, in dispatch_request
+    return self.ensure_sync(self.view_functions[rule.endpoint])(**view_args)
+           ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^
+  File "/Users/seungkyun/PyProjects/PyBroffice/broffice/utils/auth_handler.py", line 47, in decorated_function
+    return func(*args, **kwargs)
+  File "/Users/seungkyun/PyProjects/PyBroffice/broffice/router/reports.py", line 59, in dashboard
+    return render_template('reports/dashboard.html',
+        year_month=year_month,
+    ...<6 lines>...
+        totals=totals
+    )
+  File "/Users/seungkyun/PyProjects/PyBroffice/venv/lib/python3.14/site-packages/flask/templating.py", line 151, in render_template
+    return _render(app, template, context)
+  File "/Users/seungkyun/PyProjects/PyBroffice/venv/lib/python3.14/site-packages/flask/templating.py", line 132, in _render
+    rv = template.render(context)
+  File "/Users/seungkyun/PyProjects/PyBroffice/venv/lib/python3.14/site-packages/jinja2/environment.py", line 1295, in render
+    self.environment.handle_exception()
+    ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^^
+  File "/Users/seungkyun/PyProjects/PyBroffice/venv/lib/python3.14/site-packages/jinja2/environment.py", line 942, in handle_exception
+    raise rewrite_traceback_stack(source=source)
+  File "/Users/seungkyun/PyProjects/PyBroffice/broffice/templates/reports/dashboard.html", line 1, in top-level template code
+    {% extends "layout.html" %}
+    ^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/seungkyun/PyProjects/PyBroffice/broffice/templates/layout.html", line 61, in top-level template code
+    {% include 'includes/sidebar.html' ignore missing %}
+    ^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/seungkyun/PyProjects/PyBroffice/broffice/templates/includes/sidebar.html", line 30, in top-level template code
+    {% set _tkid = request.view_args.get('task_kind_id') or request.args.get('task_kind_id', 0, type=int) %}
+    ^^^^^^^^^^^^^^^^^
+  File "/Users/seungkyun/PyProjects/PyBroffice/venv/lib/python3.14/site-packages/werkzeug/datastructures/structures.py", line 82, in get
+    rv = type(rv)
+jinja2.exceptions.UndefinedError: 'int' is undefined
+[2026-02-13 15:25:39] INFO in log_handler: 로거 초기화 완료 - 레벨: DEBUG, 파일: /Users/seungkyun/PyProjects/PyBroffice/logs/broffice.log
+[2026-02-13 15:25:39] INFO in __init__: Flask-Mail 초기화 완료
+[2026-02-13 15:25:39] INFO in __init__: 필터 등록 완료
+[2026-02-13 15:25:39] INFO in __init__: 애플리케이션 초기화 완료
+[2026-02-13 15:25:39] INFO in log_handler: 로거 초기화 완료 - 레벨: DEBUG, 파일: /Users/seungkyun/PyProjects/PyBroffice/logs/broffice.log
+[2026-02-13 15:25:39] INFO in __init__: Flask-Mail 초기화 완료
+[2026-02-13 15:25:39] INFO in __init__: 필터 등록 완료
+[2026-02-13 15:25:39] INFO in __init__: 애플리케이션 초기화 완료
+[2026-02-13 16:05:26] INFO in log_handler: 로거 초기화 완료 - 레벨: DEBUG, 파일: /Users/seungkyun/PyProjects/PyBroffice/logs/broffice.log
+[2026-02-13 16:05:26] INFO in __init__: Flask-Mail 초기화 완료
+[2026-02-13 16:05:26] INFO in __init__: 필터 등록 완료
+[2026-02-13 16:05:26] INFO in __init__: 애플리케이션 초기화 완료
+[2026-02-13 16:06:39] INFO in log_handler: 로거 초기화 완료 - 레벨: DEBUG, 파일: /Users/seungkyun/PyProjects/PyBroffice/logs/broffice.log
+[2026-02-13 16:06:39] INFO in __init__: Flask-Mail 초기화 완료
+[2026-02-13 16:06:39] INFO in __init__: 필터 등록 완료
+[2026-02-13 16:06:39] INFO in __init__: 애플리케이션 초기화 완료
+[2026-02-13 16:08:21] ERROR in dbconns: 데이터베이스 연결 사용 중 오류: (1305, 'PROCEDURE Broffice$brobiz.get_report_managers does not exist')
+[2026-02-13 16:08:21] ERROR in dbconns: 프로시저 실행 중 오류: get_report_managers, (1305, 'PROCEDURE Broffice$brobiz.get_report_managers does not exist')
+[2026-02-13 16:08:21] ERROR in __init__: 처리되지 않은 예외: OperationalError - (1305, 'PROCEDURE Broffice$brobiz.get_report_managers does not exist')
+Traceback (most recent call last):
+  File "/Users/seungkyun/PyProjects/PyBroffice/venv/lib/python3.14/site-packages/flask/app.py", line 1484, in full_dispatch_request
+    rv = self.dispatch_request()
+  File "/Users/seungkyun/PyProjects/PyBroffice/venv/lib/python3.14/site-packages/flask/app.py", line 1469, in dispatch_request
+    return self.ensure_sync(self.view_functions[rule.endpoint])(**view_args)
+           ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^
+  File "/Users/seungkyun/PyProjects/PyBroffice/broffice/utils/auth_handler.py", line 47, in decorated_function
+    return func(*args, **kwargs)
+  File "/Users/seungkyun/PyProjects/PyBroffice/broffice/router/reports.py", line 27, in dashboard
+    managers = conn.return_list('get_report_managers', []) or []
+               ~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/seungkyun/PyProjects/PyBroffice/broffice/dbconns.py", line 291, in return_list
+    cursor.execute(call_sql, params if params else [])
+    ~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/seungkyun/PyProjects/PyBroffice/venv/lib/python3.14/site-packages/pymysql/cursors.py", line 153, in execute
+    result = self._query(query)
+  File "/Users/seungkyun/PyProjects/PyBroffice/venv/lib/python3.14/site-packages/pymysql/cursors.py", line 322, in _query
+    conn.query(q)
+    ~~~~~~~~~~^^^
+  File "/Users/seungkyun/PyProjects/PyBroffice/venv/lib/python3.14/site-packages/pymysql/connections.py", line 575, in query
+    self._affected_rows = self._read_query_result(unbuffered=unbuffered)
+                          ~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/seungkyun/PyProjects/PyBroffice/venv/lib/python3.14/site-packages/pymysql/connections.py", line 826, in _read_query_result
+    result.read()
+    ~~~~~~~~~~~^^
+  File "/Users/seungkyun/PyProjects/PyBroffice/venv/lib/python3.14/site-packages/pymysql/connections.py", line 1203, in read
+    first_packet = self.connection._read_packet()
+  File "/Users/seungkyun/PyProjects/PyBroffice/venv/lib/python3.14/site-packages/pymysql/connections.py", line 782, in _read_packet
+    packet.raise_for_error()
+    ~~~~~~~~~~~~~~~~~~~~~~^^
+  File "/Users/seungkyun/PyProjects/PyBroffice/venv/lib/python3.14/site-packages/pymysql/protocol.py", line 219, in raise_for_error
+    err.raise_mysql_exception(self._data)
+    ~~~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^
+  File "/Users/seungkyun/PyProjects/PyBroffice/venv/lib/python3.14/site-packages/pymysql/err.py", line 150, in raise_mysql_exception
+    raise errorclass(errno, errval)
+pymysql.err.OperationalError: (1305, 'PROCEDURE Broffice$brobiz.get_report_managers does not exist')
+[2026-02-13 16:23:06] INFO in log_handler: 로거 초기화 완료 - 레벨: DEBUG, 파일: /Users/seungkyun/PyProjects/PyBroffice/logs/broffice.log
+[2026-02-13 16:23:06] INFO in __init__: Flask-Mail 초기화 완료
+[2026-02-13 16:23:06] INFO in __init__: 필터 등록 완료
+[2026-02-13 16:23:06] INFO in __init__: 애플리케이션 초기화 완료
+[2026-02-13 16:24:06] INFO in log_handler: 로거 초기화 완료 - 레벨: DEBUG, 파일: /Users/seungkyun/PyProjects/PyBroffice/logs/broffice.log
+[2026-02-13 16:24:06] INFO in __init__: Flask-Mail 초기화 완료
+[2026-02-13 16:24:06] INFO in __init__: 필터 등록 완료
+[2026-02-13 16:24:06] INFO in __init__: 애플리케이션 초기화 완료
+[2026-02-13 16:25:14] INFO in log_handler: 로거 초기화 완료 - 레벨: DEBUG, 파일: /Users/seungkyun/PyProjects/PyBroffice/logs/broffice.log
+[2026-02-13 16:25:14] INFO in __init__: Flask-Mail 초기화 완료
+[2026-02-13 16:25:14] INFO in __init__: 필터 등록 완료
+[2026-02-13 16:25:15] INFO in __init__: 애플리케이션 초기화 완료
+[2026-02-13 16:25:28] INFO in log_handler: 로거 초기화 완료 - 레벨: DEBUG, 파일: /Users/seungkyun/PyProjects/PyBroffice/logs/broffice.log
+[2026-02-13 16:25:28] INFO in __init__: Flask-Mail 초기화 완료
+[2026-02-13 16:25:28] INFO in __init__: 필터 등록 완료
+[2026-02-13 16:25:28] INFO in __init__: 애플리케이션 초기화 완료
+[2026-02-13 16:26:42] INFO in log_handler: 로거 초기화 완료 - 레벨: DEBUG, 파일: /Users/seungkyun/PyProjects/PyBroffice/logs/broffice.log
+[2026-02-13 16:26:42] INFO in __init__: Flask-Mail 초기화 완료
+[2026-02-13 16:26:42] INFO in __init__: 필터 등록 완료
+[2026-02-13 16:26:42] INFO in __init__: 애플리케이션 초기화 완료
+[2026-02-13 16:27:41] INFO in log_handler: 로거 초기화 완료 - 레벨: DEBUG, 파일: /Users/seungkyun/PyProjects/PyBroffice/logs/broffice.log
+[2026-02-13 16:27:41] INFO in __init__: Flask-Mail 초기화 완료
+[2026-02-13 16:27:41] INFO in __init__: 필터 등록 완료
+[2026-02-13 16:27:41] INFO in __init__: 애플리케이션 초기화 완료
+[2026-02-13 16:29:49] WARNING in sms_handler: Twilio 설정이 없습니다. SMS 발송을 건너뜁니다.
+[2026-02-13 17:49:58] INFO in log_handler: 로거 초기화 완료 - 레벨: DEBUG, 파일: /Users/seungkyun/PyProjects/PyBroffice/logs/broffice.log
+[2026-02-13 17:49:58] INFO in __init__: Flask-Mail 초기화 완료
+[2026-02-13 17:49:58] INFO in __init__: 필터 등록 완료
+[2026-02-13 17:49:58] INFO in __init__: 애플리케이션 초기화 완료
+[2026-02-13 17:49:59] INFO in log_handler: 로거 초기화 완료 - 레벨: DEBUG, 파일: /Users/seungkyun/PyProjects/PyBroffice/logs/broffice.log
+[2026-02-13 17:49:59] INFO in __init__: Flask-Mail 초기화 완료
+[2026-02-13 17:49:59] INFO in __init__: 필터 등록 완료
+[2026-02-13 17:49:59] INFO in __init__: 애플리케이션 초기화 완료
+[2026-02-13 17:50:37] ERROR in dbconns: 데이터베이스 연결 생성 중 오류: (2013, 'Lost connection to MySQL server during query')
+[2026-02-13 17:50:37] ERROR in dbconns: 새 연결 생성 중 오류: (2013, 'Lost connection to MySQL server during query')
+[2026-02-13 17:50:37] ERROR in dbconns: 데이터베이스 연결 사용 중 오류: (2013, 'Lost connection to MySQL server during query')
+[2026-02-13 17:50:37] ERROR in dbconns: 프로시저 실행 중 오류: get_sns_log_list, (2013, 'Lost connection to MySQL server during query')
+[2026-02-13 17:50:37] ERROR in __init__: 처리되지 않은 예외: OperationalError - (2013, 'Lost connection to MySQL server during query')
+Traceback (most recent call last):
+  File "/Users/seungkyun/PyProjects/PyBroffice/venv/lib/python3.14/site-packages/flask/app.py", line 1484, in full_dispatch_request
+    rv = self.dispatch_request()
+  File "/Users/seungkyun/PyProjects/PyBroffice/venv/lib/python3.14/site-packages/flask/app.py", line 1469, in dispatch_request
+    return self.ensure_sync(self.view_functions[rule.endpoint])(**view_args)
+           ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^
+  File "/Users/seungkyun/PyProjects/PyBroffice/broffice/utils/auth_handler.py", line 47, in decorated_function
+    return func(*args, **kwargs)
+  File "/Users/seungkyun/PyProjects/PyBroffice/broffice/router/reports.py", line 84, in sns_logs
+    logs = conn.return_list('get_sns_log_list', [year_month, send_status]) or []
+           ~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/seungkyun/PyProjects/PyBroffice/broffice/dbconns.py", line 288, in return_list
+    with get_db_connection() as conn:
+         ~~~~~~~~~~~~~~~~~^^
+  File "/opt/homebrew/Cellar/python@3.14/3.14.2_1/Frameworks/Python.framework/Versions/3.14/lib/python3.14/contextlib.py", line 141, in __enter__
+    return next(self.gen)
+  File "/Users/seungkyun/PyProjects/PyBroffice/broffice/dbconns.py", line 200, in get_db_connection
+    conn = connection_pool.get_connection()
+  File "/Users/seungkyun/PyProjects/PyBroffice/broffice/dbconns.py", line 129, in get_connection
+    conn = self._create_connection()
+  File "/Users/seungkyun/PyProjects/PyBroffice/broffice/dbconns.py", line 88, in _create_connection
+    conn = pymysql.connect(**self.db_config)
+  File "/Users/seungkyun/PyProjects/PyBroffice/venv/lib/python3.14/site-packages/pymysql/connections.py", line 365, in __init__
+    self.connect()
+    ~~~~~~~~~~~~^^
+  File "/Users/seungkyun/PyProjects/PyBroffice/venv/lib/python3.14/site-packages/pymysql/connections.py", line 680, in connect
+    self._get_server_information()
+    ~~~~~~~~~~~~~~~~~~~~~~~~~~~~^^
+  File "/Users/seungkyun/PyProjects/PyBroffice/venv/lib/python3.14/site-packages/pymysql/connections.py", line 1099, in _get_server_information
+    packet = self._read_packet()
+  File "/Users/seungkyun/PyProjects/PyBroffice/venv/lib/python3.14/site-packages/pymysql/connections.py", line 751, in _read_packet
+    packet_header = self._read_bytes(4)
+  File "/Users/seungkyun/PyProjects/PyBroffice/venv/lib/python3.14/site-packages/pymysql/connections.py", line 805, in _read_bytes
+    raise err.OperationalError(
+        CR.CR_SERVER_LOST, "Lost connection to MySQL server during query"
+    )
+pymysql.err.OperationalError: (2013, 'Lost connection to MySQL server during query')
+[2026-02-13 17:50:37] ERROR in dbconns: 데이터베이스 연결 생성 중 오류: (2003, "Can't connect to MySQL server on '127.0.0.1' ([Errno 61] Connection refused)")
+[2026-02-13 17:50:37] ERROR in dbconns: 새 연결 생성 중 오류: (2003, "Can't connect to MySQL server on '127.0.0.1' ([Errno 61] Connection refused)")
+[2026-02-13 17:50:37] ERROR in dbconns: 데이터베이스 연결 사용 중 오류: (2003, "Can't connect to MySQL server on '127.0.0.1' ([Errno 61] Connection refused)")
+[2026-02-13 17:50:37] ERROR in dbconns: 프로시저 실행 중 오류 (단일 결과): get_dashboard_kpi, (2003, "Can't connect to MySQL server on '127.0.0.1' ([Errno 61] Connection refused)")
+[2026-02-13 17:50:37] ERROR in __init__: 처리되지 않은 예외: OperationalError - (2003, "Can't connect to MySQL server on '127.0.0.1' ([Errno 61] Connection refused)")
+Traceback (most recent call last):
+  File "/Users/seungkyun/PyProjects/PyBroffice/venv/lib/python3.14/site-packages/pymysql/connections.py", line 661, in connect
+    sock = socket.create_connection(
+        (self.host, self.port), self.connect_timeout, **kwargs
+    )
+  File "/opt/homebrew/Cellar/python@3.14/3.14.2_1/Frameworks/Python.framework/Versions/3.14/lib/python3.14/socket.py", line 870, in create_connection
+    raise exceptions[0]
+  File "/opt/homebrew/Cellar/python@3.14/3.14.2_1/Frameworks/Python.framework/Versions/3.14/lib/python3.14/socket.py", line 855, in create_connection
+    sock.connect(sa)
+    ~~~~~~~~~~~~^^^^
+ConnectionRefusedError: [Errno 61] Connection refused
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "/Users/seungkyun/PyProjects/PyBroffice/venv/lib/python3.14/site-packages/flask/app.py", line 1484, in full_dispatch_request
+    rv = self.dispatch_request()
+  File "/Users/seungkyun/PyProjects/PyBroffice/venv/lib/python3.14/site-packages/flask/app.py", line 1469, in dispatch_request
+    return self.ensure_sync(self.view_functions[rule.endpoint])(**view_args)
+           ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^
+  File "/Users/seungkyun/PyProjects/PyBroffice/broffice/utils/auth_handler.py", line 18, in decorated_function
+    return func(*args, **kwargs)
+  File "/Users/seungkyun/PyProjects/PyBroffice/broffice/router/homes.py", line 19, in index
+    kpi = conn.execute_return('get_dashboard_kpi', []) or {}
+          ~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/seungkyun/PyProjects/PyBroffice/broffice/dbconns.py", line 265, in execute_return
+    with get_db_connection() as conn:
+         ~~~~~~~~~~~~~~~~~^^
+  File "/opt/homebrew/Cellar/python@3.14/3.14.2_1/Frameworks/Python.framework/Versions/3.14/lib/python3.14/contextlib.py", line 141, in __enter__
+    return next(self.gen)
+  File "/Users/seungkyun/PyProjects/PyBroffice/broffice/dbconns.py", line 200, in get_db_connection
+    conn = connection_pool.get_connection()
+  File "/Users/seungkyun/PyProjects/PyBroffice/broffice/dbconns.py", line 129, in get_connection
+    conn = self._create_connection()
+  File "/Users/seungkyun/PyProjects/PyBroffice/broffice/dbconns.py", line 88, in _create_connection
+    conn = pymysql.connect(**self.db_config)
+  File "/Users/seungkyun/PyProjects/PyBroffice/venv/lib/python3.14/site-packages/pymysql/connections.py", line 365, in __init__
+    self.connect()
+    ~~~~~~~~~~~~^^
+  File "/Users/seungkyun/PyProjects/PyBroffice/venv/lib/python3.14/site-packages/pymysql/connections.py", line 723, in connect
+    raise exc
+pymysql.err.OperationalError: (2003, "Can't connect to MySQL server on '127.0.0.1' ([Errno 61] Connection refused)")
+[2026-02-13 18:08:11] INFO in log_handler: 로거 초기화 완료 - 레벨: DEBUG, 파일: /Users/seungkyun/PyProjects/PyBroffice/logs/broffice.log
+[2026-02-13 18:08:11] INFO in __init__: Flask-Mail 초기화 완료
+[2026-02-13 18:08:11] INFO in __init__: 필터 등록 완료
+[2026-02-13 18:08:11] INFO in __init__: 애플리케이션 초기화 완료
+[2026-02-13 18:08:19] INFO in log_handler: 로거 초기화 완료 - 레벨: DEBUG, 파일: /Users/seungkyun/PyProjects/PyBroffice/logs/broffice.log
+[2026-02-13 18:08:19] INFO in __init__: Flask-Mail 초기화 완료
+[2026-02-13 18:08:19] INFO in __init__: 필터 등록 완료
+[2026-02-13 18:08:20] INFO in __init__: 애플리케이션 초기화 완료
+[2026-02-13 18:08:27] INFO in log_handler: 로거 초기화 완료 - 레벨: DEBUG, 파일: /Users/seungkyun/PyProjects/PyBroffice/logs/broffice.log
+[2026-02-13 18:08:27] INFO in __init__: Flask-Mail 초기화 완료
+[2026-02-13 18:08:27] INFO in __init__: 필터 등록 완료
+[2026-02-13 18:08:27] INFO in __init__: 애플리케이션 초기화 완료
+[2026-02-13 18:08:37] INFO in log_handler: 로거 초기화 완료 - 레벨: DEBUG, 파일: /Users/seungkyun/PyProjects/PyBroffice/logs/broffice.log
+[2026-02-13 18:08:37] WARNING in __init__: SendGrid API 키가 설정되지 않았습니다. (.env에 SENDGRID_API_KEY 설정 필요)
+[2026-02-13 18:08:37] INFO in __init__: 필터 등록 완료
+[2026-02-13 18:08:38] INFO in __init__: 애플리케이션 초기화 완료
+[2026-02-13 18:09:20] INFO in log_handler: 로거 초기화 완료 - 레벨: DEBUG, 파일: /Users/seungkyun/PyProjects/PyBroffice/logs/broffice.log
+[2026-02-13 18:09:20] WARNING in __init__: SendGrid API 키가 설정되지 않았습니다. (.env에 SENDGRID_API_KEY 설정 필요)
+[2026-02-13 18:09:20] INFO in __init__: 필터 등록 완료
+[2026-02-13 18:09:20] INFO in __init__: 애플리케이션 초기화 완료
+[2026-02-13 18:09:32] INFO in log_handler: 로거 초기화 완료 - 레벨: DEBUG, 파일: /Users/seungkyun/PyProjects/PyBroffice/logs/broffice.log
+[2026-02-13 18:09:32] WARNING in __init__: SendGrid API 키가 설정되지 않았습니다. (.env에 SENDGRID_API_KEY 설정 필요)
+[2026-02-13 18:09:32] INFO in __init__: 필터 등록 완료
+[2026-02-13 18:09:32] INFO in __init__: 애플리케이션 초기화 완료
+[2026-02-13 18:09:45] INFO in log_handler: 로거 초기화 완료 - 레벨: DEBUG, 파일: /Users/seungkyun/PyProjects/PyBroffice/logs/broffice.log
+[2026-02-13 18:09:45] WARNING in __init__: SendGrid API 키가 설정되지 않았습니다. (.env에 SENDGRID_API_KEY 설정 필요)
+[2026-02-13 18:09:45] INFO in __init__: 필터 등록 완료
+[2026-02-13 18:09:45] INFO in __init__: 애플리케이션 초기화 완료
+[2026-02-13 18:11:02] INFO in log_handler: 로거 초기화 완료 - 레벨: DEBUG, 파일: /Users/seungkyun/PyProjects/PyBroffice/logs/broffice.log
+[2026-02-13 18:11:02] WARNING in __init__: SendGrid API 키가 설정되지 않았습니다. (.env에 SENDGRID_API_KEY 설정 필요)
+[2026-02-13 18:11:02] INFO in __init__: 필터 등록 완료
+[2026-02-13 18:11:02] INFO in __init__: 애플리케이션 초기화 완료
+[2026-02-13 18:23:03] INFO in log_handler: 로거 초기화 완료 - 레벨: DEBUG, 파일: /Users/seungkyun/PyProjects/PyBroffice/logs/broffice.log
+[2026-02-13 18:23:03] INFO in __init__: SendGrid API 키 설정 확인 완료
+[2026-02-13 18:23:03] INFO in __init__: 필터 등록 완료
+[2026-02-13 18:23:03] INFO in __init__: 애플리케이션 초기화 완료
+[2026-02-13 18:27:45] ERROR in __init__: 처리되지 않은 예외: ModuleNotFoundError - No module named 'PIL'
+Traceback (most recent call last):
+  File "/Users/seungkyun/PyProjects/PyBroffice/venv/lib/python3.14/site-packages/flask/app.py", line 1484, in full_dispatch_request
+    rv = self.dispatch_request()
+  File "/Users/seungkyun/PyProjects/PyBroffice/venv/lib/python3.14/site-packages/flask/app.py", line 1469, in dispatch_request
+    return self.ensure_sync(self.view_functions[rule.endpoint])(**view_args)
+           ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^
+  File "/Users/seungkyun/PyProjects/PyBroffice/broffice/utils/auth_handler.py", line 18, in decorated_function
+    return func(*args, **kwargs)
+  File "/Users/seungkyun/PyProjects/PyBroffice/broffice/router/tasks.py", line 404, in task_area_photo_upload
+    from PIL import Image
+ModuleNotFoundError: No module named 'PIL'
+[2026-02-13 18:27:53] ERROR in __init__: 처리되지 않은 예외: ModuleNotFoundError - No module named 'PIL'
+Traceback (most recent call last):
+  File "/Users/seungkyun/PyProjects/PyBroffice/venv/lib/python3.14/site-packages/flask/app.py", line 1484, in full_dispatch_request
+    rv = self.dispatch_request()
+  File "/Users/seungkyun/PyProjects/PyBroffice/venv/lib/python3.14/site-packages/flask/app.py", line 1469, in dispatch_request
+    return self.ensure_sync(self.view_functions[rule.endpoint])(**view_args)
+           ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^
+  File "/Users/seungkyun/PyProjects/PyBroffice/broffice/utils/auth_handler.py", line 18, in decorated_function
+    return func(*args, **kwargs)
+  File "/Users/seungkyun/PyProjects/PyBroffice/broffice/router/tasks.py", line 404, in task_area_photo_upload
+    from PIL import Image
+ModuleNotFoundError: No module named 'PIL'
+[2026-02-13 18:31:35] ERROR in __init__: 처리되지 않은 예외: ModuleNotFoundError - No module named 'PIL'
+Traceback (most recent call last):
+  File "/Users/seungkyun/PyProjects/PyBroffice/venv/lib/python3.14/site-packages/flask/app.py", line 1484, in full_dispatch_request
+    rv = self.dispatch_request()
+  File "/Users/seungkyun/PyProjects/PyBroffice/venv/lib/python3.14/site-packages/flask/app.py", line 1469, in dispatch_request
+    return self.ensure_sync(self.view_functions[rule.endpoint])(**view_args)
+           ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^
+  File "/Users/seungkyun/PyProjects/PyBroffice/broffice/utils/auth_handler.py", line 18, in decorated_function
+    return func(*args, **kwargs)
+  File "/Users/seungkyun/PyProjects/PyBroffice/broffice/router/tasks.py", line 404, in task_area_photo_upload
+    from PIL import Image
+ModuleNotFoundError: No module named 'PIL'
+[2026-02-13 18:33:08] ERROR in __init__: 처리되지 않은 예외: ModuleNotFoundError - No module named 'PIL'
+Traceback (most recent call last):
+  File "/Users/seungkyun/PyProjects/PyBroffice/venv/lib/python3.14/site-packages/flask/app.py", line 1484, in full_dispatch_request
+    rv = self.dispatch_request()
+  File "/Users/seungkyun/PyProjects/PyBroffice/venv/lib/python3.14/site-packages/flask/app.py", line 1469, in dispatch_request
+    return self.ensure_sync(self.view_functions[rule.endpoint])(**view_args)
+           ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^
+  File "/Users/seungkyun/PyProjects/PyBroffice/broffice/utils/auth_handler.py", line 18, in decorated_function
+    return func(*args, **kwargs)
+  File "/Users/seungkyun/PyProjects/PyBroffice/broffice/router/tasks.py", line 404, in task_area_photo_upload
+    from PIL import Image
+ModuleNotFoundError: No module named 'PIL'
+[2026-02-13 18:35:31] ERROR in __init__: 처리되지 않은 예외: ModuleNotFoundError - No module named 'PIL'
+Traceback (most recent call last):
+  File "/Users/seungkyun/PyProjects/PyBroffice/venv/lib/python3.14/site-packages/flask/app.py", line 1484, in full_dispatch_request
+    rv = self.dispatch_request()
+  File "/Users/seungkyun/PyProjects/PyBroffice/venv/lib/python3.14/site-packages/flask/app.py", line 1469, in dispatch_request
+    return self.ensure_sync(self.view_functions[rule.endpoint])(**view_args)
+           ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^
+  File "/Users/seungkyun/PyProjects/PyBroffice/broffice/utils/auth_handler.py", line 18, in decorated_function
+    return func(*args, **kwargs)
+  File "/Users/seungkyun/PyProjects/PyBroffice/broffice/router/tasks.py", line 404, in task_area_photo_upload
+    from PIL import Image
+ModuleNotFoundError: No module named 'PIL'
+[2026-02-13 18:36:42] ERROR in __init__: 처리되지 않은 예외: ModuleNotFoundError - No module named 'PIL'
+Traceback (most recent call last):
+  File "/Users/seungkyun/PyProjects/PyBroffice/venv/lib/python3.14/site-packages/flask/app.py", line 1484, in full_dispatch_request
+    rv = self.dispatch_request()
+  File "/Users/seungkyun/PyProjects/PyBroffice/venv/lib/python3.14/site-packages/flask/app.py", line 1469, in dispatch_request
+    return self.ensure_sync(self.view_functions[rule.endpoint])(**view_args)
+           ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^
+  File "/Users/seungkyun/PyProjects/PyBroffice/broffice/utils/auth_handler.py", line 18, in decorated_function
+    return func(*args, **kwargs)
+  File "/Users/seungkyun/PyProjects/PyBroffice/broffice/router/tasks.py", line 404, in task_area_photo_upload
+    from PIL import Image
+ModuleNotFoundError: No module named 'PIL'
+[2026-02-13 18:53:11] INFO in log_handler: 로거 초기화 완료 - 레벨: DEBUG, 파일: /Users/seungkyun/PyProjects/PyBroffice/logs/broffice.log
+[2026-02-13 18:53:11] INFO in __init__: SendGrid API 키 설정 확인 완료
+[2026-02-13 18:53:11] INFO in __init__: 필터 등록 완료
+[2026-02-13 18:53:11] INFO in __init__: 애플리케이션 초기화 완료
+[2026-02-13 18:54:19] INFO in log_handler: 로거 초기화 완료 - 레벨: DEBUG, 파일: /Users/seungkyun/PyProjects/PyBroffice/logs/broffice.log
+[2026-02-13 18:54:19] INFO in __init__: SendGrid API 키 설정 확인 완료
+[2026-02-13 18:54:19] INFO in __init__: 필터 등록 완료
+[2026-02-13 18:54:19] INFO in __init__: 애플리케이션 초기화 완료
+[2026-02-13 22:12:41] ERROR in dbconns: 데이터베이스 연결 생성 중 오류: (2003, "Can't connect to MySQL server on '127.0.0.1' ([Errno 61] Connection refused)")
+[2026-02-13 22:12:41] ERROR in dbconns: 손상된 연결 재생성 중 오류: (2003, "Can't connect to MySQL server on '127.0.0.1' ([Errno 61] Connection refused)")
+[2026-02-13 22:12:41] ERROR in dbconns: 데이터베이스 연결 생성 중 오류: (2003, "Can't connect to MySQL server on '127.0.0.1' ([Errno 61] Connection refused)")
+[2026-02-13 22:12:41] ERROR in dbconns: 손상된 연결 재생성 중 오류: (2003, "Can't connect to MySQL server on '127.0.0.1' ([Errno 61] Connection refused)")
+[2026-02-13 22:12:41] ERROR in dbconns: 데이터베이스 연결 생성 중 오류: (2003, "Can't connect to MySQL server on '127.0.0.1' ([Errno 61] Connection refused)")
+[2026-02-13 22:12:41] ERROR in dbconns: 새 연결 생성 중 오류: (2003, "Can't connect to MySQL server on '127.0.0.1' ([Errno 61] Connection refused)")
+[2026-02-13 22:12:41] ERROR in dbconns: 데이터베이스 연결 사용 중 오류: (2003, "Can't connect to MySQL server on '127.0.0.1' ([Errno 61] Connection refused)")
+[2026-02-13 22:12:41] ERROR in dbconns: 프로시저 실행 중 오류 (단일 결과): get_user_login, (2003, "Can't connect to MySQL server on '127.0.0.1' ([Errno 61] Connection refused)")
+[2026-02-13 22:12:41] ERROR in __init__: 처리되지 않은 예외: OperationalError - (2003, "Can't connect to MySQL server on '127.0.0.1' ([Errno 61] Connection refused)")
+Traceback (most recent call last):
+  File "/Users/seungkyun/PyProjects/PyBroffice/venv/lib/python3.14/site-packages/pymysql/connections.py", line 661, in connect
+    sock = socket.create_connection(
+        (self.host, self.port), self.connect_timeout, **kwargs
+    )
+  File "/opt/homebrew/Cellar/python@3.14/3.14.2_1/Frameworks/Python.framework/Versions/3.14/lib/python3.14/socket.py", line 870, in create_connection
+    raise exceptions[0]
+  File "/opt/homebrew/Cellar/python@3.14/3.14.2_1/Frameworks/Python.framework/Versions/3.14/lib/python3.14/socket.py", line 855, in create_connection
+    sock.connect(sa)
+    ~~~~~~~~~~~~^^^^
+ConnectionRefusedError: [Errno 61] Connection refused
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "/Users/seungkyun/PyProjects/PyBroffice/venv/lib/python3.14/site-packages/flask/app.py", line 1484, in full_dispatch_request
+    rv = self.dispatch_request()
+  File "/Users/seungkyun/PyProjects/PyBroffice/venv/lib/python3.14/site-packages/flask/app.py", line 1469, in dispatch_request
+    return self.ensure_sync(self.view_functions[rule.endpoint])(**view_args)
+           ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^
+  File "/Users/seungkyun/PyProjects/PyBroffice/broffice/router/accounts.py", line 29, in login_post
+    res = conn.execute_return('get_user_login', [user_email, user_passwd])
+  File "/Users/seungkyun/PyProjects/PyBroffice/broffice/dbconns.py", line 265, in execute_return
+    with get_db_connection() as conn:
+         ~~~~~~~~~~~~~~~~~^^
+  File "/opt/homebrew/Cellar/python@3.14/3.14.2_1/Frameworks/Python.framework/Versions/3.14/lib/python3.14/contextlib.py", line 141, in __enter__
+    return next(self.gen)
+  File "/Users/seungkyun/PyProjects/PyBroffice/broffice/dbconns.py", line 200, in get_db_connection
+    conn = connection_pool.get_connection()
+  File "/Users/seungkyun/PyProjects/PyBroffice/broffice/dbconns.py", line 129, in get_connection
+    conn = self._create_connection()
+  File "/Users/seungkyun/PyProjects/PyBroffice/broffice/dbconns.py", line 88, in _create_connection
+    conn = pymysql.connect(**self.db_config)
+  File "/Users/seungkyun/PyProjects/PyBroffice/venv/lib/python3.14/site-packages/pymysql/connections.py", line 365, in __init__
+    self.connect()
+    ~~~~~~~~~~~~^^
+  File "/Users/seungkyun/PyProjects/PyBroffice/venv/lib/python3.14/site-packages/pymysql/connections.py", line 723, in connect
+    raise exc
+pymysql.err.OperationalError: (2003, "Can't connect to MySQL server on '127.0.0.1' ([Errno 61] Connection refused)")
+[2026-02-13 22:30:07] INFO in log_handler: 로거 초기화 완료 - 레벨: DEBUG, 파일: /Users/seungkyun/PyProjects/PyBroffice/logs/broffice.log
+[2026-02-13 22:30:07] INFO in __init__: SendGrid API 키 설정 확인 완료
+[2026-02-13 22:30:07] INFO in __init__: 필터 등록 완료
+[2026-02-13 22:30:07] INFO in __init__: 애플리케이션 초기화 완료
+[2026-02-13 22:39:45] ERROR in sms_handler: twilio 패키지가 설치되지 않았습니다. pip install twilio
+[2026-02-13 22:39:46] INFO in sms_handler: SMS 예약 완료: task_schedule_id=29, 건수=1
+[2026-02-13 23:00:25] INFO in log_handler: 로거 초기화 완료 - 레벨: DEBUG, 파일: /Users/seungkyun/PyProjects/PyBroffice/logs/broffice.log
+[2026-02-13 23:00:25] INFO in __init__: SendGrid API 키 설정 확인 완료
+[2026-02-13 23:00:25] INFO in __init__: 필터 등록 완료
+[2026-02-13 23:00:25] INFO in __init__: 애플리케이션 초기화 완료

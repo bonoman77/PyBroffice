@@ -29,7 +29,7 @@ BEGIN
             WHEN 6 THEN '비품'
             ELSE '기타'
         END AS task_kind_name,
-        DATE_FORMAT(COALESCE(ts.change_scheduled_at, ts.scheduled_at), '%Y-%m-%d') AS work_date,
+        DATE_FORMAT(ts.scheduled_date, '%Y-%m-%d') AS work_date,
         IFNULL(wu.user_name, '') AS worker_name
     FROM task_schedules ts
     INNER JOIN tasks t ON ts.task_id = t.task_id
@@ -55,7 +55,7 @@ BEGIN
             WHEN 6 THEN '비품'
             ELSE '기타'
         END AS task_kind_name,
-        DATE_FORMAT(COALESCE(ts.change_scheduled_at, ts.scheduled_at), '%Y-%m-%d') AS work_date,
+        DATE_FORMAT(ts.scheduled_date, '%Y-%m-%d') AS work_date,
         IFNULL(wu.user_name, '') AS worker_name
     FROM task_schedules ts
     INNER JOIN tasks t ON ts.task_id = t.task_id
