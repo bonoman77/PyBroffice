@@ -413,10 +413,20 @@ function openUserModal(data) {
     alertEl.style.display = 'none';
     
     // 비밀번호 필드: 수정 시 선택사항
-    passwdLabel.innerHTML = '비밀번호';
-    passwdHelp.textContent = '비밀번호를 변경하려면 입력하세요 (최소 8자). 비워두면 기존 비밀번호 유지됩니다.';
-    passwdInput.removeAttribute('required');
-    passwdInput.placeholder = '변경하지 않으려면 비워두세요';
+    if (data.userId == 1) {
+      // user_id=1인 경우 비밀번호 수정 불가
+      passwdLabel.innerHTML = '비밀번호 <span class="text-muted">(수정 불가)</span>';
+      passwdHelp.textContent = '시스템관리자 계정의 비밀번호는 수정할 수 없습니다.';
+      passwdInput.setAttribute('disabled', 'disabled');
+      passwdInput.placeholder = '보안상 변경 불가';
+      passwdInput.value = '';
+    } else {
+      passwdLabel.innerHTML = '비밀번호';
+      passwdHelp.textContent = '비밀번호를 변경하려면 입력하세요 (최소 8자). 비워두면 기존 비밀번호 유지됩니다.';
+      passwdInput.removeAttribute('required');
+      passwdInput.removeAttribute('disabled');
+      passwdInput.placeholder = '변경하지 않으려면 비워두세요';
+    }
     
     // 이메일 수정 불가
     emailInput.setAttribute('disabled', 'disabled');

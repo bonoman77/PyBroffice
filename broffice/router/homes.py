@@ -21,11 +21,17 @@ def index(user_kind_id=None):
         year_month = datetime.now().strftime('%Y-%m')
         schedule_count = conn.execute_return('get_dashboard_schedule_count', [year_month]) or {}
         client_requests = conn.return_list('get_client_request_recent', [0, 10]) or []
+        today_cleaning = conn.return_list('get_dashboard_admin_today', [4]) or []
+        today_snack = conn.return_list('get_dashboard_admin_today', [5]) or []
+        today_supplies = conn.return_list('get_dashboard_admin_today', [6]) or []
         return render_template('homes/index.html',
             kpi=kpi,
             schedule_count=schedule_count,
             client_requests=client_requests,
-            year_month=year_month
+            year_month=year_month,
+            today_cleaning=today_cleaning,
+            today_snack=today_snack,
+            today_supplies=today_supplies
         )
     elif user_kind_id == 2:
         # 직원용 대시보드
@@ -34,9 +40,7 @@ def index(user_kind_id=None):
         year_month = datetime.now().strftime('%Y-%m')
         
         notices = conn.return_list('get_notice_list_by_target', [2, 3]) or []
-        today_tasks = conn.return_list('get_task_my_list', [user_id, year_month]) or []
-        # 오늘 날짜 기준 필터링 (최대 10개)
-        today_tasks = [t for t in today_tasks if t.get('effective_date') == today][:10]
+        today_tasks = conn.return_list('get_dashboard_staff_today', [user_id]) or []
         schedule_progress = conn.return_list('get_staff_schedule_progress', [user_id, year_month]) or []
         
         return render_template('homes/index_staff.html',
@@ -51,10 +55,12 @@ def index(user_kind_id=None):
         client_info = conn.execute_return('get_client_detail', [client_id]) if client_id else {}
         notices = conn.return_list('get_notice_list_by_target', [3, 5]) or []
         task_reports = conn.return_list('get_task_client_recent', [client_id, 5]) if client_id else []
+        today_results = conn.return_list('get_dashboard_client_today', [client_id]) if client_id else []
         return render_template('homes/index_client.html',
             client_info=client_info,
             notices=notices,
-            task_reports=task_reports or []
+            task_reports=task_reports or [],
+            today_results=today_results
         )
     else:
         # 기본 대시보드 (예외 처리)

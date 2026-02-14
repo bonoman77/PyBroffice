@@ -26,53 +26,64 @@
     <!-- 오늘의 업무 -->
     <div class="card">
       <div class="card-header d-flex justify-content-between align-items-center">
-        <h5 class="card-title mb-0">오늘의 업무</h5>
-        <span class="badge bg-primary">{{ today_tasks|length }}건</span>
+        <h5 class="card-title mb-0"><i class="ph ph-calendar-check me-2"></i>오늘의 업무</h5>
+        <span class="text-muted small">오늘 · 내일</span>
       </div>
       <div class="card-body p-0">
-        {% if today_tasks %}
-        <div class="table-responsive">
-          <table class="table table-hover mb-0">
-            <thead>
-              <tr>
-                <th style="width: 70px;">구분</th>
-                <th>업체명</th>
-                <th style="width: 80px;">상태</th>
-              </tr>
-            </thead>
-            <tbody>
-              {% for task in today_tasks %}
-              <tr>
-                <td>
-                  {% if task.task_kind_id == 4 %}
-                  <span class="badge bg-primary-subtle text-primary">청소</span>
-                  {% elif task.task_kind_id == 5 %}
-                  <span class="badge bg-warning-subtle text-warning">간식</span>
-                  {% elif task.task_kind_id == 6 %}
-                  <span class="badge bg-danger-subtle text-danger">비품</span>
-                  {% endif %}
-                </td>
-                <td>{{ task.client_name }}</td>
-                <td>
-                  {% if task.schedule_status == 'completed' %}
-                  <span class="badge badge-soft-success">완료</span>
-                  {% elif task.schedule_status == 'today' %}
-                  <span class="badge badge-soft-primary">진행</span>
-                  {% elif task.schedule_status == 'overdue' %}
-                  <span class="badge badge-soft-danger">지연</span>
-                  {% else %}
-                  <span class="badge badge-soft-secondary">예정</span>
-                  {% endif %}
-                </td>
-              </tr>
-              {% endfor %}
-            </tbody>
-          </table>
-        </div>
+        {% if session.login_user.user_id == 1 %}
+          {% if today_tasks %}
+          <div class="table-responsive">
+            <table class="table table-hover mb-0">
+              <thead>
+                <tr>
+                  <th style="width:80px;">날짜</th>
+                  <th style="width:70px;">구분</th>
+                  <th>업체명</th>
+                  <th style="width:80px;">진행</th>
+                  <th style="width:70px;">상태</th>
+                </tr>
+              </thead>
+              <tbody>
+                {% for s in today_tasks %}
+                <tr>
+                  <td class="small">{{ s.short_date }}({{ s.day_name }})</td>
+                  <td>
+                    {% if s.task_kind_id == 4 %}
+                    <span class="badge bg-primary-subtle text-primary">청소</span>
+                    {% elif s.task_kind_id == 5 %}
+                    <span class="badge bg-warning-subtle text-warning">간식</span>
+                    {% elif s.task_kind_id == 6 %}
+                    <span class="badge bg-danger-subtle text-danger">비품</span>
+                    {% endif %}
+                  </td>
+                  <td>{{ s.client_name }}</td>
+                  <td class="small">{{ s.completed_area_count }}/{{ s.area_count }}구역</td>
+                  <td>
+                    {% if s.schedule_status == 'completed' %}
+                    <span class="badge badge-soft-success">완료</span>
+                    {% elif s.schedule_status == 'today' %}
+                    <span class="badge badge-soft-primary">오늘</span>
+                    {% elif s.schedule_status == 'overdue' %}
+                    <span class="badge badge-soft-danger">지연</span>
+                    {% else %}
+                    <span class="badge badge-soft-secondary">예정</span>
+                    {% endif %}
+                  </td>
+                </tr>
+                {% endfor %}
+              </tbody>
+            </table>
+          </div>
+          {% else %}
+          <div class="text-center text-muted py-5">
+            <i class="bi bi-calendar-check" style="font-size: 48px; opacity: 0.3;"></i>
+            <p class="mt-3 mb-0">오늘·내일 할당된 업무가 없습니다</p>
+          </div>
+          {% endif %}
         {% else %}
         <div class="text-center text-muted py-5">
-          <i class="bi bi-calendar-check" style="font-size: 48px; opacity: 0.3;"></i>
-          <p class="mt-3 mb-0">오늘 할당된 업무가 없습니다</p>
+          <i class="bi bi-lock" style="font-size: 36px; opacity: 0.3;"></i>
+          <p class="mt-2 mb-0 small">서비스 준비중입니다</p>
         </div>
         {% endif %}
       </div>

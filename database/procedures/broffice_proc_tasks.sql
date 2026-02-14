@@ -1193,4 +1193,149 @@ BEGIN
 END$$
 
 
+-- =============================================
+-- Author:      김승균
+-- Create date: 2026-02-14
+-- Email:       bonoman77@gmail.com 
+-- Description: 대시보드 - 시스템관리자 오늘의 업무 (오늘+내일, task_kind_id별, 최대6건)
+-- =============================================
+
+DROP PROCEDURE IF EXISTS get_dashboard_admin_today$$
+
+CREATE PROCEDURE get_dashboard_admin_today(
+    IN p_task_kind_id INT
+)
+BEGIN
+    SELECT 
+        ts.task_schedule_id,
+        c.client_name,
+        u.user_name AS worker_name,
+        DATE_FORMAT(ts.scheduled_date, '%m/%d') AS short_date,
+        CASE DAYOFWEEK(ts.scheduled_date)
+            WHEN 1 THEN '일' WHEN 2 THEN '월' WHEN 3 THEN '화'
+            WHEN 4 THEN '수' WHEN 5 THEN '목' WHEN 6 THEN '금' WHEN 7 THEN '토'
+        END AS day_name,
+        CASE
+            WHEN ts.canceled_at IS NOT NULL THEN 'canceled'
+            WHEN ts.completed_at IS NOT NULL THEN 'completed'
+            WHEN ts.scheduled_date < CURDATE() THEN 'overdue'
+            WHEN ts.scheduled_date = CURDATE() THEN 'today'
+            ELSE 'scheduled'
+        END AS schedule_status,
+        (SELECT COUNT(*) FROM task_area_logs tal 
+         INNER JOIN task_areas ta2 ON tal.task_area_id = ta2.task_area_id
+         WHERE tal.task_schedule_id = ts.task_schedule_id 
+           AND ta2.deleted_at IS NULL
+           AND ((tal.content IS NOT NULL AND tal.content != '')
+                OR EXISTS (SELECT 1 FROM task_area_photos tap WHERE tap.task_area_log_id = tal.task_area_log_id))
+        ) AS completed_area_count,
+        (SELECT COUNT(*) FROM task_areas ta 
+         WHERE ta.task_id = t.task_id AND ta.use_yn = 1 AND ta.deleted_at IS NULL) AS area_count
+    FROM task_schedules ts
+    INNER JOIN tasks t ON ts.task_id = t.task_id
+    INNER JOIN clients c ON t.client_id = c.client_id
+    INNER JOIN users u ON ts.user_id = u.user_id
+    WHERE t.task_kind_id = p_task_kind_id
+      AND ts.scheduled_date BETWEEN CURDATE() AND DATE_ADD(CURDATE(), INTERVAL 1 DAY)
+      AND t.deleted_at IS NULL
+      AND ts.canceled_at IS NULL
+    ORDER BY ts.scheduled_date ASC, c.client_name ASC
+    LIMIT 10;
+END$$
+
+
+-- =============================================
+-- Author:      김승균
+-- Create date: 2026-02-14
+-- Email:       bonoman77@gmail.com 
+-- Description: 대시보드 - 현장작업팀장 오늘의 업무 (오늘+내일, user_id별)
+-- =============================================
+
+DROP PROCEDURE IF EXISTS get_dashboard_staff_today$$
+
+CREATE PROCEDURE get_dashboard_staff_today(
+    IN p_user_id INT
+)
+BEGIN
+    SELECT 
+        ts.task_schedule_id,
+        t.task_kind_id,
+        c.client_name,
+        DATE_FORMAT(ts.scheduled_date, '%m/%d') AS short_date,
+        CASE DAYOFWEEK(ts.scheduled_date)
+            WHEN 1 THEN '일' WHEN 2 THEN '월' WHEN 3 THEN '화'
+            WHEN 4 THEN '수' WHEN 5 THEN '목' WHEN 6 THEN '금' WHEN 7 THEN '토'
+        END AS day_name,
+        CASE
+            WHEN ts.canceled_at IS NOT NULL THEN 'canceled'
+            WHEN ts.completed_at IS NOT NULL THEN 'completed'
+            WHEN ts.scheduled_date < CURDATE() THEN 'overdue'
+            WHEN ts.scheduled_date = CURDATE() THEN 'today'
+            ELSE 'scheduled'
+        END AS schedule_status,
+        (SELECT COUNT(*) FROM task_area_logs tal 
+         INNER JOIN task_areas ta2 ON tal.task_area_id = ta2.task_area_id
+         WHERE tal.task_schedule_id = ts.task_schedule_id 
+           AND ta2.deleted_at IS NULL
+           AND ((tal.content IS NOT NULL AND tal.content != '')
+                OR EXISTS (SELECT 1 FROM task_area_photos tap WHERE tap.task_area_log_id = tal.task_area_log_id))
+        ) AS completed_area_count,
+        (SELECT COUNT(*) FROM task_areas ta 
+         WHERE ta.task_id = t.task_id AND ta.use_yn = 1 AND ta.deleted_at IS NULL) AS area_count
+    FROM task_schedules ts
+    INNER JOIN tasks t ON ts.task_id = t.task_id
+    INNER JOIN clients c ON t.client_id = c.client_id
+    WHERE ts.user_id = p_user_id
+      AND ts.scheduled_date BETWEEN CURDATE() AND DATE_ADD(CURDATE(), INTERVAL 1 DAY)
+      AND t.deleted_at IS NULL
+      AND ts.canceled_at IS NULL
+    ORDER BY ts.scheduled_date ASC, c.client_name ASC;
+END$$
+
+
+-- =============================================
+-- Author:      김승균
+-- Create date: 2026-02-14
+-- Email:       bonoman77@gmail.com 
+-- Description: 대시보드 - 업체담당자 오늘의 작업 결과 (오늘+내일 완료건, client_id별)
+-- =============================================
+
+DROP PROCEDURE IF EXISTS get_dashboard_client_today$$
+
+CREATE PROCEDURE get_dashboard_client_today(
+    IN p_client_id INT
+)
+BEGIN
+    SELECT 
+        ts.task_schedule_id,
+        t.task_kind_id,
+        DATE_FORMAT(ts.scheduled_date, '%m/%d') AS short_date,
+        CASE DAYOFWEEK(ts.scheduled_date)
+            WHEN 1 THEN '일' WHEN 2 THEN '월' WHEN 3 THEN '화'
+            WHEN 4 THEN '수' WHEN 5 THEN '목' WHEN 6 THEN '금' WHEN 7 THEN '토'
+        END AS day_name,
+        u.user_name AS worker_name,
+        DATE_FORMAT(ts.completed_at, '%H:%i') AS completed_time,
+        (SELECT COUNT(*) FROM task_area_logs tal 
+         INNER JOIN task_areas ta2 ON tal.task_area_id = ta2.task_area_id
+         WHERE tal.task_schedule_id = ts.task_schedule_id 
+           AND ta2.deleted_at IS NULL
+           AND ((tal.content IS NOT NULL AND tal.content != '')
+                OR EXISTS (SELECT 1 FROM task_area_photos tap WHERE tap.task_area_log_id = tal.task_area_log_id))
+        ) AS completed_area_count,
+        (SELECT COUNT(*) FROM task_areas ta 
+         WHERE ta.task_id = t.task_id AND ta.use_yn = 1 AND ta.deleted_at IS NULL) AS area_count
+    FROM task_schedules ts
+    INNER JOIN tasks t ON ts.task_id = t.task_id
+    INNER JOIN clients c ON t.client_id = c.client_id
+    INNER JOIN users u ON ts.user_id = u.user_id
+    WHERE t.client_id = p_client_id
+      AND ts.scheduled_date BETWEEN CURDATE() AND DATE_ADD(CURDATE(), INTERVAL 1 DAY)
+      AND ts.completed_at IS NOT NULL
+      AND t.deleted_at IS NULL
+      AND ts.canceled_at IS NULL
+    ORDER BY ts.completed_at DESC;
+END$$
+
+
 DELIMITER ;

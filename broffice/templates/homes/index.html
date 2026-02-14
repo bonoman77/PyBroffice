@@ -65,7 +65,7 @@
 
 <!-- Main Content Grid -->
 <div class="row g-3">
-  <!-- 업체 요청사항 (왼쪽) -->
+  <!-- 왼쪽: 업체 요청사항 + 오늘의 업무 -->
   <div class="col-lg-8">
     <div class="card">
       <div class="card-header d-flex align-items-center justify-content-between">
@@ -119,9 +119,90 @@
         {% endif %}
       </div>
     </div>
+
+    <!-- 오늘의 업무 -->
+    <div class="card mt-3">
+      <div class="card-header d-flex align-items-center justify-content-between">
+        <h5 class="card-title mb-0"><i class="ph ph-calendar-check me-2"></i>오늘의 업무</h5>
+        <span class="text-muted small">오늘 · 내일 (최대 10건)</span>
+      </div>
+      <div class="card-body p-0">
+        {% if session.login_user.user_id == 1 %}
+        <ul class="nav nav-tabs px-3 pt-2" role="tablist">
+          <li class="nav-item">
+            <button class="nav-link active" data-bs-toggle="tab" data-bs-target="#tabCleaning" type="button">
+              <i class="ph-duotone ph-broom me-1"></i>청소 <span class="badge bg-success-subtle text-success ms-1">{{ today_cleaning|length }}</span>
+            </button>
+          </li>
+          <li class="nav-item">
+            <button class="nav-link" data-bs-toggle="tab" data-bs-target="#tabSnack" type="button">
+              <i class="ph-duotone ph-hamburger me-1"></i>간식 <span class="badge bg-warning-subtle text-warning ms-1">{{ today_snack|length }}</span>
+            </button>
+          </li>
+          <li class="nav-item">
+            <button class="nav-link" data-bs-toggle="tab" data-bs-target="#tabSupplies" type="button">
+              <i class="ph-duotone ph-package me-1"></i>비품 <span class="badge bg-danger-subtle text-danger ms-1">{{ today_supplies|length }}</span>
+            </button>
+          </li>
+        </ul>
+        <div class="tab-content">
+          {% for tab_id, tab_data in [('tabCleaning', today_cleaning), ('tabSnack', today_snack), ('tabSupplies', today_supplies)] %}
+          <div class="tab-pane fade {{ 'show active' if loop.first else '' }}" id="{{ tab_id }}">
+            {% if tab_data %}
+            <div class="table-responsive">
+              <table class="table table-hover mb-0">
+                <thead>
+                  <tr>
+                    <th style="width:80px;">날짜</th>
+                    <th>업체명</th>
+                    <th style="width:90px;">작업자</th>
+                    <th style="width:80px;">진행</th>
+                    <th style="width:70px;">상태</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {% for s in tab_data %}
+                  <tr>
+                    <td class="small">{{ s.short_date }}({{ s.day_name }})</td>
+                    <td>{{ s.client_name }}</td>
+                    <td class="small">{{ s.worker_name }}</td>
+                    <td class="small">{{ s.completed_area_count }}/{{ s.area_count }}구역</td>
+                    <td>
+                      {% if s.schedule_status == 'completed' %}
+                      <span class="badge badge-soft-success">완료</span>
+                      {% elif s.schedule_status == 'today' %}
+                      <span class="badge badge-soft-primary">오늘</span>
+                      {% elif s.schedule_status == 'overdue' %}
+                      <span class="badge badge-soft-danger">지연</span>
+                      {% else %}
+                      <span class="badge badge-soft-secondary">예정</span>
+                      {% endif %}
+                    </td>
+                  </tr>
+                  {% endfor %}
+                </tbody>
+              </table>
+            </div>
+            {% else %}
+            <div class="text-center text-muted py-4">
+              <i class="bi bi-calendar-check" style="font-size: 36px; opacity: 0.3;"></i>
+              <p class="mt-2 mb-0 small">오늘·내일 예정된 업무가 없습니다</p>
+            </div>
+            {% endif %}
+          </div>
+          {% endfor %}
+        </div>
+        {% else %}
+        <div class="text-center text-muted py-5">
+          <i class="bi bi-lock" style="font-size: 36px; opacity: 0.3;"></i>
+          <p class="mt-2 mb-0 small">서비스 준비중입니다</p>
+        </div>
+        {% endif %}
+      </div>
+    </div>
   </div>
 
-  <!-- 이번달 스케줄 현황 (오른쪽) -->
+  <!-- 오른쪽: 이번달 스케줄 현황 + 빠른 메뉴 -->
   <div class="col-lg-4">
     {% set sc = schedule_count %}
     {% set c_total = sc.cleaning_total|default(0)|int %}

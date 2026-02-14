@@ -68,7 +68,63 @@
         {% endif %}
       </div>
     </div>
-    <!-- 작업 보고 내역 -->
+    <!-- 오늘의 작업 결과 -->
+    <div class="card mt-3">
+      <div class="card-header d-flex align-items-center justify-content-between">
+        <h5 class="card-title mb-0"><i class="ph ph-clipboard-text me-2"></i>오늘의 작업 결과</h5>
+        <span class="text-muted small">오늘 · 내일 완료건</span>
+      </div>
+      <div class="card-body p-0">
+        {% if session.login_user.user_id == 1 %}
+          {% if today_results %}
+          <div class="table-responsive">
+            <table class="table table-hover mb-0">
+              <thead>
+                <tr>
+                  <th style="width:80px;">날짜</th>
+                  <th style="width:70px;">구분</th>
+                  <th style="width:90px;">작업자</th>
+                  <th style="width:80px;">진행</th>
+                  <th style="width:70px;">완료</th>
+                </tr>
+              </thead>
+              <tbody>
+                {% for s in today_results %}
+                <tr>
+                  <td class="small">{{ s.short_date }}({{ s.day_name }})</td>
+                  <td>
+                    {% if s.task_kind_id == 4 %}
+                    <span class="badge bg-primary-subtle text-primary">청소</span>
+                    {% elif s.task_kind_id == 5 %}
+                    <span class="badge bg-warning-subtle text-warning">간식</span>
+                    {% elif s.task_kind_id == 6 %}
+                    <span class="badge bg-danger-subtle text-danger">비품</span>
+                    {% endif %}
+                  </td>
+                  <td class="small">{{ s.worker_name }}</td>
+                  <td class="small">{{ s.completed_area_count }}/{{ s.area_count }}구역</td>
+                  <td class="small text-success fw-semibold">{{ s.completed_time }}</td>
+                </tr>
+                {% endfor %}
+              </tbody>
+            </table>
+          </div>
+          {% else %}
+          <div class="text-center text-muted py-4">
+            <i class="bi bi-clipboard-check" style="font-size: 36px; opacity: 0.3;"></i>
+            <p class="mt-2 mb-0 small">오늘·내일 완료된 작업이 없습니다</p>
+          </div>
+          {% endif %}
+        {% else %}
+        <div class="text-center text-muted py-5">
+          <i class="bi bi-lock" style="font-size: 36px; opacity: 0.3;"></i>
+          <p class="mt-2 mb-0 small">서비스 준비중입니다</p>
+        </div>
+        {% endif %}
+      </div>
+    </div>
+
+    <!-- 작업 보고 내역 (기존 - 주석처리) -->
     <!-- <div class="card mt-3">
       <div class="card-header d-flex align-items-center justify-content-between">
         <div>
