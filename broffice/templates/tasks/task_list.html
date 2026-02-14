@@ -80,7 +80,8 @@
             </div>
           </th>
           <th>업체명</th>
-          <th>작업자</th>
+          <th>현장작업팀장</th>
+          <th>관리팀장</th>
           <th>작업주기</th>
           <th>구역수</th>
           <th>상태</th>
@@ -107,22 +108,29 @@
               <div class="users-cell-email">{{ task.user_mobile }}</div>
             </td>
             <td class="users-cell-meta">
+              <div>{{ task.manager_name or '-' }}</div>
+            </td>
+            <td class="users-cell-meta">
               <div>{{ task.day_of_week }}</div>
             </td>
             <td class="users-cell-meta text-center">
-              <div>{{ task.area_count }}</div>
+              <div class="{% if task.area_count == 0 %}text-danger{% elif task.area_count > 0 %}fw-bold{% endif %}">{{ task.area_count }}</div>
             </td>
             <td class="text-center">
               {% if task.task_status == 'active' %}
-                <span class="users-status active">활성</span>
+                <span class="fw-bold text-success">활성</span>
               {% elif task.task_status == 'pending' %}
                 <span class="users-status pending">대기</span>
               {% else %}
-                <span class="users-status inactive">비활성</span>
+                <span class="text-danger">비활성</span>
               {% endif %}
             </td>
             <td class="users-cell-meta text-center">
-              <div>{{ task.current_month_schedule_count }} / {{ task.next_month_schedule_count }}</div>
+              <div>
+                <span class="{% if task.current_month_schedule_count > 0 %}fw-bold{% endif %}">{{ task.current_month_schedule_count }}</span>
+                /
+                <span class="{% if task.next_month_schedule_count > 0 %}fw-bold{% endif %}">{{ task.next_month_schedule_count }}</span>
+              </div>
             </td>
             <td>
               <div class="table-actions justify-content-end">
@@ -135,7 +143,7 @@
           {% endfor %}
         {% else %}
           <tr>
-            <td colspan="8" class="text-center py-5">
+            <td colspan="9" class="text-center py-5">
               <div class="text-muted">
                 <i class="ph 
                   {% if task_kind_id == 4 %}ph-broom
@@ -168,9 +176,9 @@
 <!-- 스케줄 생성 -->
 <div class="card mt-3">
   <div class="card-body">
-    <div class="d-flex align-items-center justify-content-between">
+    <div class="d-flex align-items-center justify-content-between flex-wrap gap-2 mb-2">
       <h6 class="mb-0"><i class="ph ph-calendar-dots me-2"></i>스케줄 생성</h6>
-      <div class="d-flex gap-2">
+      <div class="d-flex flex-wrap gap-2">
         <button class="btn btn-sm btn-primary" onclick="generateSchedule('current', 'all')">
           <i class="ph ph-calendar-plus me-1"></i>당월전체
         </button>
@@ -184,6 +192,10 @@
           <i class="ph ph-check-square me-1"></i>익월선택
         </button>
       </div>
+    </div>
+    <div class="small text-muted border-top pt-2">
+      <i class="ph ph-info me-1"></i>구역이 등록되어 있고 <strong>활성</strong> 상태인 작업만 스케줄이 생성됩니다.
+      재생성 시 완료·작업중인 스케줄은 유지되고, 나머지는 삭제 후 새로 생성됩니다.
     </div>
   </div>
 </div>

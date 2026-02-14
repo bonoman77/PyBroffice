@@ -275,6 +275,15 @@ def client_request_check():
     return jsonify({'success': True, 'message': '확인 처리되었습니다.'})
 
 
+@bp.route("/manual")
+@admin_required
+def manual():
+    """사이트 매뉴얼 (user_id=1 전용)"""
+    if session.get('login_user', {}).get('user_id') != 1:
+        return redirect(url_for('homes.index'))
+    return render_template('homes/manual.html')
+
+
 @bp.route("/test_camera")
 @admin_required
 def test_camera():

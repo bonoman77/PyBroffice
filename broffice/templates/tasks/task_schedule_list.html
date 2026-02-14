@@ -72,9 +72,9 @@
       <thead>
         <tr>
           <th>날짜</th>
-          <th>요일</th>
           <th>업체명</th>
-          <th>작업자</th>
+          <th>현장작업팀장</th>
+          <th>관리팀장</th>
           <th>상태</th>
           <th class="users-th-actions">작업</th>
         </tr>
@@ -84,10 +84,10 @@
           {% for s in schedules %}
           <tr data-task-log-id="{{ s.task_schedule_id }}" data-status="{{ s.schedule_status }}">
             <td class="users-cell-meta">
-              <div class="fw-semibold">{{ s.effective_date }}</div>
-            </td>
-            <td class="users-cell-meta text-center">
-              <div>{{ s.effective_day }}</div>
+              <div class="fw-semibold">{{ s.effective_date }} ({{ s.effective_day }})</div>
+              {% if s.change_scheduled_yn %}
+                <div class="small text-warning"><i class="ph ph-arrow-bend-right-down me-1"></i>날짜변경</div>
+              {% endif %}
             </td>
             <td>
               <div class="users-cell-user">
@@ -99,6 +99,9 @@
             <td class="users-cell-meta">
               <div>{{ s.worker_name }}</div>
               <div class="users-cell-email">{{ s.worker_mobile }}</div>
+            </td>
+            <td class="users-cell-meta">
+              <div>{{ s.manager_name or '-' }}</div>
             </td>
             <td class="text-center">
               {% if s.schedule_status == 'completed' %}
@@ -112,9 +115,16 @@
               {% else %}
                 <span class="users-status pending">예정</span>
               {% endif %}
+              {% if s.schedule_status != 'completed' and s.completed_area_count is defined and s.completed_area_count > 0 %}
+                <div><span class="badge bg-danger mt-1" style="font-size: 0.7em;">작업중</span></div>
+              {% endif %}
             </td>
             <td>
               <div class="table-actions justify-content-end">
+                <a href="{{ url_for('tasks.task_detail_view', task_schedule_id=s.task_schedule_id, task_kind_id=task_kind_id) }}" 
+                   class="btn btn-icon btn-sm btn-light" title="자세히보기">
+                  <i class="ph ph-eye"></i>
+                </a>
                 {% if s.schedule_status != 'completed' and s.schedule_status != 'canceled' %}
                 <button class="btn btn-icon btn-sm btn-light" title="날짜변경"
                         onclick="showChangeDateModal({{ s.task_schedule_id }}, '{{ s.effective_date }}', '{{ s.client_name }}')">
@@ -131,7 +141,7 @@
           {% endfor %}
         {% else %}
           <tr>
-            <td colspan="8" class="text-center py-5">
+            <td colspan="7" class="text-center py-5">
               <div class="text-muted">
                 <i class="ph ph-calendar-blank" style="font-size: 48px; opacity: 0.3;"></i>
                 <p class="mt-3 mb-0">해당 월에 생성된 스케줄이 없습니다.</p>

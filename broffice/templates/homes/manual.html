@@ -1,0 +1,386 @@
+{% extends "layout.html" %}
+
+{% block title %}사이트 매뉴얼{% endblock %}
+
+{% block extra_css %}
+<style>
+.manual-section {
+  scroll-margin-top: 80px;
+}
+.manual-nav .nav-link {
+  padding: 0.35rem 0.75rem;
+  font-size: 0.85rem;
+  color: var(--bs-body-color);
+  border-left: 2px solid transparent;
+  border-radius: 0;
+}
+.manual-nav .nav-link:hover,
+.manual-nav .nav-link.active {
+  color: var(--bs-primary);
+  border-left-color: var(--bs-primary);
+  background: rgba(var(--bs-primary-rgb), 0.05);
+}
+.manual-nav .nav-link .badge {
+  font-size: 0.65rem;
+}
+.manual-card {
+  /* border-left: 3px solid var(--bs-primary); */
+}
+.manual-card .card-header {
+  background: transparent;
+  border-bottom: 1px solid rgba(0,0,0,0.05);
+}
+.manual-icon {
+  width: 36px;
+  height: 36px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 8px;
+  font-size: 1.1rem;
+}
+.role-badge {
+  font-size: 0.7rem;
+  padding: 0.15rem 0.4rem;
+}
+/* 다크모드 테이블 스타일 */
+@media (prefers-color-scheme: dark) {
+  .table {
+    --bs-table-color: var(--bs-body-color);
+    --bs-table-bg: transparent;
+    --bs-table-border-color: rgba(255, 255, 255, 0.15);
+    --bs-table-striped-bg: rgba(255, 255, 255, 0.05);
+    --bs-table-active-bg: rgba(255, 255, 255, 0.1);
+    --bs-table-hover-bg: rgba(255, 255, 255, 0.075);
+  }
+  .table-light {
+    --bs-table-bg: rgba(255, 255, 255, 0.05);
+    --bs-table-border-color: rgba(255, 255, 255, 0.15);
+  }
+}
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="page-header">
+  <div>
+    <h1 class="page-title"><i class="bi bi-book me-2"></i>사이트 매뉴얼</h1>
+    <nav>
+      <ol class="breadcrumb">
+        <li class="breadcrumb-item"><a href="/">홈</a></li>
+        <li class="breadcrumb-item active">사이트 매뉴얼</li>
+      </ol>
+    </nav>
+  </div>
+</div>
+
+<div class="row">
+  <!-- 좌측 네비게이션 -->
+  <div class="col-lg-3 d-none d-lg-block">
+    <div class="card position-sticky" style="top: 80px;">
+      <div class="card-body p-3">
+        <h6 class="fw-bold mb-3"><i class="bi bi-list-nested me-1"></i>목차</h6>
+        <nav class="manual-nav nav flex-column">
+          <a class="nav-link" href="#sec-overview">시스템 개요</a>
+          <a class="nav-link" href="#sec-roles">사용자 유형</a>
+          <a class="nav-link" href="#sec-home">홈</a>
+          <a class="nav-link" href="#sec-members">회원관리</a>
+          <a class="nav-link" href="#sec-cleaning">청소관리</a>
+          <a class="nav-link" href="#sec-snack">간식관리</a>
+          <a class="nav-link" href="#sec-supplies">비품관리</a>
+          <a class="nav-link" href="#sec-report">리포트</a>
+          <a class="nav-link" href="#sec-schedule-flow">스케줄 생성 흐름</a>
+          <a class="nav-link" href="#sec-work-flow">업무보고 흐름</a>
+        </nav>
+      </div>
+    </div>
+  </div>
+
+  <!-- 우측 콘텐츠 -->
+  <div class="col-lg-9">
+
+    <!-- 시스템 개요 -->
+    <div class="card manual-card mb-3 manual-section" id="sec-overview">
+      <div class="card-header py-3">
+        <h5 class="mb-0">
+          <span class="manual-icon bg-primary-subtle text-primary me-2"><i class="bi bi-info-circle"></i></span>
+          시스템 개요
+        </h5>
+      </div>
+      <div class="card-body">
+        <p class="mb-2"><strong>브로피스</strong>는 청소·간식·비품 등 정기 업무의 스케줄 관리, 현장 업무보고, 리포트를 하나의 플랫폼에서 처리하는 시스템입니다.</p>
+        <div class="row g-2 mt-2">
+          <div class="col-md-4">
+            <div class="border rounded p-3 text-center h-100">
+              <i class="ph-duotone ph-calendar-check fs-2 text-primary d-block mb-2"></i>
+              <strong class="d-block">스케줄 관리</strong>
+              <small class="text-muted">작업 등록 → 스케줄 자동 생성</small>
+            </div>
+          </div>
+          <div class="col-md-4">
+            <div class="border rounded p-3 text-center h-100">
+              <i class="ph-duotone ph-camera fs-2 text-success d-block mb-2"></i>
+              <strong class="d-block">현장 업무보고</strong>
+              <small class="text-muted">사진 촬영 + 특이사항 기록</small>
+            </div>
+          </div>
+          <div class="col-md-4">
+            <div class="border rounded p-3 text-center h-100">
+              <i class="ph-duotone ph-chart-bar fs-2 text-info d-block mb-2"></i>
+              <strong class="d-block">리포트</strong>
+              <small class="text-muted">월간 실적 · 문자발송 내역</small>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- 사용자 유형 -->
+    <div class="card manual-card mb-3 manual-section" id="sec-roles">
+      <div class="card-header py-3">
+        <h5 class="mb-0">
+          <span class="manual-icon bg-warning-subtle text-warning me-2"><i class="bi bi-people"></i></span>
+          사용자 유형
+        </h5>
+      </div>
+      <div class="card-body">
+        <div class="table-responsive">
+          <table class="table table-sm table-bordered mb-0">
+            <thead class="table-light">
+              <tr><th style="width:140px;">유형</th><th>설명</th><th>주요 기능</th></tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td><span class="badge bg-primary role-badge">시스템관리자</span></td>
+                <td>시스템 전체를 관리하는 운영자</td>
+                <td>회원·업체 관리, 작업 등록, 스케줄 생성, 리포트 조회, 관리팀장 지정</td>
+              </tr>
+              <tr>
+                <td><span class="badge bg-success role-badge">현장작업팀장</span></td>
+                <td>현장에서 업무를 수행하는 작업자</td>
+                <td>내 스케줄 확인, 업무보고(사진·특이사항), 완료 처리</td>
+              </tr>
+              <tr>
+                <td><span class="badge bg-warning role-badge">관리팀장</span></td>
+                <td>현장작업팀장의 업무를 관리하고, 업체와 소통하는 역할</td>
+                <td>업체별 관리팀장 지정, 업무 현황 파악, 업체 요청사항 응대 (현재 시스템관리자가 담당)</td>
+              </tr>
+              <tr>
+                <td><span class="badge bg-info role-badge">업체담당자</span></td>
+                <td>서비스를 받는 업체의 담당자</td>
+                <td>작업 결과 확인, 요청사항 등록, 공지사항 확인, 관리팀장 정보 확인</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+
+    <!-- 홈 -->
+    <div class="card manual-card mb-3 manual-section" id="sec-home">
+      <div class="card-header py-3">
+        <h5 class="mb-0">
+          <span class="manual-icon bg-secondary-subtle text-secondary me-2"><i class="ph-duotone ph-house"></i></span>
+          홈
+        </h5>
+      </div>
+      <div class="card-body">
+        <div class="mb-3">
+          <h6 class="fw-bold"><i class="bi bi-speedometer2 me-2"></i>대시보드</h6>
+          <p class="small text-muted mb-1">사용자 유형별로 다른 대시보드가 표시됩니다.</p>
+          <ul class="small mb-0">
+            <li><strong>시스템관리자</strong> — KPI 요약, 월간 스케줄 현황, 최근 업체 요청사항</li>
+            <li><strong>현장작업팀장</strong> — 오늘 할 일, 작업 종류별 진행률</li>
+            <li><strong>업체담당자</strong> — 업체 정보, 최근 작업 결과, 공지사항</li>
+          </ul>
+        </div>
+        <div class="mb-3">
+          <h6 class="fw-bold"><i class="bi bi-megaphone me-2"></i>공지사항</h6>
+          <p class="small text-muted mb-0">시스템관리자가 작성하며, 대상(전체/현장작업팀장/업체)을 지정할 수 있습니다. 상단 고정 및 표시 여부 설정 가능.</p>
+        </div>
+        <div>
+          <h6 class="fw-bold"><i class="bi bi-chat-dots me-2"></i>업체 요청사항</h6>
+          <p class="small text-muted mb-0">업체담당자가 요청을 등록하면 시스템관리자가 확인 처리합니다. 현장작업팀장은 접근 불가.</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- 회원관리 -->
+    <div class="card manual-card mb-3 manual-section" id="sec-members">
+      <div class="card-header py-3">
+        <h5 class="mb-0">
+          <span class="manual-icon bg-primary-subtle text-primary me-2"><i class="ph-duotone ph-users"></i></span>
+          회원관리
+          <span class="badge bg-primary role-badge ms-2">시스템관리자 전용</span>
+        </h5>
+      </div>
+      <div class="card-body">
+        <div class="row g-3">
+          <div class="col-md-6">
+            <h6 class="fw-bold"><i class="bi bi-person-lines-fill me-2"></i>회원목록</h6>
+            <p class="small text-muted mb-0">현장작업팀장·업체담당자 계정을 관리합니다. 인증 처리, 사용 여부 설정, 상세 정보 수정이 가능합니다.</p>
+          </div>
+          <div class="col-md-6">
+            <h6 class="fw-bold"><i class="bi bi-building-check me-2"></i>업체목록</h6>
+            <p class="small text-muted mb-0">서비스 대상 업체를 등록·관리합니다. 업체별 관리팀장을 지정할 수 있습니다.</p>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- 청소관리 -->
+    <div class="card manual-card mb-3 manual-section" id="sec-cleaning">
+      <div class="card-header py-3">
+        <h5 class="mb-0">
+          <span class="manual-icon bg-info-subtle text-info me-2"><i class="ph-duotone ph-broom"></i></span>
+          청소관리
+        </h5>
+      </div>
+      <div class="card-body">
+        {% include "homes/_manual_task_section.html" %}
+      </div>
+    </div>
+
+    <!-- 간식관리 -->
+    <div class="card manual-card mb-3 manual-section" id="sec-snack">
+      <div class="card-header py-3">
+        <h5 class="mb-0">
+          <span class="manual-icon bg-warning-subtle text-warning me-2"><i class="ph-duotone ph-hamburger"></i></span>
+          간식관리
+        </h5>
+      </div>
+      <div class="card-body">
+        <p class="small text-muted mb-0">청소관리와 동일한 구조입니다. 작업 관리 → 스케줄 생성 → 내 스케줄 → 업무보고 → 작업 결과 확인 순서로 운영됩니다.</p>
+      </div>
+    </div>
+
+    <!-- 비품관리 -->
+    <div class="card manual-card mb-3 manual-section" id="sec-supplies">
+      <div class="card-header py-3">
+        <h5 class="mb-0">
+          <span class="manual-icon bg-danger-subtle text-danger me-2"><i class="ph-duotone ph-package"></i></span>
+          비품관리
+        </h5>
+      </div>
+      <div class="card-body">
+        <p class="small text-muted mb-0">청소관리와 동일한 구조입니다. 작업 관리 → 스케줄 생성 → 내 스케줄 → 업무보고 → 작업 결과 확인 순서로 운영됩니다.</p>
+      </div>
+    </div>
+
+    <!-- 리포트 -->
+    <div class="card manual-card mb-3 manual-section" id="sec-report">
+      <div class="card-header py-3">
+        <h5 class="mb-0">
+          <span class="manual-icon bg-success-subtle text-success me-2"><i class="ph-duotone ph-chart-bar"></i></span>
+          리포트
+          <span class="badge bg-primary role-badge ms-2">시스템관리자 전용</span>
+        </h5>
+      </div>
+      <div class="card-body">
+        <div class="row g-3">
+          <div class="col-md-6">
+            <h6 class="fw-bold"><i class="bi bi-graph-up me-2"></i>월간 리포트</h6>
+            <ul class="small text-muted mb-0">
+              <li><strong>전체</strong> — 청소·간식·비품 통합 현황</li>
+              <li><strong>청소/간식/비품</strong> — 종류별 상세 현황</li>
+              <li>현장작업팀장별 필터링, 일별 추이 차트 제공</li>
+            </ul>
+          </div>
+          <div class="col-md-6">
+            <h6 class="fw-bold"><i class="ph-duotone ph-chat-circle-dots me-2"></i>문자발송 내역</h6>
+            <p class="small text-muted mb-0">업무 완료 시 자동 발송되는 SMS 내역을 조회합니다. 발송 성공/실패 상태를 확인할 수 있습니다.</p>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- 스케줄 생성 흐름 -->
+    <div class="card manual-card mb-3 manual-section" id="sec-schedule-flow">
+      <div class="card-header py-3">
+        <h5 class="mb-0">
+          <span class="manual-icon bg-primary-subtle text-primary me-2"><i class="bi bi-diagram-3"></i></span>
+          스케줄 생성 흐름
+        </h5>
+      </div>
+      <div class="card-body">
+        <div class="d-flex flex-wrap align-items-center gap-2 mb-3">
+          <span class="badge bg-primary px-3 py-2">① 작업 등록</span>
+          <i class="ph ph-arrow-right text-muted"></i>
+          <span class="badge bg-primary px-3 py-2">② 구역 등록</span>
+          <i class="ph ph-arrow-right text-muted"></i>
+          <span class="badge bg-primary px-3 py-2">③ 스케줄 생성</span>
+          <i class="ph ph-arrow-right text-muted"></i>
+          <span class="badge bg-success px-3 py-2">④ 업무 수행</span>
+        </div>
+        <div class="border rounded p-3 bg-light">
+          <h6 class="fw-bold mb-2"><i class="ph ph-info me-1"></i>스케줄 생성 규칙</h6>
+          <ul class="small mb-0">
+            <li>구역이 1개 이상 등록되어 있고, 상태가 <strong>사용</strong>인 작업만 스케줄이 생성됩니다.</li>
+            <li>작업주기(요일 또는 날짜)에 맞춰 해당 월의 스케줄이 자동 생성됩니다.</li>
+            <li>재생성 시 <strong>완료</strong>되었거나 <strong>작업중</strong>(사진·특이사항이 있는)인 스케줄은 유지됩니다.</li>
+            <li>나머지 스케줄은 삭제 후 새로 생성됩니다.</li>
+            <li>당월 전체 / 당월 선택 / 익월 전체 / 익월 선택으로 생성할 수 있습니다.</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+
+    <!-- 업무보고 흐름 -->
+    <div class="card manual-card mb-3 manual-section" id="sec-work-flow">
+      <div class="card-header py-3">
+        <h5 class="mb-0">
+          <span class="manual-icon bg-success-subtle text-success me-2"><i class="bi bi-clipboard-check"></i></span>
+          업무보고 흐름
+        </h5>
+      </div>
+      <div class="card-body">
+        <div class="d-flex flex-wrap align-items-center gap-2 mb-3">
+          <span class="badge bg-info px-3 py-2">① 내 스케줄 확인</span>
+          <i class="ph ph-arrow-right text-muted"></i>
+          <span class="badge bg-warning px-3 py-2">② 구역별 사진 촬영</span>
+          <i class="ph ph-arrow-right text-muted"></i>
+          <span class="badge bg-warning px-3 py-2">③ 특이사항 기록</span>
+          <i class="ph ph-arrow-right text-muted"></i>
+          <span class="badge bg-success px-3 py-2">④ 전체 완료</span>
+        </div>
+        <div class="border rounded p-3 bg-light">
+          <h6 class="fw-bold mb-2"><i class="ph ph-info me-1"></i>업무보고 안내</h6>
+          <ul class="small mb-0">
+            <li>직원은 <strong>내 스케줄</strong>에서 오늘 할 일을 확인합니다.</li>
+            <li>각 구역별로 사진을 촬영하고, 필요 시 특이사항을 기록합니다.</li>
+            <li>사진만 올려도 <strong>작업중</strong> 상태로 표시됩니다.</li>
+            <li>모든 구역 작업 후 <strong>전체 완료</strong>를 누르면 관리팀장과 업체담당자에게 SMS가 발송됩니다.</li>
+            <li>완료 처리 후에는 수정할 수 없습니다.</li>
+            <li>업체담당자는 <strong>작업 결과 확인</strong> 메뉴에서 사진과 내용을 확인할 수 있습니다.</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+
+  </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+// 스크롤 시 좌측 네비게이션 active 처리
+const sections = document.querySelectorAll('.manual-section');
+const navLinks = document.querySelectorAll('.manual-nav .nav-link');
+
+function updateActiveNav() {
+  let current = '';
+  sections.forEach(section => {
+    const top = section.offsetTop - 120;
+    if (window.scrollY >= top) {
+      current = section.getAttribute('id');
+    }
+  });
+  navLinks.forEach(link => {
+    link.classList.toggle('active', link.getAttribute('href') === '#' + current);
+  });
+}
+
+window.addEventListener('scroll', updateActiveNav);
+updateActiveNav();
+</script>
+{% endblock %}

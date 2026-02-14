@@ -204,7 +204,8 @@ BEGIN
         t.updated_at,
         c.client_name,
         u.user_name,
-        u.user_mobile, 
+        u.user_mobile,
+        mgr.user_name AS manager_name,
         CASE 
             WHEN t.days_of_week = '0' THEN 
                 CASE 
@@ -264,6 +265,7 @@ BEGIN
     FROM tasks t
     INNER JOIN clients c ON t.client_id = c.client_id
     INNER JOIN users u ON t.user_id = u.user_id
+    LEFT JOIN users mgr ON mgr.user_id = c.manage_user_id
     WHERE t.task_kind_id = p_task_kind_id
       AND t.deleted_at IS NULL
     ORDER BY t.created_at DESC;
@@ -486,12 +488,16 @@ BEGIN
             SET v_end_date = v_service_ended_at;
         END IF;
         
-        -- 기존 해당 월 스케줄 삭제 (완료된 것만 건너뛰고 나머지 모두 삭제)
+        -- 기존 해당 월 스케줄 삭제 (완료된 것, 작업중인 것은 건너뛰기)
         DELETE FROM task_schedules
         WHERE task_id = p_task_id
           AND scheduled_date >= STR_TO_DATE(CONCAT(p_year_month, '-01'), '%Y-%m-%d')
           AND scheduled_date <= LAST_DAY(STR_TO_DATE(CONCAT(p_year_month, '-01'), '%Y-%m-%d'))
-          AND completed_at IS NULL;
+          AND completed_at IS NULL
+          AND NOT EXISTS (
+              SELECT 1 FROM task_area_logs tal
+              WHERE tal.task_schedule_id = task_schedules.task_schedule_id
+          );
         
         SET v_current_date = v_start_date;
         
@@ -510,12 +516,13 @@ BEGIN
             
             SET v_day_of_month = DAY(v_current_date);
             
-            -- 해당 날짜에 완료된 스케줄이 이미 있으면 건너뛰기
+            -- 해당 날짜에 완료 또는 작업중인 스케줄이 이미 있으면 건너뛰기
             IF NOT EXISTS (
-                SELECT 1 FROM task_schedules
-                WHERE task_id = p_task_id
-                  AND scheduled_date = v_current_date
-                  AND completed_at IS NOT NULL
+                SELECT 1 FROM task_schedules ts2
+                WHERE ts2.task_id = p_task_id
+                  AND ts2.scheduled_date = v_current_date
+                  AND (ts2.completed_at IS NOT NULL
+                       OR EXISTS (SELECT 1 FROM task_area_logs tal WHERE tal.task_schedule_id = ts2.task_schedule_id))
             ) THEN
                 -- days_of_week가 '0'이면 fix_dates 기반 (월별)
                 IF v_days_of_week = '0' THEN
@@ -588,18 +595,29 @@ BEGIN
         u.user_name AS worker_name,
         u.user_mobile AS worker_mobile,
         au.user_name AS admin_name,
+        mgr.user_name AS manager_name,
         CASE
             WHEN ts.canceled_at IS NOT NULL THEN 'canceled'
             WHEN ts.completed_at IS NOT NULL THEN 'completed'
             WHEN ts.scheduled_date < CURDATE() THEN 'overdue'
             WHEN ts.scheduled_date = CURDATE() THEN 'today'
             ELSE 'scheduled'
-        END AS schedule_status
+        END AS schedule_status,
+        (SELECT COUNT(*) FROM task_areas ta 
+         WHERE ta.task_id = t.task_id AND ta.use_yn = 1 AND ta.deleted_at IS NULL) AS area_count,
+        (SELECT COUNT(*) FROM task_area_logs tal 
+         INNER JOIN task_areas ta2 ON tal.task_area_id = ta2.task_area_id
+         WHERE tal.task_schedule_id = ts.task_schedule_id 
+           AND ta2.deleted_at IS NULL
+           AND ((tal.content IS NOT NULL AND tal.content != '')
+                OR EXISTS (SELECT 1 FROM task_area_photos tap WHERE tap.task_area_log_id = tal.task_area_log_id))
+        ) AS completed_area_count
     FROM task_schedules ts
     INNER JOIN tasks t ON ts.task_id = t.task_id
     INNER JOIN clients c ON t.client_id = c.client_id
     INNER JOIN users u ON ts.user_id = u.user_id
     LEFT JOIN users au ON ts.change_user_id = au.user_id
+    LEFT JOIN users mgr ON mgr.user_id = c.manage_user_id
     WHERE t.task_kind_id = p_task_kind_id
       AND ts.scheduled_date >= v_start_date
       AND ts.scheduled_date <= v_end_date

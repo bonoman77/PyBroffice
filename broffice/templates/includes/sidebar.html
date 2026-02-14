@@ -80,6 +80,9 @@
         <li><a class="panel-link {{ 'active' if request.endpoint == 'homes.privacy' else '' }}" href="{{ url_for('homes.privacy') }}"><i class="bi bi-shield-check me-2"></i>개인정보처리방침</a></li>
         {% if session.get('login_user', {}).get('user_kind_id') == 1 %}
         <li><a class="panel-link {{ 'active' if request.endpoint == 'homes.timeline' else '' }}" href="{{ url_for('homes.timeline') }}"><i class="bi bi-clock-history me-2"></i>개발타임라인</a></li>
+        {% if session.get('login_user', {}).get('user_id') == 1 %}
+        <li><a class="panel-link {{ 'active' if request.endpoint == 'homes.manual' else '' }}" href="{{ url_for('homes.manual') }}"><i class="bi bi-book me-2"></i>사이트 매뉴얼</a></li>
+        {% endif %}
         <li class="mt-2"><hr class="my-1"></li>
         <li><a class="panel-link {{ 'active' if request.endpoint == 'homes.test_camera' else '' }}" href="{{ url_for('homes.test_camera') }}"><i class="ph-duotone ph-camera me-2"></i>사진찍기 테스트</a></li>
         {% if session.get('login_user', {}).get('user_id') == 1 %}

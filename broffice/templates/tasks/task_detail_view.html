@@ -1,0 +1,243 @@
+{% extends "layout.html" %}
+
+{% block title %}
+{% if task_kind_id == 4 %}청소{% elif task_kind_id == 5 %}간식{% elif task_kind_id == 6 %}비품{% endif %} 업무 상세보기
+{% endblock %}
+
+{% block content %}
+<!-- Page Header -->
+<div class="page-header">
+  <div>
+    <h1 class="page-title">{% if task_kind_id == 4 %}청소{% elif task_kind_id == 5 %}간식{% elif task_kind_id == 6 %}비품{% endif %} 업무 상세보기</h1>
+    <nav>
+      <ol class="breadcrumb">
+        <li class="breadcrumb-item"><a href="/">홈</a></li>
+        <li class="breadcrumb-item">
+          <a href="{{ url_for('tasks.task_schedule_list', task_kind_id=task_kind_id) }}">스케줄</a>
+        </li>
+        <li class="breadcrumb-item active">상세보기</li>
+      </ol>
+    </nav>
+  </div>
+</div>
+
+{% if schedule %}
+<!-- 업무 기본 정보 카드 -->
+<div class="card mb-3">
+  <div class="card-body">
+    <div class="d-flex align-items-center justify-content-between mb-3">
+      <div>
+        <h5 class="mb-1">{{ schedule.client_name }}</h5>
+        <div class="text-muted small">
+          <span class="badge badge-soft-secondary me-1">{{ schedule.task_kind_name }}</span>
+          <span>{{ schedule.effective_date }}</span>
+        </div>
+        <div class="d-flex flex-wrap gap-3 mt-1 small">
+          <div>
+            <span class="text-muted">현장작업팀장:</span>
+            <strong>{{ schedule.worker_name or '-' }}</strong>
+            {% if schedule.worker_mobile %}
+            <a href="tel:{{ schedule.worker_mobile }}" class="text-muted ms-1"><i class="ph ph-phone"></i> {{ schedule.worker_mobile }}</a>
+            {% endif %}
+          </div>
+          {% if schedule.manager_name %}
+          <div>
+            <span class="text-muted">관리팀장:</span>
+            <strong>{{ schedule.manager_name }}</strong>
+            {% if schedule.manager_mobile %}
+            <a href="tel:{{ schedule.manager_mobile }}" class="text-muted ms-1"><i class="ph ph-phone"></i> {{ schedule.manager_mobile }}</a>
+            {% endif %}
+          </div>
+          {% endif %}
+        </div>
+      </div>
+      <div>
+        {% if schedule.schedule_status == 'completed' %}
+          <span class="badge bg-success fs-13 px-3 py-2">완료</span>
+        {% elif schedule.schedule_status == 'today' %}
+          <span class="badge bg-primary fs-13 px-3 py-2">오늘</span>
+        {% elif schedule.schedule_status == 'overdue' %}
+          <span class="badge bg-secondary fs-13 px-3 py-2">미완료</span>
+        {% elif schedule.schedule_status == 'canceled' %}
+          <span class="badge bg-secondary fs-13 px-3 py-2">취소</span>
+        {% else %}
+          <span class="badge bg-info fs-13 px-3 py-2">예정</span>
+        {% endif %}
+      </div>
+    </div>
+    {% if schedule.completed_date %}
+      <div class="small text-success">
+        <i class="ph ph-check-circle me-1"></i>완료: {{ schedule.completed_date }}
+      </div>
+    {% endif %}
+    {% if schedule.memo %}
+      <div class="small text-muted mt-1">
+        <i class="ph ph-note me-1"></i>{{ schedule.memo }}
+      </div>
+    {% endif %}
+    {% if schedule.change_scheduled_yn %}
+      <div class="small text-warning mt-1">
+        <i class="ph ph-arrow-right me-1"></i>날짜 변경됨
+      </div>
+    {% endif %}
+  </div>
+</div>
+
+<!-- 구역별 업무 -->
+<h6 class="mb-3"><i class="ph ph-map-pin me-1"></i>구역별 업무 ({{ areas|length }}개)</h6>
+
+{% for area in areas %}
+<div class="card mb-3">
+  <div class="card-header d-flex align-items-center justify-content-between py-2">
+    <div>
+      <strong>{{ area.floor }}층 - {{ area.area }}</strong>
+      {% if area.task_area_log_id and (area.photo_count or area.log_content) %}
+        <span class="badge bg-warning text-dark ms-2">작업완료</span>
+      {% else %}
+        <span class="badge bg-secondary ms-2">미작업</span>
+      {% endif %}
+    </div>
+    {% if area.min_photo_cnt > 0 %}
+      <span class="badge badge-soft-secondary">
+        <i class="ph ph-camera me-1"></i>최소 {{ area.min_photo_cnt }}장
+      </span>
+    {% endif %}
+  </div>
+  <div class="card-body">
+    <!-- 업무 포인트 -->
+    {% if area.check_points %}
+      <div class="mb-3">
+        <small class="fw-semibold text-muted"><i class="ph ph-info me-1"></i>업무 포인트</small>
+        <div class="small mt-1">{{ area.check_points }}</div>
+      </div>
+    {% endif %}
+
+    <!-- 사진 영역 (읽기 전용) -->
+    {% if area.photos %}
+    <div class="mb-3">
+      <label class="form-label small fw-semibold">
+        <i class="ph ph-camera me-1"></i>사진 ({{ area.photos|length }}장)
+      </label>
+      <div class="d-flex flex-wrap gap-2">
+        {% for photo in area.photos %}
+          <img src="{{ photo.photo_file_path }}" class="rounded border area-photo" 
+               data-area-id="{{ area.task_area_id }}"
+               style="width: 80px; height: 80px; object-fit: cover; cursor: pointer;"
+               onclick="showPhotoCarousel(this)">
+        {% endfor %}
+      </div>
+    </div>
+    {% endif %}
+
+    <!-- 특이사항 (읽기 전용) -->
+    {% if area.log_content %}
+    <div>
+      <label class="form-label small fw-semibold">
+        <i class="ph ph-note-pencil me-1"></i>특이사항
+      </label>
+      <div class="form-control form-control-sm bg-light" style="min-height: 40px;">{{ area.log_content }}</div>
+    </div>
+    {% endif %}
+  </div>
+</div>
+{% endfor %}
+
+<!-- 뒤로가기 -->
+<div class="text-center mb-4">
+  <button onclick="history.back()" class="btn btn-outline-secondary">
+    <i class="ph ph-arrow-left me-1"></i>목록으로
+  </button>
+</div>
+
+{% else %}
+<div class="text-center text-muted py-5">
+  <i class="ph ph-warning fs-1 d-block mb-2"></i>
+  <p>업무 정보를 찾을 수 없습니다.</p>
+  <button onclick="history.back()" class="btn btn-outline-secondary btn-sm">목록으로</button>
+</div>
+{% endif %}
+
+<!-- 사진 Carousel 모달 -->
+<div class="modal fade" id="photoModal" tabindex="-1" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered modal-lg">
+    <div class="modal-content bg-dark">
+      <div class="modal-header py-2 border-0">
+        <h6 class="modal-title text-white" id="photoModalTitle">사진</h6>
+        <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body text-center p-0">
+        <div id="photoCarousel" class="carousel slide" data-bs-ride="false">
+          <div class="carousel-inner" id="carouselInner"></div>
+          <button class="carousel-control-prev" type="button" data-bs-target="#photoCarousel" data-bs-slide="prev">
+            <span class="carousel-control-prev-icon"></span>
+          </button>
+          <button class="carousel-control-next" type="button" data-bs-target="#photoCarousel" data-bs-slide="next">
+            <span class="carousel-control-next-icon"></span>
+          </button>
+        </div>
+        <div class="text-white small py-2" id="photoCounter"></div>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+let detailCarouselInstance = null;
+
+function showPhotoCarousel(imgEl) {
+    const areaId = imgEl.dataset.areaId;
+    const photos = document.querySelectorAll('.area-photo[data-area-id="' + areaId + '"]');
+    const inner = document.getElementById('carouselInner');
+    inner.innerHTML = '';
+
+    let activeIdx = 0;
+    photos.forEach((photo, idx) => {
+        if (photo.src === imgEl.src) activeIdx = idx;
+        const item = document.createElement('div');
+        item.className = 'carousel-item' + (idx === activeIdx ? ' active' : '');
+        item.innerHTML = '<img src="' + photo.src + '" class="d-block w-100" style="max-height:70vh; object-fit:contain;">';
+        inner.appendChild(item);
+    });
+
+    const prevBtn = document.querySelector('#photoCarousel .carousel-control-prev');
+    const nextBtn = document.querySelector('#photoCarousel .carousel-control-next');
+    if (photos.length <= 1) {
+        prevBtn.style.display = 'none';
+        nextBtn.style.display = 'none';
+    } else {
+        prevBtn.style.display = '';
+        nextBtn.style.display = '';
+    }
+
+    document.getElementById('photoCounter').textContent = (activeIdx + 1) + ' / ' + photos.length;
+
+    const carouselEl = document.getElementById('photoCarousel');
+    carouselEl.removeEventListener('slid.bs.carousel', carouselEl._counterHandler);
+    carouselEl._counterHandler = function(e) {
+        document.getElementById('photoCounter').textContent = (e.to + 1) + ' / ' + photos.length;
+    };
+    carouselEl.addEventListener('slid.bs.carousel', carouselEl._counterHandler);
+
+    if (detailCarouselInstance) detailCarouselInstance.dispose();
+    detailCarouselInstance = new bootstrap.Carousel(carouselEl, { keyboard: true, wrap: true });
+    if (activeIdx > 0) detailCarouselInstance.to(activeIdx);
+
+    const modal = new bootstrap.Modal(document.getElementById('photoModal'));
+    modal.show();
+}
+
+document.getElementById('photoModal').addEventListener('shown.bs.modal', function() {
+    document.addEventListener('keydown', viewPhotoKeyHandler);
+});
+document.getElementById('photoModal').addEventListener('hidden.bs.modal', function() {
+    document.removeEventListener('keydown', viewPhotoKeyHandler);
+});
+function viewPhotoKeyHandler(e) {
+    if (!detailCarouselInstance) return;
+    if (e.key === 'ArrowLeft') detailCarouselInstance.prev();
+    else if (e.key === 'ArrowRight') detailCarouselInstance.next();
+}
+</script>
+{% endblock %}

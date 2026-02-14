@@ -53,6 +53,9 @@
         <span class="badge bg-info px-3 py-2">
           <i class="ph ph-clock me-1"></i>대기 <strong>{{ pending_count }}</strong>
         </span>
+        <span class="badge bg-danger px-3 py-2">
+          <i class="ph ph-spinner me-1"></i>작업중 <strong>{{ in_progress_count }}</strong>
+        </span>
         <span class="badge bg-warning px-3 py-2">
           <i class="ph ph-check-circle me-1"></i>완료 <strong>{{ completed_count }}</strong>
         </span>
@@ -73,6 +76,12 @@
     <button class="nav-link" id="tab-all" data-bs-toggle="tab" 
             data-bs-target="#pane-all" type="button" role="tab">
       <i class="ph ph-calendar-blank me-1"></i>전체
+    </button>
+  </li>
+  <li class="nav-item" role="presentation">
+    <button class="nav-link" id="tab-in-progress" data-bs-toggle="tab" 
+            data-bs-target="#pane-in-progress" type="button" role="tab">
+      <i class="ph ph-spinner me-1"></i>작업중 <span class="badge bg-danger ms-1">{{ in_progress_count }}</span>
     </button>
   </li>
   <li class="nav-item" role="presentation">
@@ -138,6 +147,31 @@
       <div class="text-center text-muted py-5">
         <i class="ph ph-calendar-x fs-1 d-block mb-2"></i>
         <p>이 달에 예정된 업무가 없습니다.</p>
+      </div>
+    {% endif %}
+  </div>
+
+  <!-- 작업중 탭 -->
+  <div class="tab-pane fade" id="pane-in-progress" role="tabpanel">
+    {% set in_progress_schedules = schedules | rejectattr('schedule_status', 'equalto', 'completed') | list %}
+    {% set in_progress_schedules = in_progress_schedules | selectattr('completed_area_count', '>', 0) | list %}
+    {% if in_progress_schedules %}
+      {% set ns = namespace(current_date='') %}
+      {% for s in in_progress_schedules %}
+        {% if s.effective_date != ns.current_date %}
+          {% set ns.current_date = s.effective_date %}
+          <div class="d-flex align-items-center gap-2 mb-2 {% if not loop.first %}mt-4{% endif %}">
+            <span class="badge fs-13 px-3 py-2 bg-danger">
+              {{ s.effective_date }} ({{ s.effective_day }})
+            </span>
+          </div>
+        {% endif %}
+        {% include "tasks/_schedule_card.html" %}
+      {% endfor %}
+    {% else %}
+      <div class="text-center text-muted py-5">
+        <i class="ph ph-spinner fs-1 d-block mb-2"></i>
+        <p>작업중인 업무가 없습니다.</p>
       </div>
     {% endif %}
   </div>

@@ -347,6 +347,7 @@ def task_my_list(task_kind_id):
     tomorrow = (datetime.now() + timedelta(days=1)).strftime('%Y-%m-%d')
     total_count = len(schedules)
     completed_count = sum(1 for s in schedules if s.get('schedule_status') == 'completed')
+    in_progress_count = sum(1 for s in schedules if s.get('schedule_status') != 'completed' and s.get('completed_area_count', 0) > 0)
     pending_count = sum(1 for s in schedules if s.get('schedule_status') in ('scheduled', 'today') and s.get('effective_date', '') >= today)
     
     return render_template('tasks/task_my_list.html',
@@ -356,6 +357,7 @@ def task_my_list(task_kind_id):
         tomorrow=tomorrow,
         total_count=total_count,
         completed_count=completed_count,
+        in_progress_count=in_progress_count,
         pending_count=pending_count,
         workers=workers,
         selected_user_id=selected_user_id, 
@@ -387,6 +389,27 @@ def task_detail(task_schedule_id, task_kind_id):
         areas=areas,
         task_kind_id=task_kind_id,
         has_any_work=has_any_work
+    )
+
+
+@bp.route("/task_detail_view/<int:task_schedule_id>/<int:task_kind_id>", methods=['GET'])
+@login_required
+def task_detail_view(task_schedule_id, task_kind_id):
+    """업무 상세 보기 (읽기 전용)"""
+    
+    schedule = conn.execute_return('get_task_detail', [task_schedule_id])
+    areas = conn.return_list('get_task_detail_areas', [task_schedule_id])
+    
+    for area in areas:
+        if area.get('task_area_log_id'):
+            area['photos'] = conn.return_list('get_task_area_photos', [area['task_area_log_id']])
+        else:
+            area['photos'] = []
+    
+    return render_template('tasks/task_detail_view.html',
+        schedule=schedule,
+        areas=areas,
+        task_kind_id=task_kind_id
     )
 
 
