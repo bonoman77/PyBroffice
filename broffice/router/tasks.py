@@ -435,54 +435,67 @@ def task_area_log_save():
 @login_required
 def task_area_photo_upload():
     """구역 사진 업로드 (여러 장, 이미지 경량화)"""
-    from PIL import Image
-    import io
-    
-    task_area_log_id = request.form.get('taskAreaLogId', type=int)
-    files = request.files.getlist('photos')
-    
-    if not files or all(f.filename == '' for f in files):
-        return jsonify({'success': False, 'message': '파일이 없습니다.'}), 400
-    
-    upload_dir = os.path.join(current_app.static_folder, 'uploads', 'task_photos')
-    os.makedirs(upload_dir, exist_ok=True)
-    
-    MAX_SIZE = (1280, 1280)
-    QUALITY = 80
-    
-    uploaded = []
-    for file in files:
-        if file.filename == '':
-            continue
+    try:
+        task_area_log_id = request.form.get('taskAreaLogId', type=int)
+        files = request.files.getlist('photos')
         
-        unique_name = f"{uuid.uuid4().hex}.jpg"
-        file_path = os.path.join(upload_dir, unique_name)
+        if not task_area_log_id:
+            return jsonify({'success': False, 'message': '로그 ID가 없습니다.'}), 400
         
-        # 이미지 경량화: 리사이즈 + JPEG 압축
+        if not files or all(f.filename == '' for f in files):
+            return jsonify({'success': False, 'message': '파일이 없습니다.'}), 400
+        
+        upload_dir = os.path.join(current_app.static_folder, 'uploads', 'task_photos')
+        os.makedirs(upload_dir, exist_ok=True)
+        
+        MAX_SIZE = (1280, 1280)
+        QUALITY = 80
+        
         try:
-            img = Image.open(file.stream)
-            img = img.convert('RGB')
-            img.thumbnail(MAX_SIZE, Image.LANCZOS)
-            img.save(file_path, 'JPEG', quality=QUALITY, optimize=True)
-        except Exception:
-            file.stream.seek(0)
-            file.save(file_path)
+            from PIL import Image
+            use_pil = True
+        except ImportError:
+            use_pil = False
+            current_app.logger.warning('Pillow 미설치 - 원본 파일로 저장합니다.')
         
-        db_path = f'/static/uploads/task_photos/{unique_name}'
-        res = conn.execute_return('set_task_area_photo_insert', [task_area_log_id, db_path])
-        photo_id = res.get('return_value', 0) if res else 0
+        uploaded = []
+        for file in files:
+            if file.filename == '':
+                continue
+            
+            unique_name = f"{uuid.uuid4().hex}.jpg"
+            file_path = os.path.join(upload_dir, unique_name)
+            
+            if use_pil:
+                try:
+                    img = Image.open(file.stream)
+                    img = img.convert('RGB')
+                    img.thumbnail(MAX_SIZE, Image.LANCZOS)
+                    img.save(file_path, 'JPEG', quality=QUALITY, optimize=True)
+                except Exception:
+                    file.stream.seek(0)
+                    file.save(file_path)
+            else:
+                file.save(file_path)
+            
+            db_path = f'/static/uploads/task_photos/{unique_name}'
+            res = conn.execute_return('set_task_area_photo_insert', [task_area_log_id, db_path])
+            photo_id = res.get('return_value', 0) if res else 0
+            
+            if photo_id > 0:
+                uploaded.append({
+                    'task_area_photo_id': photo_id,
+                    'photo_file_path': db_path
+                })
         
-        if photo_id > 0:
-            uploaded.append({
-                'task_area_photo_id': photo_id,
-                'photo_file_path': db_path
-            })
-    
-    return jsonify({
-        'success': len(uploaded) > 0,
-        'message': f'{len(uploaded)}장 업로드되었습니다.',
-        'photos': uploaded
-    })
+        return jsonify({
+            'success': len(uploaded) > 0,
+            'message': f'{len(uploaded)}장 업로드되었습니다.',
+            'photos': uploaded
+        })
+    except Exception as e:
+        current_app.logger.error(f'사진 업로드 오류: {e}', exc_info=True)
+        return jsonify({'success': False, 'message': f'서버 오류: {str(e)}'}), 500
 
 
 @bp.route("/task_area_photo_delete", methods=['POST'])

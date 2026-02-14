@@ -1,5 +1,5 @@
 import os
-from flask import Flask, url_for, render_template
+from flask import Flask, url_for, render_template, request, jsonify
 from werkzeug.exceptions import HTTPException
 from broffice.utils.file_handler import file_download
 from broffice.utils.log_handler import setup_logger
@@ -101,6 +101,13 @@ def register_filters(app):
 def register_error_handlers(app):
     """에러 핸들러 등록"""
     
+    def _is_api_request():
+        """AJAX/fetch 요청 여부 판별"""
+        return (request.is_json
+                or request.headers.get('X-Requested-With') == 'XMLHttpRequest'
+                or 'application/json' in request.headers.get('Accept', '')
+                or (request.content_type and 'multipart/form-data' in request.content_type))
+    
     @app.errorhandler(404)
     def not_found_error(error):
         """404 에러 핸들러"""
@@ -124,6 +131,8 @@ def register_error_handlers(app):
     def internal_error(error):
         """500 에러 핸들러"""
         app.logger.error("500 에러 발생", exc_info=True)
+        if _is_api_request():
+            return jsonify({'success': False, 'message': f'서버 내부 오류: {str(error)}'}), 500
         if app.config.get('DEBUG'):
             return str(error), 500
         return render_template('errors/500.html'), 500
@@ -133,6 +142,8 @@ def register_error_handlers(app):
         """전역 예외 핸들러"""
         # HTTP 예외는 해당 핸들러로 전달
         if isinstance(e, HTTPException):
+            if _is_api_request():
+                return jsonify({'success': False, 'message': str(e)}), e.code
             return e
         
         # 예외 로깅 (exc_info=True로 스택 트레이스 자동 포함)
@@ -140,6 +151,10 @@ def register_error_handlers(app):
             f"처리되지 않은 예외: {type(e).__name__} - {str(e)}",
             exc_info=True
         )
+        
+        # AJAX/fetch 요청인 경우 JSON 응답
+        if _is_api_request():
+            return jsonify({'success': False, 'message': f'서버 오류: {type(e).__name__} - {str(e)}'}), 500
         
         # 개발 환경에서는 상세 에러 표시
         if app.config.get('DEBUG'):

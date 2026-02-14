@@ -425,8 +425,19 @@ async function uploadPhotos(taskAreaId, taskScheduleId, files) {
         
         const response = await fetch('/tasks/task_area_photo_upload', {
             method: 'POST',
+            headers: { 'Accept': 'application/json' },
             body: formData
         });
+        
+        if (!response.ok) {
+            let errMsg = `서버 오류 (${response.status})`;
+            try {
+                const errData = await response.json();
+                errMsg = errData.message || errMsg;
+            } catch (_) {}
+            showToast('danger', errMsg);
+            return;
+        }
         const data = await response.json();
         
         if (data.success && data.photos) {
